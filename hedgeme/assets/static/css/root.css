@@ -1,0 +1,12 @@
+:root {
+    --light: #00ffff;
+    --light2: #00f2f2;
+
+    --dark:rgba(0, 255, 255, .2);
+    --dark2:#004444;
+
+    --mag: magenta;
+    --mag2: #aa00aa;
+
+    --clight:white;
+}

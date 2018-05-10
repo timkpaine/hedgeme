@@ -32,6 +32,7 @@ div.header {
 
 div.header h2{
     margin: 0;
+    margin-left:5px;
     align-self: center;
 }
 
@@ -43,7 +44,13 @@ div.header input {
     color:white;
 }
 
-div#holder {
-    height:200px;
-    width:200px;
+perspective-viewer#holder {
+    position: relative;
+    height:75%;
+    width:75%;
+}
+
+perspective-viewer div#app, 
+perspective-viewer div#pivot_chart{
+    background-color:transparent;
 }

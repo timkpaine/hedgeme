@@ -1,35 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Crowdsource</title>
+<title></title>
 <link href="/static/css/root.css" rel="stylesheet">
 <link href="/static/css/index.css" rel="stylesheet">
-<script src='https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.24/webcomponents.min.js'></script>
+<link rel="stylesheet" type="text/css" href="/static/css/fonts.css">
+<script src='/static/js/webcomponents.min.js'></script>
 <script src="/static/js/perspective.view.js"></script>
 <script src="/static/js/hypergrid.plugin.js"></script>
 <script src="/static/js/highcharts.plugin.js"></script>
+<script src='/static/js/index.js'></script>
 </head>
 <body>
     <div class="header">
         <h2 class="logo">hedge.me</h2>
-        <input type="text" placeholder="target">
+        <input id="ticker_input" type="text" placeholder="  target">
     </div>
     <div class="main">
         <perspective-viewer id="holder">
         </perspective-viewer>
     </div>
 </body>
-
-<script>
-    window.addEventListener('WebComponentsReady', function () {
-        var xhr1 = new XMLHttpRequest();
-        xhr1.open('GET', '/data', true);
-        xhr1.onload = function () { 
-            console.log(xhr1.response);
-            var jsn = JSON.parse(xhr1.response);
-            document.getElementById('holder').load(jsn); 
-        };
-        xhr1.send(null);
-    });
-</script>
 </html>

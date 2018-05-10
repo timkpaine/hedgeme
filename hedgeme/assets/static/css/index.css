@@ -6,12 +6,14 @@ html {
 body {
     height: 100vh;
     margin: 0px;
-    background: linear-gradient(var(--dark), #000);
+    background: black;
 }
 
 div.main{
     height:100%;
     width:100%;
+    background: linear-gradient(#000, #0ff);
+
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -19,69 +21,29 @@ div.main{
     justify-content: center;
 }
 
-img.main {
-    width:100%;
-    max-width:1000px;
-    max-height:10vh;
-    min-height:75px;
-    padding-bottom: 10vh;
-    animation-name: fader;
-    animation-duration: 5s;
-    animation-iteration-count: infinite;
-}
-
-@keyframes fader {
-    0%   {
-        filter: brightness(1);
-        -webkit-filter: brightness(1);
-    }
-    50%  {
-        filter: brightness(0);
-        -webkit-filter: brightness(0);
-    }
-    100% {
-        filter: brightness(1);
-        -webkit-filter: brightness(1);
-    }
-}
-
-div.subs{
-    display:flex;
+div.header {
+    color:white;
+    height:50px;
+    display: flex;
     flex-direction: row;
-    width:100%;
+    justify-content: left;
+    border-bottom: 1px solid white;
 }
 
-div.subs a {
-    width:50%;
-    text-align: center;
-    text-decoration: none;
-    font-family: "Ubuntu";
-    color: var(--light2);
-
-    display:flex;
-    flex-direction: row;
-    align-content: center;
-    justify-content: center;
-    align-self:center;
-
-    filter: brightness(.4);
-    -webkit-filter: brightness(.4);
+div.header h2{
+    margin: 0;
+    align-self: center;
 }
 
-p.leaders, 
-p.active {
-    width:50%;
-    max-width:100px;
-    max-height:25px;
-    min-height:5px;
+div.header input {
+    height:25px;
+    align-self: center;
+    margin-left: 25px;
+    background-color: black;
+    color:white;
 }
 
-div.subs a:hover, 
-dib.subs a:hover{
-    -webkit-transition: filter .8s linear;
-    transition: filter .8s linear;
-    filter: brightness(1)
-    filter: contrast(1);
-    -webkit-filter: brightness(1);
-    -webkit-filter: contrast(1);
+div#holder {
+    height:200px;
+    width:200px;
 }

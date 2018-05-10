@@ -3,7 +3,7 @@ import os.path
 import tornado.ioloop
 import tornado.web
 from .utils import log, parse_args
-from .handlers import HTMLOpenHandler
+from .handlers import HTMLOpenHandler, DataHandler
 
 
 class ServerApplication(tornado.web.Application):
@@ -13,6 +13,7 @@ class ServerApplication(tornado.web.Application):
 
         default_handlers = [
             (r"/", HTMLOpenHandler, {'template': 'index.html'}),
+            (r"/data", DataHandler, {}),
             (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": static}),
             (r"/(.*)", HTMLOpenHandler, {'template': '404.html'})
         ]

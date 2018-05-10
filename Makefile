@@ -1,5 +1,5 @@
 run:  ## run server
-	python3 app.py
+	python3 -m hedgeme.server
 
 tests: clean install ## Clean and Make unit tests
 	python3 -m nose -v tests --with-coverage --cover-erase --cover-package=`find hedgeme -name "*.py" | sed "s=\./==g" | sed "s=/=.=g" | sed "s/.py//g" | tr '\n' ',' | rev | cut -c2- | rev`

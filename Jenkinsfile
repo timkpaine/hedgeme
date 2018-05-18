@@ -29,6 +29,7 @@ pipeline {
                         sh '. venv/bin/activate && python3 -m codecov --token f1584ece-92aa-4be7-b6ae-89c02a19af16'
                     }
                 }
+            }
             stage('Deploy') {
                 when {
                     branch 'master'

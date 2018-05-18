@@ -1,4 +1,4 @@
 # accurate coverage
-from hedgeme import *
+from hedgeme.server import getContext, ServerApplication
 
 print('nothing to report')

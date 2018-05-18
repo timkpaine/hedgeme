@@ -9,14 +9,18 @@
 <script src="/static/js/perspective.view.js"></script>
 <script src="/static/js/hypergrid.plugin.js"></script>
 <script src="/static/js/highcharts.plugin.js"></script>
+<script src="/static/js/mobile_fix.js"></script>
 <script src='/static/js/index.js'></script>
 </head>
 <body>
     <div class="header">
         <h2 class="logo">hedge.me</h2>
-        <input id="ticker_input" type="text" placeholder="  target">
+        <input id="ticker_input" type="text" placeholder="aapl" list="ticker_autocomplete">
+        <datalist id="ticker_autocomplete">
+        </datalist>
     </div>
     <div class="main">
+        <h2>trailing 4q</h2>
         <perspective-viewer id="holder">
         </perspective-viewer>
     </div>

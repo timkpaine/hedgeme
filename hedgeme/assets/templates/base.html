@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script> 
-<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="/static/js/jquery.tablesorter.widgets.js"></script>
-
 <link rel="stylesheet" type="text/css" href="/static/css/fonts.css">
 <link href="/static/css/root.css" rel="stylesheet">
 <link href="/static/css/base.css" rel="stylesheet">
@@ -15,14 +11,6 @@
 
 </head>
 <body>
-    <div class='header'>
-        <a href='/'><img class='header' src='/static/img/cs_cyan.png'></a>
-        <h2>{{ title }}</h2>
-        {% if current_user %}
-        <h4>id:{{current_user}}</h4>
-        <a href='/logout'><h4>logout</h4></a>
-        {% endif %}
-    </div>
     {% block main %}
     {% endblock %}
 </body>

@@ -1,9 +1,16 @@
 import sys
 import os.path
+import pyEX
 import tornado.ioloop
 import tornado.web
 from .utils import log, parse_args
-from .handlers import HTMLOpenHandler, DataHandler
+from .handlers import HTMLOpenHandler, DataHandler, AutocompleteHandler
+
+
+def getContext():
+    d = {}
+    d['tickers'] = pyEX.symbolsDF()
+    return d
 
 
 class ServerApplication(tornado.web.Application):
@@ -11,9 +18,12 @@ class ServerApplication(tornado.web.Application):
         root = os.path.join(os.path.dirname(__file__), 'assets')
         static = os.path.join(root, 'static')
 
+        context = getContext()
+
         default_handlers = [
             (r"/", HTMLOpenHandler, {'template': 'index.html'}),
-            (r"/data", DataHandler, {}),
+            (r"/data", DataHandler, context),
+            (r"/autocomplete", AutocompleteHandler, context),
             (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": static}),
             (r"/(.*)", HTMLOpenHandler, {'template': '404.html'})
         ]

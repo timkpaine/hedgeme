@@ -1,19 +1,34 @@
 html {
-    background-color: black;
     font-family: "Ubuntu";
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+/* specifically hide the arrow on focus */
+input::-webkit-calendar-picker-indicator {
+    display: none;
 }
 
 body {
     height: 100vh;
     margin: 0px;
-    background: black;
+    /*background: #141e30;*/
+    /*background: -webkit-linear-gradient(to right, #141e30, #243b55);*/
+    /*background: linear-gradient(to right, #141e30, #243b55); */
+    background: #000000;
+    background: -webkit-linear-gradient(to top, #000000, #53346d);
+    background: linear-gradient(to top, #000000, #53346d);
 }
 
 div.main{
     height:100%;
     width:100%;
-    background: linear-gradient(#000, #0ff);
-
+    color: white;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -22,7 +37,8 @@ div.main{
 }
 
 div.header {
-    color:white;
+    color: white;
+    background: transparent;
     height:50px;
     display: flex;
     flex-direction: row;
@@ -40,8 +56,10 @@ div.header input {
     height:25px;
     align-self: center;
     margin-left: 25px;
-    background-color: black;
+    background-color: transparent;
     color:white;
+    padding-left:10px;
+    text-transform: uppercase;
 }
 
 perspective-viewer#holder {

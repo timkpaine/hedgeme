@@ -1,12 +1,5 @@
-cufflinks
-IPython
-jinja2
 numpy
 pandas
-psycopg2
-scikit-learn
-scipy
-sqlalchemy
+pyEX
 tornado
 ujson
-validators

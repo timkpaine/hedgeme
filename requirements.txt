@@ -1,4 +1,5 @@
 IPython
+jinja2
 numpy
 pandas
 pillow

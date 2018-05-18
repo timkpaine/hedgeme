@@ -1,4 +1,7 @@
 pipeline {
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '2'))
+    }
     environment{
         HEROKU_API_KEY = credentials('heroku')
     }

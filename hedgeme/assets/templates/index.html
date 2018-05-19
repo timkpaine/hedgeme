@@ -15,14 +15,24 @@
 <body>
     <div class="header">
         <h2 class="logo">hedge.me</h2>
-        <input id="ticker_input" type="text" placeholder="aapl" list="ticker_autocomplete">
+        <input id="ticker_input" type="text" placeholder="jpm" list="ticker_autocomplete">
         <datalist id="ticker_autocomplete">
         </datalist>
     </div>
     <div class="main">
-        <h2>trailing 4q</h2>
-        <perspective-viewer id="holder">
-        </perspective-viewer>
+        <div class="section">
+            <h2>company overview</h2>
+            <div class="viewer_holder">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>trailing 4q</h2>
+            <div class="viewer_holder">
+            <perspective-viewer id="cashflow">
+            </perspective-viewer>
+            </div>
+        </div>
     </div>
 </body>
 </html>

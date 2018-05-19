@@ -5,7 +5,6 @@ class AutocompleteHandler(ServerHandler):
     def initialize(self, tickers=None, **kwargs):
         super(AutocompleteHandler, self).initialize()
         self.tickers = tickers
-        print(self.tickers)
 
     def get(self, *args):
         '''Get the login page'''

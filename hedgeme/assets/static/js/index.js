@@ -50,7 +50,7 @@ function autocomplete_ticker(path, value, autocomplete){
 
 
 window.addEventListener('WebComponentsReady', function () {
-    var holder = document.getElementById('holder');
+    var holder = document.getElementById('cashflow');
     var ticker_input = document.getElementById('ticker_input');
     var ticker_autocomplete = document.getElementById('ticker_autocomplete');
 
@@ -77,6 +77,6 @@ window.addEventListener('WebComponentsReady', function () {
         last = ticker_input.value;
     });
 
-    fetch_and_load('/data?ticker=AAPL', holder);
+    fetch_and_load('/data?ticker=JPM', holder);
 });
 

@@ -1,8 +1,0 @@
-build
-compile_commands.json
-node_modules
-*.mem
-*.log
-*.png
-package-lock.json
-jsconfig.json

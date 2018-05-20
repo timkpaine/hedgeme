@@ -20,6 +20,10 @@ clean: ## clean the repository
 	rm -rf .coverage cover htmlcov logs build dist *.egg-info
 	make -C ./docs clean
 
+js:  ## build the js
+	npm install
+	npm run build
+
 build:  ## build the repository
 	python3 setup.py build
 

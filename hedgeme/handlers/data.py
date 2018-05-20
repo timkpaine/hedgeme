@@ -2,9 +2,9 @@ import pyEX as p
 from .base import ServerHandler
 
 
-class DataHandler(ServerHandler):
+class CashDataHandler(ServerHandler):
     def initialize(self, **kwargs):
-        super(DataHandler, self).initialize()
+        super(CashDataHandler, self).initialize()
 
     def get(self, *args):
         '''Get the login page'''
@@ -12,3 +12,15 @@ class DataHandler(ServerHandler):
         # df = p.chartDF(arg, '5y')
         df = p.financialsDF(arg).reset_index()
         self.write(df[-100:].to_json(orient='records'))
+
+
+class ChartDataHandler(ServerHandler):
+    def initialize(self, **kwargs):
+        super(ChartDataHandler, self).initialize()
+
+    def get(self, *args):
+        '''Get the login page'''
+        arg = self.get_argument('ticker', 'aapl')
+        df = p.chartDF(arg, '1m').reset_index()[['date', 'open', 'high', 'low', 'close']]
+        df['ticker'] = arg
+        self.write(df.to_json(orient='records'))

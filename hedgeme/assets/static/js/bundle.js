@@ -37585,6 +37585,7 @@ function autocomplete_ticker(path, value, autocomplete) {
                 var val = jsn_1[_i];
                 var option = document.createElement('option');
                 option.value = val;
+                option.innerText = val;
                 autocomplete.appendChild(option);
             }
         }
@@ -57862,7 +57863,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, ".controls {\n  min-width: 50px;\n  min-height: 50px;\n  /*max-width: 350px;*/\n  display: flex;\n  flex-direction: column;\n  padding: 8px;\n  border: 1px solid #C0C0C0;\n  border-top: none;\n  background: white;\n  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);\n}\n\n\n.controls > div {\n  flex: 1 1 auto;\n  border: 1px solid #505050;\n  overflow: auto;\n}\n\n\n.controls  input {\n  margin: 8px;\n  width:100%;\n}\n\n\n.controls input::-webkit-outer-spin-button,\n.controls input::-webkit-inner-spin-button {\n    /* display: none; <- Crashes Chrome on hover */\n    -webkit-appearance: none;\n    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */\n}\n\n/* specifically hide the arrow on focus */\n.controls input::-webkit-calendar-picker-indicator {\n    display: none;\n}", ""]);
+exports.push([module.i, ".controls {\n  min-width: 50px;\n  min-height: 50px;\n  /*max-width: 350px;*/\n  display: flex;\n  flex-direction: column;\n  padding: 8px;\n  border: 1px solid #C0C0C0;\n  border-top: none;\n  background: white;\n  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);\n}\n\n\n.controls > div {\n  flex: 1 1 auto;\n  border: 1px solid #505050;\n  overflow: auto;\n}\n\n\n.controls  input {\n  margin: 8px;\n  width:90%;\n}\n\n\n.controls input::-webkit-outer-spin-button,\n.controls input::-webkit-inner-spin-button {\n    /* display: none; <- Crashes Chrome on hover */\n    -webkit-appearance: none;\n    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */\n}\n\n/* specifically hide the arrow on focus */\n.controls input::-webkit-calendar-picker-indicator {\n    display: none;\n}", ""]);
 
 // exports
 

@@ -37584,8 +37584,8 @@ function autocomplete_ticker(path, value, autocomplete) {
             for (var _i = 0, jsn_1 = jsn; _i < jsn_1.length; _i++) {
                 var val = jsn_1[_i];
                 var option = document.createElement('option');
-                option.value = val;
-                option.innerText = val;
+                option.value = val['symbol'];
+                option.innerText = val['symbol'] + ' - ' + val['name'];
                 autocomplete.appendChild(option);
             }
         }
@@ -37640,9 +37640,9 @@ var ControlsWidget = (function (_super) {
         _this.last = '';
         input.addEventListener('keyup', function (e) {
             if (e.keyCode === 13) {
-                if (this.entered == input.value) {
-                    return;
-                }
+                // if(this.entered == input.value){
+                //     return;
+                // }
                 fetch_and_load_cashflow('/cash?ticker=' + input.value, psps['cash'].pspNode);
                 fetch_and_load_chart('/chart?ticker=' + input.value, psps['chart'].pspNode);
                 this.entered = input.value;
@@ -37665,7 +37665,8 @@ var ControlsWidget = (function (_super) {
         var content = document.createElement('div');
         var input = document.createElement('input');
         var datalist = document.createElement('datalist');
-        input.placeholder = 'JPM';
+        input.placeholder = 'Ticker';
+        input.value = 'JPM';
         input.id = 'controls_input';
         datalist.id = 'controls_datalist';
         input.setAttribute('list', datalist.id);

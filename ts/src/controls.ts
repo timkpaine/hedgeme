@@ -26,8 +26,8 @@ function autocomplete_ticker(path: string, value: string, autocomplete: HTMLData
 
             for(let val of jsn){
                 let option = document.createElement('option');
-                option.value = val;
-                option.innerText = val;
+                option.value = val['symbol'];
+                option.innerText = val['symbol'] + ' - ' + val['name'];
                 autocomplete.appendChild(option);
             }
         }
@@ -83,7 +83,8 @@ class ControlsWidget extends Widget {
     let input = document.createElement('input');
     let datalist = document.createElement('datalist');
 
-    input.placeholder = 'JPM';
+    input.placeholder = 'Ticker';
+    input.value = 'JPM';
     input.id = 'controls_input';
     datalist.id = 'controls_datalist';
     input.setAttribute('list', datalist.id);
@@ -110,9 +111,9 @@ class ControlsWidget extends Widget {
 
     input.addEventListener('keyup', function(e: KeyboardEvent){
         if (e.keyCode === 13){
-            if(this.entered == input.value){
-                return;
-            }
+            // if(this.entered == input.value){
+            //     return;
+            // }
             fetch_and_load_cashflow('/cash?ticker=' + input.value, psps['cash'].pspNode);
             fetch_and_load_chart('/chart?ticker=' + input.value, psps['chart'].pspNode);
 

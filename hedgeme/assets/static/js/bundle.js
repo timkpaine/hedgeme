@@ -37624,10 +37624,34 @@ function fetch_and_load_chart(path, loadto) {
     };
     xhr1.send(null);
 }
+function fetch_and_load_company(path, loadto) {
+    var xhr1 = new XMLHttpRequest();
+    xhr1.open('GET', path, true);
+    xhr1.onload = function () {
+        var jsn = JSON.parse(xhr1.response);
+        while (loadto.lastChild) {
+            loadto.removeChild(loadto.lastChild);
+        }
+        if (jsn) {
+            for (var _i = 0, _a = Object.keys(jsn); _i < _a.length; _i++) {
+                var x = _a[_i];
+                var row = document.createElement('tr');
+                var td1 = document.createElement('td');
+                var td2 = document.createElement('td');
+                td1.textContent = x;
+                td2.textContent = jsn[x];
+                row.appendChild(td1);
+                row.appendChild(td2);
+                loadto.appendChild(row);
+            }
+        }
+    };
+    xhr1.send(null);
+}
 var ControlsWidget = (function (_super) {
     __extends(ControlsWidget, _super);
-    function ControlsWidget(psps) {
-        var _this = _super.call(this, { node: ControlsWidget.createNode() }) || this;
+    function ControlsWidget(def, psps) {
+        var _this = _super.call(this, { node: ControlsWidget.createNode(def) }) || this;
         _this.setFlag(widgets_1.Widget.Flag.DisallowLayout);
         _this.addClass('controls');
         _this.title.label = 'Controls';
@@ -37645,6 +37669,7 @@ var ControlsWidget = (function (_super) {
                 // }
                 fetch_and_load_cashflow('/cash?ticker=' + input.value, psps['cash'].pspNode);
                 fetch_and_load_chart('/chart?ticker=' + input.value, psps['chart'].pspNode);
+                fetch_and_load_company('/company?ticker=' + input.value, this.companyInfoNode);
                 this.entered = input.value;
             }
             if (this.last == input.value) {
@@ -37656,22 +37681,26 @@ var ControlsWidget = (function (_super) {
             }
             this.last = input.value;
         }.bind(_this));
-        fetch_and_load_cashflow('/cash?ticker=JPM', psps['cash'].pspNode);
-        fetch_and_load_chart('/chart?ticker=JPM', psps['chart'].pspNode);
+        fetch_and_load_cashflow('/cash?ticker=' + def, psps['cash'].pspNode);
+        fetch_and_load_chart('/chart?ticker=' + def, psps['chart'].pspNode);
+        fetch_and_load_company('/company?ticker=' + def, _this.companyInfoNode);
         return _this;
     }
-    ControlsWidget.createNode = function () {
+    ControlsWidget.createNode = function (def) {
         var node = document.createElement('div');
         var content = document.createElement('div');
         var input = document.createElement('input');
         var datalist = document.createElement('datalist');
+        var table = document.createElement('table');
+        table.cellSpacing = '10';
         input.placeholder = 'Ticker';
-        input.value = 'JPM';
+        input.value = def;
         input.id = 'controls_input';
         datalist.id = 'controls_datalist';
         input.setAttribute('list', datalist.id);
         content.appendChild(input);
         content.appendChild(datalist);
+        content.appendChild(table);
         node.appendChild(content);
         return node;
     };
@@ -37685,6 +37714,13 @@ var ControlsWidget = (function (_super) {
     Object.defineProperty(ControlsWidget.prototype, "datalistNode", {
         get: function () {
             return this.node.getElementsByTagName('datalist')[0];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ControlsWidget.prototype, "companyInfoNode", {
+        get: function () {
+            return this.node.getElementsByTagName('table')[0];
         },
         enumerable: true,
         configurable: true
@@ -37897,7 +37933,7 @@ function main() {
     });
     var psp = new psp_1.PSPWidget('Performance');
     var psp2 = new psp_1.PSPWidget('Cashflow');
-    var ctrl = new controls_1.ControlsWidget({ 'cash': psp2, 'chart': psp });
+    var ctrl = new controls_1.ControlsWidget('JPM', { 'cash': psp2, 'chart': psp });
     var dock = new widgets_1.DockPanel();
     dock.addWidget(ctrl);
     dock.addWidget(psp, { mode: 'split-right', ref: ctrl });
@@ -37906,8 +37942,8 @@ function main() {
     /* hack for custom sizing */
     var layout = dock.saveLayout();
     var sizes = layout.main.sizes;
-    sizes[0] = 0.25;
-    sizes[1] = 0.75;
+    sizes[0] = 0.3;
+    sizes[1] = 0.7;
     dock.restoreLayout(layout);
     var savedLayouts = [];
     commands.addCommand('save-dock-layout', {

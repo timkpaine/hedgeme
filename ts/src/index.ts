@@ -106,7 +106,7 @@ function main(): void {
 
   let psp = new PSPWidget('Performance');
   let psp2 = new PSPWidget('Cashflow');
-  let ctrl = new ControlsWidget({'cash':psp2, 'chart':psp});
+  let ctrl = new ControlsWidget('JPM', {'cash':psp2, 'chart':psp});
 
   let dock = new DockPanel();
   dock.addWidget(ctrl);
@@ -117,8 +117,8 @@ function main(): void {
   /* hack for custom sizing */
   var layout = dock.saveLayout();
   var sizes: number[] = (layout.main as DockLayout.ISplitAreaConfig).sizes;
-  sizes[0] = 0.25;
-  sizes[1] = 0.75;
+  sizes[0] = 0.3;
+  sizes[1] = 0.7;
   dock.restoreLayout(layout);
 
   let savedLayouts: DockPanel.ILayoutConfig[] = [];

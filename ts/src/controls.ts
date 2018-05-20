@@ -74,29 +74,58 @@ function fetch_and_load_chart(path:string, loadto:any){ //PSP Widget
 }
 
 
+function fetch_and_load_company(path:string, loadto:HTMLTableElement){
+    var xhr1 = new XMLHttpRequest();
+    xhr1.open('GET', path, true);
+    xhr1.onload = function () { 
+        var jsn = JSON.parse(xhr1.response);
+        while(loadto.lastChild){
+            loadto.removeChild(loadto.lastChild);
+        }
+
+        if (jsn){
+            for (let x of Object.keys(jsn)){
+                let row = document.createElement('tr');
+                let td1 = document.createElement('td');
+                let td2 = document.createElement('td');
+                td1.textContent = x;
+                td2.textContent = jsn[x];
+                row.appendChild(td1);
+                row.appendChild(td2);
+                loadto.appendChild(row)
+            }
+        }
+    };
+    xhr1.send(null);
+}
+
+
 export
 class ControlsWidget extends Widget {
 
-  static createNode(): HTMLElement {
+  static createNode(def: string): HTMLElement {
     let node = document.createElement('div');
     let content = document.createElement('div');
     let input = document.createElement('input');
     let datalist = document.createElement('datalist');
 
+    let table = document.createElement('table');
+    table.cellSpacing = '10';
     input.placeholder = 'Ticker';
-    input.value = 'JPM';
+    input.value = def;
     input.id = 'controls_input';
     datalist.id = 'controls_datalist';
     input.setAttribute('list', datalist.id);
 
     content.appendChild(input);
     content.appendChild(datalist);
+    content.appendChild(table);
     node.appendChild(content);
     return node;
   }
 
-  constructor(psps: {[key:string]:PSPWidget;}) {
-    super({ node: ControlsWidget.createNode() });
+  constructor(def: string, psps: {[key:string]:PSPWidget;}) {
+    super({ node: ControlsWidget.createNode(def) });
     this.setFlag(Widget.Flag.DisallowLayout);
     this.addClass('controls');
     this.title.label = 'Controls';
@@ -116,7 +145,7 @@ class ControlsWidget extends Widget {
             // }
             fetch_and_load_cashflow('/cash?ticker=' + input.value, psps['cash'].pspNode);
             fetch_and_load_chart('/chart?ticker=' + input.value, psps['chart'].pspNode);
-
+            fetch_and_load_company('/company?ticker=' + input.value, this.companyInfoNode);
             this.entered = input.value;
         }
 
@@ -132,10 +161,9 @@ class ControlsWidget extends Widget {
         this.last = input.value;
     }.bind(this));
 
-    fetch_and_load_cashflow('/cash?ticker=JPM', psps['cash'].pspNode);
-    fetch_and_load_chart('/chart?ticker=JPM', psps['chart'].pspNode);
-
-
+    fetch_and_load_cashflow('/cash?ticker=' + def, psps['cash'].pspNode);
+    fetch_and_load_chart('/chart?ticker=' + def, psps['chart'].pspNode);
+    fetch_and_load_company('/company?ticker=' + def, this.companyInfoNode);
   }
 
   get inputNode(): HTMLInputElement {
@@ -144,6 +172,10 @@ class ControlsWidget extends Widget {
 
   get datalistNode(): HTMLDataListElement {
     return this.node.getElementsByTagName('datalist')[0] as HTMLDataListElement;
+  }
+
+  get companyInfoNode(): HTMLTableElement {
+    return this.node.getElementsByTagName('table')[0] as HTMLTableElement;
   }
 
   protected onActivateRequest(msg: Message): void {

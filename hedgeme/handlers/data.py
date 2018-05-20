@@ -24,3 +24,13 @@ class ChartDataHandler(ServerHandler):
         df = p.chartDF(arg, '1m').reset_index()[['date', 'open', 'high', 'low', 'close']]
         df['ticker'] = arg
         self.write(df.to_json(orient='records'))
+
+
+class CompanyDataHandler(ServerHandler):
+    def initialize(self, **kwargs):
+        super(CompanyDataHandler, self).initialize()
+
+    def get(self, *args):
+        '''Get the login page'''
+        arg = self.get_argument('ticker', 'aapl')
+        self.write(p.company(arg))

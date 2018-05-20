@@ -13,6 +13,8 @@
 @import './menu.css';
 @import './menubar.css';
 @import './tabbar.css';
+@import './psp.css';
+@import './controls.css';
 
 
 body {

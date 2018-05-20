@@ -12,11 +12,7 @@ import {
 } from '@phosphor/commands';
 
 import {
-  Message
-} from '@phosphor/messaging';
-
-import {
-  BoxPanel, CommandPalette, ContextMenu, DockPanel, Menu, MenuBar, Widget
+  BoxPanel, CommandPalette, ContextMenu, DockPanel, MenuBar, Widget, DockLayout
 } from '@phosphor/widgets';
 
 import '../style/index.css';
@@ -24,108 +20,23 @@ import "@jpmorganchase/perspective-viewer";
 import "@jpmorganchase/perspective-viewer-hypergrid";
 import "@jpmorganchase/perspective-viewer-highcharts";
 
+import {
+  PSPWidget
+} from './psp';
 
+import {
+  ContentWidget
+} from './example';
+
+import {
+  ControlsWidget
+} from './controls';
+
+import {
+  createMenu
+} from './menus';
 
 const commands = new CommandRegistry();
-
-
-function createMenu(): Menu {
-  let sub1 = new Menu({ commands });
-  sub1.title.label = 'More...';
-  sub1.title.mnemonic = 0;
-  sub1.addItem({ command: 'example:one' });
-  sub1.addItem({ command: 'example:two' });
-  sub1.addItem({ command: 'example:three' });
-  sub1.addItem({ command: 'example:four' });
-
-  let sub2 = new Menu({ commands });
-  sub2.title.label = 'More...';
-  sub2.title.mnemonic = 0;
-  sub2.addItem({ command: 'example:one' });
-  sub2.addItem({ command: 'example:two' });
-  sub2.addItem({ command: 'example:three' });
-  sub2.addItem({ command: 'example:four' });
-  sub2.addItem({ type: 'submenu', submenu: sub1 });
-
-  let root = new Menu({ commands });
-  root.addItem({ command: 'example:copy' });
-  root.addItem({ command: 'example:paste' });
-  root.addItem({ type: 'separator' });
-  root.addItem({ command: 'example:new-tab' });
-  root.addItem({ command: 'example:close-tab' });
-  root.addItem({ type: 'separator' });
-  root.addItem({ type: 'submenu', submenu: sub2 });
-  root.addItem({ type: 'separator' });
-  root.addItem({ command: 'example:close' });
-
-  return root;
-}
-
-
-class ContentWidget extends Widget {
-
-  static createNode(): HTMLElement {
-    let node = document.createElement('div');
-    let content = document.createElement('div');
-    let input = document.createElement('input');
-    input.placeholder = 'Placeholder...';
-    content.appendChild(input);
-    node.appendChild(content);
-    return node;
-  }
-
-  constructor(name: string) {
-    super({ node: ContentWidget.createNode() });
-    this.setFlag(Widget.Flag.DisallowLayout);
-    this.addClass('content');
-    this.addClass(name.toLowerCase());
-    this.title.label = name;
-    this.title.closable = true;
-    this.title.caption = `Long description for: ${name}`;
-  }
-
-  get inputNode(): HTMLInputElement {
-    return this.node.getElementsByTagName('input')[0] as HTMLInputElement;
-  }
-
-  protected onActivateRequest(msg: Message): void {
-    if (this.isAttached) {
-      this.inputNode.focus();
-    }
-  }
-}
-
-
-class PSPWidget extends Widget {
-
-  static createNode(): HTMLElement {
-    let node = document.createElement('div');
-    let content = document.createElement('perspective-viewer');
-    node.appendChild(content);
-    return node;
-  }
-
-  constructor(name: string) {
-    super({ node: ContentWidget.createNode() });
-    this.setFlag(Widget.Flag.DisallowLayout);
-    this.addClass('content');
-    this.addClass(name.toLowerCase());
-    this.title.label = name;
-    this.title.closable = true;
-    this.title.caption = `Long description for: ${name}`;
-  }
-
-  get pspNode(): HTMLInputElement {
-    return this.node.getElementsByTagName('perspective-viewer')[0] as HTMLInputElement;
-  }
-
-  protected onActivateRequest(msg: Message): void {
-    if (this.isAttached) {
-      this.pspNode.focus();
-    }
-  }
-}
-
 
 function main(): void {
 
@@ -138,33 +49,6 @@ function main(): void {
     }
   });
 
-  commands.addCommand('example:paste', {
-    label: 'Paste',
-    mnemonic: 0,
-    iconClass: 'fa fa-paste',
-    execute: () => {
-      console.log('Paste');
-    }
-  });
-
-  commands.addCommand('example:new-tab', {
-    label: 'New Tab',
-    mnemonic: 0,
-    caption: 'Open a new tab',
-    execute: () => {
-      console.log('New Tab');
-    }
-  });
-
-  commands.addCommand('example:close-tab', {
-    label: 'Close Tab',
-    mnemonic: 2,
-    caption: 'Close the current tab',
-    execute: () => {
-      console.log('Close Tab');
-    }
-  });
-
   commands.addCommand('example:close', {
     label: 'Close',
     mnemonic: 0,
@@ -174,76 +58,37 @@ function main(): void {
     }
   });
 
-  commands.addCommand('example:one', {
-    label: 'One',
-    execute: () => {
-      console.log('One');
-    }
-  });
+  // commands.addKeyBinding({
+  //   keys: ['Accel C'],
+  //   selector: 'body',
+  //   command: 'example:copy'
+  // });
 
-  commands.addCommand('example:two', {
-    label: 'Two',
-    execute: () => {
-      console.log('Two');
-    }
-  });
+  // commands.addKeyBinding({
+  //   keys: ['Accel V'],
+  //   selector: 'body',
+  //   command: 'example:paste'
+  // });
 
-  commands.addCommand('example:three', {
-    label: 'Three',
-    execute: () => {
-      console.log('Three');
-    }
-  });
+  // commands.addKeyBinding({
+  //   keys: ['Accel J', 'Accel J'],
+  //   selector: 'body',
+  //   command: 'example:new-tab'
+  // });
 
-  commands.addCommand('example:four', {
-    label: 'Four',
-    execute: () => {
-      console.log('Four');
-    }
-  });
-
-  commands.addKeyBinding({
-    keys: ['Accel C'],
-    selector: 'body',
-    command: 'example:copy'
-  });
-
-  commands.addKeyBinding({
-    keys: ['Accel V'],
-    selector: 'body',
-    command: 'example:paste'
-  });
-
-  commands.addKeyBinding({
-    keys: ['Accel J', 'Accel J'],
-    selector: 'body',
-    command: 'example:new-tab'
-  });
-
-  let menu1 = createMenu();
+  let menu1 = createMenu(commands);
   menu1.title.label = 'File';
   menu1.title.mnemonic = 0;
 
-  let menu2 = createMenu();
-  menu2.title.label = 'Edit';
-  menu2.title.mnemonic = 0;
-
   let bar = new MenuBar();
   bar.addMenu(menu1);
-  bar.addMenu(menu2);
   bar.id = 'menuBar';
 
   let palette = new CommandPalette({ commands });
   palette.addItem({ command: 'example:copy', category: 'Edit' });
   palette.addItem({ command: 'example:paste', category: 'Edit' });
-  palette.addItem({ command: 'example:one', category: 'Number' });
-  palette.addItem({ command: 'example:two', category: 'Number' });
-  palette.addItem({ command: 'example:three', category: 'Number' });
-  palette.addItem({ command: 'example:four', category: 'Number' });
   palette.addItem({ command: 'example:new-tab', category: 'File' });
   palette.addItem({ command: 'example:close-tab', category: 'File' });
-  palette.addItem({ command: 'example:save-on-exit', category: 'File' });
-  palette.addItem({ command: 'example:open-task-manager', category: 'File' });
   palette.addItem({ command: 'example:close', category: 'File' });
   palette.id = 'palette';
 
@@ -255,19 +100,8 @@ function main(): void {
     }
   });
 
-  contextMenu.addItem({ command: 'example:cut', selector: '.content' });
   contextMenu.addItem({ command: 'example:copy', selector: '.content' });
   contextMenu.addItem({ command: 'example:paste', selector: '.content' });
-
-  contextMenu.addItem({ command: 'example:one', selector: '.p-CommandPalette' });
-  contextMenu.addItem({ command: 'example:two', selector: '.p-CommandPalette' });
-  contextMenu.addItem({ command: 'example:three', selector: '.p-CommandPalette' });
-  contextMenu.addItem({ command: 'example:four', selector: '.p-CommandPalette' });
-  contextMenu.addItem({ command: 'example:black', selector: '.p-CommandPalette' });
-
-  contextMenu.addItem({ command: 'notebook:new', selector: '.p-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:save-on-exit', selector: '.p-CommandPalette-input' });
-  contextMenu.addItem({ command: 'example:open-task-manager', selector: '.p-CommandPalette-input' });
   contextMenu.addItem({ type: 'separator', selector: '.p-CommandPalette-input' });
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
@@ -275,23 +109,21 @@ function main(): void {
   });
 
   let r1 = new ContentWidget('Red');
-  let b1 = new ContentWidget('Blue');
-  let g1 = new ContentWidget('Green');
-  let y1 = new ContentWidget('Yellow');
-
-  let r2 = new ContentWidget('Red');
-  let b2 = new ContentWidget('Blue');
-  // let g2 = new ContentWidget('Green');
-  // let y2 = new ContentWidget('Yellow');
+  let psp = new PSPWidget('psp');
+  let ctrl = new ControlsWidget({'chart':psp});
 
   let dock = new DockPanel();
-  dock.addWidget(r1);
-  dock.addWidget(b1, { mode: 'split-right', ref: r1 });
-  dock.addWidget(y1, { mode: 'split-bottom', ref: b1 });
-  dock.addWidget(g1, { mode: 'split-left', ref: y1 });
-  dock.addWidget(r2, { ref: b1 });
-  dock.addWidget(b2, { mode: 'tab-after', ref: y1 });
+  dock.addWidget(ctrl);
+  dock.addWidget(psp, { mode: 'split-right', ref: ctrl });
+  dock.addWidget(r1, { mode: 'tab-after', ref: psp });
   dock.id = 'dock';
+
+  /* hack for custom sizing */
+  var layout = dock.saveLayout();
+  var sizes: number[] = (layout.main as DockLayout.ISplitAreaConfig).sizes;
+  sizes[0] = 0.25;
+  sizes[1] = 0.75;
+  dock.restoreLayout(layout);
 
   let savedLayouts: DockPanel.ILayoutConfig[] = [];
 
@@ -327,14 +159,22 @@ function main(): void {
 
   let main = new BoxPanel({ direction: 'left-to-right', spacing: 0 });
   main.id = 'main';
-  main.addWidget(palette);
   main.addWidget(dock);
 
   window.onresize = () => { main.update(); };
 
   Widget.attach(bar, document.body);
   Widget.attach(main, document.body);
+
+
+
+
+
 }
 
 
 window.onload = main;
+
+
+
+

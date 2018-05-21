@@ -8,10 +8,13 @@ class CashDataHandler(ServerHandler):
 
     def get(self, *args):
         '''Get the login page'''
-        arg = self.get_argument('ticker', 'aapl')
-        # df = p.chartDF(arg, '5y')
-        df = p.financialsDF(arg).reset_index()
-        self.write(df[-100:].to_json(orient='records'))
+        try:
+            arg = self.get_argument('ticker', 'aapl')
+            # df = p.chartDF(arg, '5y')
+            df = p.financialsDF(arg).reset_index()
+            self.write(df[-100:].to_json(orient='records'))
+        except KeyError:
+            self.write('')
 
 
 class ChartDataHandler(ServerHandler):

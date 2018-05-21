@@ -10,6 +10,9 @@ class AutocompleteHandler(ServerHandler):
         '''Get the login page'''
         arg = self.get_argument('partial', '')
         if arg:
-            self.write(self.tickers[self.tickers['symbol'].str.startswith(arg.upper())][:10].to_json(orient='records'))
+            self.write(self.tickers[
+                self.tickers['symbol'].str.startswith(arg.upper()) |
+                self.tickers['name'].str.lower().str.contains(arg.lower())]
+                [:10].to_json(orient='records'))
         else:
             self.write('[]')

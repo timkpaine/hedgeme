@@ -16,19 +16,21 @@ import '../ts/style/index.css';
 function autocomplete_ticker(path: string, value: string, autocomplete: HTMLDataListElement){
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
-    xhr1.onload = function () { 
-        var jsn = JSON.parse(xhr1.response);
-        
-        if (jsn) {
-            while(autocomplete.lastChild){
-                autocomplete.removeChild(autocomplete.lastChild);
-            }
+    xhr1.onload = function () {
+        if(xhr1.response){
+            var jsn = JSON.parse(xhr1.response);
+            
+            if (jsn) {
+                while(autocomplete.lastChild){
+                    autocomplete.removeChild(autocomplete.lastChild);
+                }
 
-            for(let val of jsn){
-                let option = document.createElement('option');
-                option.value = val['symbol'];
-                option.innerText = val['symbol'] + ' - ' + val['name'];
-                autocomplete.appendChild(option);
+                for(let val of jsn){
+                    let option = document.createElement('option');
+                    option.value = val['symbol'];
+                    option.innerText = val['symbol'] + ' - ' + val['name'];
+                    autocomplete.appendChild(option);
+                }
             }
         }
     };
@@ -39,15 +41,17 @@ function fetch_and_load_cashflow(path:string, loadto:any){ //PSP Widget
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () { 
-        var jsn = JSON.parse(xhr1.response);
+        loadto.delete();
+        if(xhr1.response){
+            var jsn = JSON.parse(xhr1.response);
 
-        loadto.view = 'heatmap';
-        loadto.columns = '["currentDebt","currentAssets","currentCash","totalAssets","totalCash","totalDebt","totalRevenue"]';
-        loadto.aggregates = '{"operatingGainsLosses":"distinct count","symbol":"distinct count","totalLiabilities":"distinct count","reportDate":"distinct count","cashChange":"sum","cashFlow":"sum","costOfRevenue":"sum","currentAssets":"sum","currentCash":"sum","currentDebt":"sum","grossProfit":"sum","netIncome":"sum","operatingExpense":"sum","operatingIncome":"sum","operatingRevenue":"sum","researchAndDevelopment":"sum","shareholderEquity":"sum","totalAssets":"sum","totalCash":"sum","totalDebt":"sum","totalRevenue":"sum"}';
+            loadto.view = 'heatmap';
+            loadto.columns = '["currentDebt","currentAssets","currentCash","totalAssets","totalCash","totalDebt","totalRevenue"]';
+            loadto.aggregates = '{"operatingGainsLosses":"distinct count","symbol":"distinct count","totalLiabilities":"distinct count","reportDate":"distinct count","cashChange":"sum","cashFlow":"sum","costOfRevenue":"sum","currentAssets":"sum","currentCash":"sum","currentDebt":"sum","grossProfit":"sum","netIncome":"sum","operatingExpense":"sum","operatingIncome":"sum","operatingRevenue":"sum","researchAndDevelopment":"sum","shareholderEquity":"sum","totalAssets":"sum","totalCash":"sum","totalDebt":"sum","totalRevenue":"sum"}';
 
-        if (jsn){
-            loadto.delete();
-            loadto.update(jsn);
+            if (jsn){
+                loadto.update(jsn);
+            }
         }
     };
     xhr1.send(null);
@@ -57,17 +61,19 @@ function fetch_and_load_chart(path:string, loadto:any){ //PSP Widget
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () { 
-        var jsn = JSON.parse(xhr1.response);
+        loadto.delete();
+        if(xhr1.response){
+            var jsn = JSON.parse(xhr1.response);
 
-        loadto.view = 'y_line';
-        loadto.columns = '["open","close","high","low"]';
-        loadto.aggregates = '{"ticker":"distinct count","date":"distinct count","close":"last","high":"sum","low":"sum","open":"sum"}';
-        loadto.setAttribute('column-pivots', '["ticker"]');
-        loadto.setAttribute('row-pivots', '["date"]');
+            loadto.view = 'y_line';
+            loadto.columns = '["open","close","high","low"]';
+            loadto.aggregates = '{"ticker":"distinct count","date":"distinct count","close":"last","high":"sum","low":"sum","open":"sum"}';
+            loadto.setAttribute('column-pivots', '["ticker"]');
+            loadto.setAttribute('row-pivots', '["date"]');
 
-        if (jsn){
-            loadto.delete();
-            loadto.update(jsn);
+            if (jsn){
+                loadto.update(jsn);
+            }
         }
     };
     xhr1.send(null);
@@ -78,21 +84,23 @@ function fetch_and_load_company(path:string, loadto:HTMLTableElement){
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () { 
-        var jsn = JSON.parse(xhr1.response);
-        while(loadto.lastChild){
-            loadto.removeChild(loadto.lastChild);
-        }
+        if(xhr1.response){
+            var jsn = JSON.parse(xhr1.response);
+            while(loadto.lastChild){
+                loadto.removeChild(loadto.lastChild);
+            }
 
-        if (jsn){
-            for (let x of Object.keys(jsn)){
-                let row = document.createElement('tr');
-                let td1 = document.createElement('td');
-                let td2 = document.createElement('td');
-                td1.textContent = x;
-                td2.textContent = jsn[x];
-                row.appendChild(td1);
-                row.appendChild(td2);
-                loadto.appendChild(row)
+            if (jsn){
+                for (let x of Object.keys(jsn)){
+                    let row = document.createElement('tr');
+                    let td1 = document.createElement('td');
+                    let td2 = document.createElement('td');
+                    td1.textContent = x;
+                    td2.textContent = jsn[x];
+                    row.appendChild(td1);
+                    row.appendChild(td2);
+                    loadto.appendChild(row)
+                }
             }
         }
     };

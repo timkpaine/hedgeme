@@ -37576,17 +37576,19 @@ function autocomplete_ticker(path, value, autocomplete) {
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () {
-        var jsn = JSON.parse(xhr1.response);
-        if (jsn) {
-            while (autocomplete.lastChild) {
-                autocomplete.removeChild(autocomplete.lastChild);
-            }
-            for (var _i = 0, jsn_1 = jsn; _i < jsn_1.length; _i++) {
-                var val = jsn_1[_i];
-                var option = document.createElement('option');
-                option.value = val['symbol'];
-                option.innerText = val['symbol'] + ' - ' + val['name'];
-                autocomplete.appendChild(option);
+        if (xhr1.response) {
+            var jsn = JSON.parse(xhr1.response);
+            if (jsn) {
+                while (autocomplete.lastChild) {
+                    autocomplete.removeChild(autocomplete.lastChild);
+                }
+                for (var _i = 0, jsn_1 = jsn; _i < jsn_1.length; _i++) {
+                    var val = jsn_1[_i];
+                    var option = document.createElement('option');
+                    option.value = val['symbol'];
+                    option.innerText = val['symbol'] + ' - ' + val['name'];
+                    autocomplete.appendChild(option);
+                }
             }
         }
     };
@@ -37596,13 +37598,15 @@ function fetch_and_load_cashflow(path, loadto) {
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () {
-        var jsn = JSON.parse(xhr1.response);
-        loadto.view = 'heatmap';
-        loadto.columns = '["currentDebt","currentAssets","currentCash","totalAssets","totalCash","totalDebt","totalRevenue"]';
-        loadto.aggregates = '{"operatingGainsLosses":"distinct count","symbol":"distinct count","totalLiabilities":"distinct count","reportDate":"distinct count","cashChange":"sum","cashFlow":"sum","costOfRevenue":"sum","currentAssets":"sum","currentCash":"sum","currentDebt":"sum","grossProfit":"sum","netIncome":"sum","operatingExpense":"sum","operatingIncome":"sum","operatingRevenue":"sum","researchAndDevelopment":"sum","shareholderEquity":"sum","totalAssets":"sum","totalCash":"sum","totalDebt":"sum","totalRevenue":"sum"}';
-        if (jsn) {
-            loadto.delete();
-            loadto.update(jsn);
+        loadto.delete();
+        if (xhr1.response) {
+            var jsn = JSON.parse(xhr1.response);
+            loadto.view = 'heatmap';
+            loadto.columns = '["currentDebt","currentAssets","currentCash","totalAssets","totalCash","totalDebt","totalRevenue"]';
+            loadto.aggregates = '{"operatingGainsLosses":"distinct count","symbol":"distinct count","totalLiabilities":"distinct count","reportDate":"distinct count","cashChange":"sum","cashFlow":"sum","costOfRevenue":"sum","currentAssets":"sum","currentCash":"sum","currentDebt":"sum","grossProfit":"sum","netIncome":"sum","operatingExpense":"sum","operatingIncome":"sum","operatingRevenue":"sum","researchAndDevelopment":"sum","shareholderEquity":"sum","totalAssets":"sum","totalCash":"sum","totalDebt":"sum","totalRevenue":"sum"}';
+            if (jsn) {
+                loadto.update(jsn);
+            }
         }
     };
     xhr1.send(null);
@@ -37611,15 +37615,17 @@ function fetch_and_load_chart(path, loadto) {
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () {
-        var jsn = JSON.parse(xhr1.response);
-        loadto.view = 'y_line';
-        loadto.columns = '["open","close","high","low"]';
-        loadto.aggregates = '{"ticker":"distinct count","date":"distinct count","close":"last","high":"sum","low":"sum","open":"sum"}';
-        loadto.setAttribute('column-pivots', '["ticker"]');
-        loadto.setAttribute('row-pivots', '["date"]');
-        if (jsn) {
-            loadto.delete();
-            loadto.update(jsn);
+        loadto.delete();
+        if (xhr1.response) {
+            var jsn = JSON.parse(xhr1.response);
+            loadto.view = 'y_line';
+            loadto.columns = '["open","close","high","low"]';
+            loadto.aggregates = '{"ticker":"distinct count","date":"distinct count","close":"last","high":"sum","low":"sum","open":"sum"}';
+            loadto.setAttribute('column-pivots', '["ticker"]');
+            loadto.setAttribute('row-pivots', '["date"]');
+            if (jsn) {
+                loadto.update(jsn);
+            }
         }
     };
     xhr1.send(null);
@@ -37628,21 +37634,23 @@ function fetch_and_load_company(path, loadto) {
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () {
-        var jsn = JSON.parse(xhr1.response);
-        while (loadto.lastChild) {
-            loadto.removeChild(loadto.lastChild);
-        }
-        if (jsn) {
-            for (var _i = 0, _a = Object.keys(jsn); _i < _a.length; _i++) {
-                var x = _a[_i];
-                var row = document.createElement('tr');
-                var td1 = document.createElement('td');
-                var td2 = document.createElement('td');
-                td1.textContent = x;
-                td2.textContent = jsn[x];
-                row.appendChild(td1);
-                row.appendChild(td2);
-                loadto.appendChild(row);
+        if (xhr1.response) {
+            var jsn = JSON.parse(xhr1.response);
+            while (loadto.lastChild) {
+                loadto.removeChild(loadto.lastChild);
+            }
+            if (jsn) {
+                for (var _i = 0, _a = Object.keys(jsn); _i < _a.length; _i++) {
+                    var x = _a[_i];
+                    var row = document.createElement('tr');
+                    var td1 = document.createElement('td');
+                    var td2 = document.createElement('td');
+                    td1.textContent = x;
+                    td2.textContent = jsn[x];
+                    row.appendChild(td1);
+                    row.appendChild(td2);
+                    loadto.appendChild(row);
+                }
             }
         }
     };

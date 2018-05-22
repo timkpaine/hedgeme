@@ -37,3 +37,22 @@ class CompanyDataHandler(ServerHandler):
         '''Get the login page'''
         arg = self.get_argument('ticker', 'aapl')
         self.write(p.company(arg))
+
+
+class QuoteDataHandler(ServerHandler):
+    def initialize(self, **kwargs):
+        super(QuoteDataHandler, self).initialize()
+
+    def get(self, *args):
+        '''Get the login page'''
+        arg = self.get_argument('ticker', 'aapl')
+        self.write(p.quote(arg))
+
+
+class MarketsDataHandler(ServerHandler):
+    def initialize(self, **kwargs):
+        super(MarketsDataHandler, self).initialize()
+
+    def get(self, *args):
+        '''Get the login page'''
+        self.write(p.marketsDF().to_json(orient='records'))

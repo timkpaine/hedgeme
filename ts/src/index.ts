@@ -106,12 +106,14 @@ function main(): void {
 
   let psp = new PSPWidget('Performance');
   let psp2 = new PSPWidget('Cashflow');
-  let ctrl = new ControlsWidget('JPM', {'cash':psp2, 'chart':psp});
+  let psp3 = new PSPWidget('Markets');
+  let ctrl = new ControlsWidget('JPM', {'cash':psp2, 'chart':psp, 'markets':psp3});
 
   let dock = new DockPanel();
   dock.addWidget(ctrl);
   dock.addWidget(psp, { mode: 'split-right', ref: ctrl });
   dock.addWidget(psp2, { mode: 'split-bottom', ref: psp });
+  dock.addWidget(psp3, { mode: 'tab-after', ref: psp });
   dock.id = 'dock';
 
   /* hack for custom sizing */

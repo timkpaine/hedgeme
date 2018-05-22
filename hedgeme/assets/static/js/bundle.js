@@ -37611,6 +37611,20 @@ function fetch_and_load_cashflow(path, loadto) {
     };
     xhr1.send(null);
 }
+function fetch_and_load_markets(path, loadto) {
+    var xhr1 = new XMLHttpRequest();
+    xhr1.open('GET', path, true);
+    xhr1.onload = function () {
+        loadto.delete();
+        if (xhr1.response) {
+            var jsn = JSON.parse(xhr1.response);
+            if (jsn) {
+                loadto.update(jsn);
+            }
+        }
+    };
+    xhr1.send(null);
+}
 function fetch_and_load_chart(path, loadto) {
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
@@ -37678,6 +37692,8 @@ var ControlsWidget = (function (_super) {
                 fetch_and_load_cashflow('/cash?ticker=' + input.value, psps['cash'].pspNode);
                 fetch_and_load_chart('/chart?ticker=' + input.value, psps['chart'].pspNode);
                 fetch_and_load_company('/company?ticker=' + input.value, this.companyInfoNode);
+                fetch_and_load_company('/quote?ticker=' + input.value, this.quoteNode);
+                fetch_and_load_markets('/markets?ticker=' + input.value, psps['markets'].pspNode);
                 this.entered = input.value;
             }
             if (this.last == input.value) {
@@ -37692,6 +37708,8 @@ var ControlsWidget = (function (_super) {
         fetch_and_load_cashflow('/cash?ticker=' + def, psps['cash'].pspNode);
         fetch_and_load_chart('/chart?ticker=' + def, psps['chart'].pspNode);
         fetch_and_load_company('/company?ticker=' + def, _this.companyInfoNode);
+        fetch_and_load_company('/quote?ticker=' + def, _this.quoteNode);
+        fetch_and_load_markets('/markets?ticker=' + def, psps['markets'].pspNode);
         return _this;
     }
     ControlsWidget.createNode = function (def) {
@@ -37700,7 +37718,9 @@ var ControlsWidget = (function (_super) {
         var input = document.createElement('input');
         var datalist = document.createElement('datalist');
         var table = document.createElement('table');
+        var table2 = document.createElement('table');
         table.cellSpacing = '10';
+        table2.cellSpacing = '10';
         input.placeholder = 'Ticker';
         input.value = def;
         input.id = 'controls_input';
@@ -37709,6 +37729,7 @@ var ControlsWidget = (function (_super) {
         content.appendChild(input);
         content.appendChild(datalist);
         content.appendChild(table);
+        content.appendChild(table2);
         node.appendChild(content);
         return node;
     };
@@ -37729,6 +37750,13 @@ var ControlsWidget = (function (_super) {
     Object.defineProperty(ControlsWidget.prototype, "companyInfoNode", {
         get: function () {
             return this.node.getElementsByTagName('table')[0];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ControlsWidget.prototype, "quoteNode", {
+        get: function () {
+            return this.node.getElementsByTagName('table')[1];
         },
         enumerable: true,
         configurable: true
@@ -37941,11 +37969,13 @@ function main() {
     });
     var psp = new psp_1.PSPWidget('Performance');
     var psp2 = new psp_1.PSPWidget('Cashflow');
-    var ctrl = new controls_1.ControlsWidget('JPM', { 'cash': psp2, 'chart': psp });
+    var psp3 = new psp_1.PSPWidget('Markets');
+    var ctrl = new controls_1.ControlsWidget('JPM', { 'cash': psp2, 'chart': psp, 'markets': psp3 });
     var dock = new widgets_1.DockPanel();
     dock.addWidget(ctrl);
     dock.addWidget(psp, { mode: 'split-right', ref: ctrl });
     dock.addWidget(psp2, { mode: 'split-bottom', ref: psp });
+    dock.addWidget(psp3, { mode: 'tab-after', ref: psp });
     dock.id = 'dock';
     /* hack for custom sizing */
     var layout = dock.saveLayout();
@@ -62826,7 +62856,7 @@ utils.intFromLE = intFromLE;
 /* 410 */
 /***/ (function(module, exports) {
 
-module.exports = {"_from":"elliptic@^6.0.0","_id":"elliptic@6.4.0","_inBundle":false,"_integrity":"sha1-ysmvh2LIWDYYcAPI3+GT5eLq5d8=","_location":"/elliptic","_phantomChildren":{},"_requested":{"type":"range","registry":true,"raw":"elliptic@^6.0.0","name":"elliptic","escapedName":"elliptic","rawSpec":"^6.0.0","saveSpec":null,"fetchSpec":"^6.0.0"},"_requiredBy":["/browserify-sign","/create-ecdh"],"_resolved":"https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz","_shasum":"cac9af8762c85836187003c8dfe193e5e2eae5df","_spec":"elliptic@^6.0.0","_where":"/Users/theocean154/Programs/projects/hedgeme/hedgeme/assets/static/ts/node_modules/browserify-sign","author":{"name":"Fedor Indutny","email":"fedor@indutny.com"},"bugs":{"url":"https://github.com/indutny/elliptic/issues"},"bundleDependencies":false,"dependencies":{"bn.js":"^4.4.0","brorand":"^1.0.1","hash.js":"^1.0.0","hmac-drbg":"^1.0.0","inherits":"^2.0.1","minimalistic-assert":"^1.0.0","minimalistic-crypto-utils":"^1.0.0"},"deprecated":false,"description":"EC cryptography","devDependencies":{"brfs":"^1.4.3","coveralls":"^2.11.3","grunt":"^0.4.5","grunt-browserify":"^5.0.0","grunt-cli":"^1.2.0","grunt-contrib-connect":"^1.0.0","grunt-contrib-copy":"^1.0.0","grunt-contrib-uglify":"^1.0.1","grunt-mocha-istanbul":"^3.0.1","grunt-saucelabs":"^8.6.2","istanbul":"^0.4.2","jscs":"^2.9.0","jshint":"^2.6.0","mocha":"^2.1.0"},"files":["lib"],"homepage":"https://github.com/indutny/elliptic","keywords":["EC","Elliptic","curve","Cryptography"],"license":"MIT","main":"lib/elliptic.js","name":"elliptic","repository":{"type":"git","url":"git+ssh://git@github.com/indutny/elliptic.git"},"scripts":{"jscs":"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js","jshint":"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js","lint":"npm run jscs && npm run jshint","test":"npm run lint && npm run unit","unit":"istanbul test _mocha --reporter=spec test/index.js","version":"grunt dist && git add dist/"},"version":"6.4.0"}
+module.exports = {"_from":"elliptic@^6.0.0","_id":"elliptic@6.4.0","_inBundle":false,"_integrity":"sha1-ysmvh2LIWDYYcAPI3+GT5eLq5d8=","_location":"/elliptic","_phantomChildren":{},"_requested":{"type":"range","registry":true,"raw":"elliptic@^6.0.0","name":"elliptic","escapedName":"elliptic","rawSpec":"^6.0.0","saveSpec":null,"fetchSpec":"^6.0.0"},"_requiredBy":["/browserify-sign","/create-ecdh"],"_resolved":"https://registry.npmjs.org/elliptic/-/elliptic-6.4.0.tgz","_shasum":"cac9af8762c85836187003c8dfe193e5e2eae5df","_spec":"elliptic@^6.0.0","_where":"/Users/timkpaine/Programs/projects/hedgeme/node_modules/browserify-sign","author":{"name":"Fedor Indutny","email":"fedor@indutny.com"},"bugs":{"url":"https://github.com/indutny/elliptic/issues"},"bundleDependencies":false,"dependencies":{"bn.js":"^4.4.0","brorand":"^1.0.1","hash.js":"^1.0.0","hmac-drbg":"^1.0.0","inherits":"^2.0.1","minimalistic-assert":"^1.0.0","minimalistic-crypto-utils":"^1.0.0"},"deprecated":false,"description":"EC cryptography","devDependencies":{"brfs":"^1.4.3","coveralls":"^2.11.3","grunt":"^0.4.5","grunt-browserify":"^5.0.0","grunt-cli":"^1.2.0","grunt-contrib-connect":"^1.0.0","grunt-contrib-copy":"^1.0.0","grunt-contrib-uglify":"^1.0.1","grunt-mocha-istanbul":"^3.0.1","grunt-saucelabs":"^8.6.2","istanbul":"^0.4.2","jscs":"^2.9.0","jshint":"^2.6.0","mocha":"^2.1.0"},"files":["lib"],"homepage":"https://github.com/indutny/elliptic","keywords":["EC","Elliptic","curve","Cryptography"],"license":"MIT","main":"lib/elliptic.js","name":"elliptic","repository":{"type":"git","url":"git+ssh://git@github.com/indutny/elliptic.git"},"scripts":{"jscs":"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js","jshint":"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js","lint":"npm run jscs && npm run jshint","test":"npm run lint && npm run unit","unit":"istanbul test _mocha --reporter=spec test/index.js","version":"grunt dist && git add dist/"},"version":"6.4.0"}
 
 /***/ }),
 /* 411 */

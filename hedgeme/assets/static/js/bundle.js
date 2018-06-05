@@ -37944,6 +37944,12 @@ function main() {
     dock.addWidget(psp8, { mode: 'tab-after', ref: psp7 });
     dock.id = 'dock';
     var savedLayouts = [];
+    /* hack for custom sizing */
+    var layout = dock.saveLayout();
+    var sizes = layout.main.sizes;
+    sizes[0] = 0.3;
+    sizes[1] = 0.7;
+    dock.restoreLayout(layout);
     savedLayouts.push(dock.saveLayout());
     commands.addCommand('controls:open', {
         label: 'Controls',
@@ -37953,12 +37959,6 @@ function main() {
             dock.restoreLayout(savedLayouts[0]);
         }
     });
-    /* hack for custom sizing */
-    var layout = dock.saveLayout();
-    var sizes = layout.main.sizes;
-    sizes[0] = 0.3;
-    sizes[1] = 0.7;
-    dock.restoreLayout(layout);
     commands.addCommand('save-dock-layout', {
         label: 'Save Layout',
         caption: 'Save the current dock layout',

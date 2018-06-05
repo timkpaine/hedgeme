@@ -107,7 +107,14 @@ function main(): void {
   dock.id = 'dock';
 
   let savedLayouts: DockPanel.ILayoutConfig[] = [];
+  /* hack for custom sizing */
+  var layout = dock.saveLayout();
+  var sizes: number[] = (layout.main as DockLayout.ISplitAreaConfig).sizes;
+  sizes[0] = 0.3;
+  sizes[1] = 0.7;
+  dock.restoreLayout(layout);
   savedLayouts.push(dock.saveLayout());
+
 
   commands.addCommand('controls:open', {
     label: 'Controls',
@@ -117,13 +124,6 @@ function main(): void {
       dock.restoreLayout(savedLayouts[0]);
     }
   });
-
-  /* hack for custom sizing */
-  var layout = dock.saveLayout();
-  var sizes: number[] = (layout.main as DockLayout.ISplitAreaConfig).sizes;
-  sizes[0] = 0.3;
-  sizes[1] = 0.7;
-  dock.restoreLayout(layout);
 
 
   commands.addCommand('save-dock-layout', {

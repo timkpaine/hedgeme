@@ -106,19 +106,15 @@ function main(): void {
   dock.addWidget(psp8, { mode: 'tab-after', ref: psp7 });
   dock.id = 'dock';
 
+  let savedLayouts: DockPanel.ILayoutConfig[] = [];
+  savedLayouts.push(dock.saveLayout());
+
   commands.addCommand('controls:open', {
     label: 'Controls',
     mnemonic: 1,
     iconClass: 'fa fa-plus',
     execute: () => {
-      dock.addWidget(ctrl);
-      // dock.addWidget(ctrl, {mode: 'split-left', ref: anno});
-      /* hack for custom sizing */
-      var layout = dock.saveLayout();
-      var sizes: number[] = (layout.main as DockLayout.ISplitAreaConfig).sizes;
-      sizes[0] = 0.3;
-      sizes[1] = 0.7;
-      dock.restoreLayout(layout);
+      dock.restoreLayout(savedLayouts[0]);
     }
   });
 
@@ -129,7 +125,6 @@ function main(): void {
   sizes[1] = 0.7;
   dock.restoreLayout(layout);
 
-  let savedLayouts: DockPanel.ILayoutConfig[] = [];
 
   commands.addCommand('save-dock-layout', {
     label: 'Save Layout',

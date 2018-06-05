@@ -37938,24 +37938,19 @@ function main() {
     dock.addWidget(psp10, { mode: 'tab-after', ref: psp3 });
     dock.addWidget(psp4, { mode: 'split-bottom', ref: psp });
     dock.addWidget(psp5, { mode: 'tab-after', ref: psp4 });
-    dock.addWidget(psp6, { mode: 'tab-after', ref: psp5 });
+    dock.addWidget(psp9, { mode: 'tab-after', ref: psp5 });
+    dock.addWidget(psp6, { mode: 'tab-after', ref: psp9 });
     dock.addWidget(psp7, { mode: 'tab-after', ref: psp6 });
-    dock.addWidget(psp9, { mode: 'tab-after', ref: psp7 });
-    dock.addWidget(psp8, { mode: 'tab-after', ref: psp9 });
+    dock.addWidget(psp8, { mode: 'tab-after', ref: psp7 });
     dock.id = 'dock';
+    var savedLayouts = [];
+    savedLayouts.push(dock.saveLayout());
     commands.addCommand('controls:open', {
         label: 'Controls',
         mnemonic: 1,
         iconClass: 'fa fa-plus',
         execute: function () {
-            dock.addWidget(ctrl);
-            // dock.addWidget(ctrl, {mode: 'split-left', ref: anno});
-            /* hack for custom sizing */
-            var layout = dock.saveLayout();
-            var sizes = layout.main.sizes;
-            sizes[0] = 0.3;
-            sizes[1] = 0.7;
-            dock.restoreLayout(layout);
+            dock.restoreLayout(savedLayouts[0]);
         }
     });
     /* hack for custom sizing */
@@ -37964,7 +37959,6 @@ function main() {
     sizes[0] = 0.3;
     sizes[1] = 0.7;
     dock.restoreLayout(layout);
-    var savedLayouts = [];
     commands.addCommand('save-dock-layout', {
         label: 'Save Layout',
         caption: 'Save the current dock layout',

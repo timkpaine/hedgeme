@@ -12,7 +12,7 @@ import {
 } from '@phosphor/commands';
 
 import {
-  BoxPanel, CommandPalette, ContextMenu, DockPanel, MenuBar, Widget, DockLayout
+  BoxPanel, CommandPalette, ContextMenu, DockPanel, MenuBar, Widget, DockLayout, Menu
 } from '@phosphor/widgets';
 
 import '../ts/style/index.css';
@@ -28,64 +28,29 @@ import {
   ControlsWidget
 } from './controls';
 
-import {
-  createMenu
-} from './menus';
-
 const commands = new CommandRegistry();
 
 function main(): void {
 
-  commands.addCommand('example:copy', {
-    label: 'Copy',
-    mnemonic: 0,
-    iconClass: 'fa fa-copy',
-    execute: () => {
-      console.log('Copy');
-    }
-  });
+  let menu = new Menu({ commands });
+  menu.title.label = 'File';
+  menu.title.mnemonic = 0;
 
-  commands.addCommand('example:close', {
-    label: 'Close',
-    mnemonic: 0,
-    iconClass: 'fa fa-close',
-    execute: () => {
-      console.log('Close');
-    }
-  });
+  menu.addItem({ command: 'controls:open' });
+  menu.addItem({ type: 'separator'});
+  menu.addItem({ command: 'save-dock-layout'});
+  menu.addItem({ command: 'restore-dock-layout'});
 
-  // commands.addKeyBinding({
-  //   keys: ['Accel C'],
-  //   selector: 'body',
-  //   command: 'example:copy'
-  // });
+  menu.title.label = 'File';
+  menu.title.mnemonic = 0;
 
-  // commands.addKeyBinding({
-  //   keys: ['Accel V'],
-  //   selector: 'body',
-  //   command: 'example:paste'
-  // });
-
-  // commands.addKeyBinding({
-  //   keys: ['Accel J', 'Accel J'],
-  //   selector: 'body',
-  //   command: 'example:new-tab'
-  // });
-
-  let menu1 = createMenu(commands);
-  menu1.title.label = 'File';
-  menu1.title.mnemonic = 0;
 
   let bar = new MenuBar();
-  bar.addMenu(menu1);
+  bar.addMenu(menu);
   bar.id = 'menuBar';
 
   let palette = new CommandPalette({ commands });
-  palette.addItem({ command: 'example:copy', category: 'Edit' });
-  palette.addItem({ command: 'example:paste', category: 'Edit' });
-  palette.addItem({ command: 'example:new-tab', category: 'File' });
-  palette.addItem({ command: 'example:close-tab', category: 'File' });
-  palette.addItem({ command: 'example:close', category: 'File' });
+  // palette.addItem({ command: 'controls:open', category: 'New' });
   palette.id = 'palette';
 
   let contextMenu = new ContextMenu({ commands });
@@ -96,25 +61,66 @@ function main(): void {
     }
   });
 
-  contextMenu.addItem({ command: 'example:copy', selector: '.content' });
-  contextMenu.addItem({ command: 'example:paste', selector: '.content' });
+  contextMenu.addItem({ command: 'controls:open', selector: '.content' });
   contextMenu.addItem({ type: 'separator', selector: '.p-CommandPalette-input' });
+  contextMenu.addItem({ command: 'save-dock-layout', selector: '.content' });
+  contextMenu.addItem({ command: 'restore-dock-layout', selector: '.content' });
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {
     commands.processKeydownEvent(event);
   });
 
-  let psp = new PSPWidget('Performance');
-  let psp2 = new PSPWidget('Cashflow');
-  let psp3 = new PSPWidget('Markets');
-  let ctrl = new ControlsWidget('JPM', {'cash':psp2, 'chart':psp, 'markets':psp3});
+  let psp = new PSPWidget('Performance');  // chart
+  let psp2 = new PSPWidget('Quotes');  // quote
+  let psp3 = new PSPWidget('Dividends'); //dividends
+  let psp4 = new PSPWidget('Cashflow');
+  let psp5 = new PSPWidget('Financials'); // financials
+  let psp6 = new PSPWidget('Earnings');
+  let psp7 = new PSPWidget('News');
+  let psp8 = new PSPWidget('Peers');
+  let psp9 = new PSPWidget('Stats');
+  let psp10 = new PSPWidget('Markets');
+  let ctrl = new ControlsWidget('JPM', {'chart':psp,
+                                        'quote':psp2,
+                                        'dividends': psp3,
+                                        'cashflow': psp4,
+                                        'financials': psp5,
+                                        'earnings': psp6,
+                                        'news': psp7,
+                                        'peers': psp8,
+                                        'stats': psp9,
+                                        'markets':psp10});
 
   let dock = new DockPanel();
   dock.addWidget(ctrl);
   dock.addWidget(psp, { mode: 'split-right', ref: ctrl });
-  dock.addWidget(psp2, { mode: 'split-bottom', ref: psp });
-  dock.addWidget(psp3, { mode: 'tab-after', ref: psp });
+  dock.addWidget(psp2, { mode: 'tab-after', ref: psp });
+  dock.addWidget(psp3, { mode: 'tab-after', ref: psp2 });
+  dock.addWidget(psp10, { mode: 'tab-after', ref: psp3 });
+
+  dock.addWidget(psp4, { mode: 'split-bottom', ref: psp });
+  dock.addWidget(psp5, { mode: 'tab-after', ref: psp4 });
+  dock.addWidget(psp9, { mode: 'tab-after', ref: psp5 });
+  dock.addWidget(psp6, { mode: 'tab-after', ref: psp9 });
+  dock.addWidget(psp7, { mode: 'tab-after', ref: psp6 });
+  dock.addWidget(psp8, { mode: 'tab-after', ref: psp7 });
   dock.id = 'dock';
+
+  commands.addCommand('controls:open', {
+    label: 'Controls',
+    mnemonic: 1,
+    iconClass: 'fa fa-plus',
+    execute: () => {
+      dock.addWidget(ctrl);
+      // dock.addWidget(ctrl, {mode: 'split-left', ref: anno});
+      /* hack for custom sizing */
+      var layout = dock.saveLayout();
+      var sizes: number[] = (layout.main as DockLayout.ISplitAreaConfig).sizes;
+      sizes[0] = 0.3;
+      sizes[1] = 0.7;
+      dock.restoreLayout(layout);
+    }
+  });
 
   /* hack for custom sizing */
   var layout = dock.saveLayout();
@@ -163,11 +169,6 @@ function main(): void {
 
   Widget.attach(bar, document.body);
   Widget.attach(main, document.body);
-
-
-
-
-
 }
 
 

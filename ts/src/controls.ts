@@ -37,6 +37,7 @@ function autocomplete_ticker(path: string, value: string, autocomplete: HTMLData
     xhr1.send(null);
 }
 
+
 function fetch_and_load_cashflow(path:string, loadto:any){ //PSP Widget
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
@@ -57,20 +58,28 @@ function fetch_and_load_cashflow(path:string, loadto:any){ //PSP Widget
     xhr1.send(null);
 }
 
-function fetch_and_load_markets(path:string, loadto:any){ //PSP Widget
+
+function fetch_and_load_grid(path:string, loadto:any, convert=false, _delete=true){ //PSP Widget
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () { 
-        loadto.delete();
+        if(_delete){
+            loadto.delete();
+        }
         if(xhr1.response){
             var jsn = JSON.parse(xhr1.response);
             if (jsn){
-                loadto.update(jsn);
+                if (convert){
+                    loadto.update([jsn]);
+                } else {
+                    loadto.update(jsn);
+                }
             }
         }
     };
     xhr1.send(null);
 }
+
 
 function fetch_and_load_chart(path:string, loadto:any){ //PSP Widget
     var xhr1 = new XMLHttpRequest();
@@ -133,9 +142,7 @@ class ControlsWidget extends Widget {
     let datalist = document.createElement('datalist');
 
     let table = document.createElement('table');
-    let table2 = document.createElement('table');
     table.cellSpacing = '10';
-    table2.cellSpacing = '10';
     input.placeholder = 'Ticker';
     input.value = def;
     input.id = 'controls_input';
@@ -145,7 +152,6 @@ class ControlsWidget extends Widget {
     content.appendChild(input);
     content.appendChild(datalist);
     content.appendChild(table);
-    content.appendChild(table2);
     node.appendChild(content);
     return node;
   }
@@ -155,7 +161,7 @@ class ControlsWidget extends Widget {
     this.setFlag(Widget.Flag.DisallowLayout);
     this.addClass('controls');
     this.title.label = 'Controls';
-    this.title.closable = false;
+    this.title.closable = true;
     this.title.caption = 'Controls';
     this.node.id = 'controls';
 
@@ -166,14 +172,17 @@ class ControlsWidget extends Widget {
 
     input.addEventListener('keyup', function(e: KeyboardEvent){
         if (e.keyCode === 13){
-            // if(this.entered == input.value){
-            //     return;
-            // }
-            fetch_and_load_cashflow('/cash?ticker=' + input.value, psps['cash'].pspNode);
-            fetch_and_load_chart('/chart?ticker=' + input.value, psps['chart'].pspNode);
-            fetch_and_load_company('/company?ticker=' + input.value, this.companyInfoNode);
-            fetch_and_load_company('/quote?ticker=' + input.value, this.quoteNode);
-            fetch_and_load_markets('/markets?ticker=' + input.value, psps['markets'].pspNode);
+            fetch_and_load_cashflow('/data?type=financials&ticker=' + input.value , psps['cashflow'].pspNode);
+            fetch_and_load_chart('/data?type=chart&ticker=' + input.value, psps['chart'].pspNode);
+            fetch_and_load_company('/data?type=company&ticker=' + input.value, this.companyInfoNode);
+            fetch_and_load_grid('/markets?ticker=' + input.value, psps['markets'].pspNode);
+            fetch_and_load_grid('/data?type=dividends&ticker=' + input.value, psps['dividends'].pspNode);
+            fetch_and_load_grid('/data?type=financials&ticker=' + input.value, psps['financials'].pspNode);
+            fetch_and_load_grid('/data?type=earnings&ticker=' + input.value, psps['earnings'].pspNode);
+            fetch_and_load_grid('/data?type=news&ticker=' + input.value, psps['news'].pspNode);
+            fetch_and_load_grid('/data?type=peers&ticker=' + input.value, psps['peers'].pspNode);
+            fetch_and_load_grid('/data?type=stats&ticker=' + input.value, psps['stats'].pspNode);
+            fetch_and_load_grid('/data?type=quote&ticker=' + input.value, psps['quote'].pspNode, true);
             this.entered = input.value;
         }
 
@@ -189,11 +198,22 @@ class ControlsWidget extends Widget {
         this.last = input.value;
     }.bind(this));
 
-    fetch_and_load_cashflow('/cash?ticker=' + def, psps['cash'].pspNode);
-    fetch_and_load_chart('/chart?ticker=' + def, psps['chart'].pspNode);
-    fetch_and_load_company('/company?ticker=' + def, this.companyInfoNode);
-    fetch_and_load_company('/quote?ticker=' + def, this.quoteNode);
-    fetch_and_load_markets('/markets?ticker=' + def, psps['markets'].pspNode);
+    fetch_and_load_cashflow('/data?type=financials&ticker=' + def, psps['cashflow'].pspNode);
+    fetch_and_load_chart('/data?type=chart&ticker=' + def, psps['chart'].pspNode);
+    fetch_and_load_company('/data?type=company&ticker=' + def, this.companyInfoNode);
+    fetch_and_load_grid('/markets?ticker=' + def, psps['markets'].pspNode);
+    fetch_and_load_grid('/markets?ticker=' + def, psps['markets'].pspNode);
+    fetch_and_load_grid('/data?type=dividends&ticker=' + def, psps['dividends'].pspNode);
+    fetch_and_load_grid('/data?type=financials&ticker=' + def, psps['financials'].pspNode);
+    fetch_and_load_grid('/data?type=earnings&ticker=' + def, psps['earnings'].pspNode);
+    fetch_and_load_grid('/data?type=news&ticker=' + def, psps['news'].pspNode);
+    fetch_and_load_grid('/data?type=peers&ticker=' + def, psps['peers'].pspNode);
+    fetch_and_load_grid('/data?type=stats&ticker=' + def, psps['stats'].pspNode);
+    this.entered = def;
+
+    setInterval(() => {
+        fetch_and_load_grid('/data?type=quote&ticker=' + this.entered, psps['quote'].pspNode, true, false);
+    }, 500);
   }
 
   get inputNode(): HTMLInputElement {
@@ -206,10 +226,6 @@ class ControlsWidget extends Widget {
 
   get companyInfoNode(): HTMLTableElement {
     return this.node.getElementsByTagName('table')[0] as HTMLTableElement;
-  }
-
-  get quoteNode(): HTMLTableElement {
-    return this.node.getElementsByTagName('table')[1] as HTMLTableElement;
   }
 
 

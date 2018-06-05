@@ -4,7 +4,7 @@ import pyEX
 import tornado.ioloop
 import tornado.web
 from .utils import log, parse_args
-from .handlers import HTMLOpenHandler, ChartDataHandler, CashDataHandler, CompanyDataHandler, AutocompleteHandler, QuoteDataHandler, MarketsDataHandler
+from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler
 
 
 def getContext():
@@ -22,11 +22,7 @@ class ServerApplication(tornado.web.Application):
 
         default_handlers = [
             (r"/", HTMLOpenHandler, {'template': 'index.html'}),
-            (r"/data", ChartDataHandler, context),
-            (r"/chart", ChartDataHandler, context),
-            (r"/cash", CashDataHandler, context),
-            (r"/company", CompanyDataHandler, context),
-            (r"/quote", QuoteDataHandler, context),
+            (r"/data", StockDataHandler, context),
             (r"/markets", MarketsDataHandler, context),
             (r"/autocomplete", AutocompleteHandler, context),
             (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": static}),

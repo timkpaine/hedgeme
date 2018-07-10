@@ -35,7 +35,7 @@ pipeline {
                     branch 'master'
                 }
                 steps {
-                    sh 'heroku git:remote -a hedgeme'
+                    sh 'heroku git:remote -a hedgeme || echo'
                     sh 'git push heroku origin/master:master'
                 }
                 post {

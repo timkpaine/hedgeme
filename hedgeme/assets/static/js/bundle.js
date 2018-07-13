@@ -36776,6 +36776,9 @@ var PSPWidget = (function (_super) {
         //               {'x': 4, 'y':'d', 'z': false}
         //       ]);
     };
+    PSPWidget.prototype.onResize = function (msg) {
+        this.pspNode.notifyResize();
+    };
     PSPWidget.prototype.onActivateRequest = function (msg) {
         if (this.isAttached) {
             this.pspNode.focus();

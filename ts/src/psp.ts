@@ -30,8 +30,8 @@ class PSPWidget extends Widget {
     this.title.caption = `Long description for: ${name}`;
   }
 
-  get pspNode(): HTMLInputElement {
-    return this.node.getElementsByTagName('perspective-viewer')[0] as HTMLInputElement;
+  get pspNode(): any {
+    return this.node.getElementsByTagName('perspective-viewer')[0];
   }
 
   onAfterAttach(msg: Message) : void {
@@ -41,6 +41,10 @@ class PSPWidget extends Widget {
       //               {'x': 3, 'y':'c', 'z': true},
       //               {'x': 4, 'y':'d', 'z': false}
       //       ]);
+  }
+
+  onResize(msg: Message): void {
+    this.pspNode.notifyResize();
   }
 
   protected onActivateRequest(msg: Message): void {

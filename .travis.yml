@@ -1,0 +1,21 @@
+language: python
+cache: pip
+
+python:
+  - "3.6"
+
+install:
+    - pip install -r requirements.txt
+    - pip install codecov
+
+script: make test
+
+after_success:
+    - codecov --token f1584ece-92aa-4be7-b6ae-89c02a19af16
+
+branches:
+  only:
+  - master
+
+notifications:
+  email: false

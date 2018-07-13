@@ -5,6 +5,7 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
+@import './vars.css';
 @import '~@phosphor/dragdrop/style/index.css';
 @import '~@phosphor/widgets/style/index.css';
 @import './commandpalette.css';
@@ -15,6 +16,7 @@
 @import './tabbar.css';
 @import './psp.css';
 @import './controls.css';
+@import './material.dark.css';
 
 
 body {
@@ -28,11 +30,14 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  color: var(--dark-color);
 }
 
 
 #menuBar {
   flex: 0 0 auto;
+  background-color: var(--dark-bg-color);
+  color: var(--dark-color);
 }
 
 
@@ -43,10 +48,11 @@ body {
 
 #palette {
   min-width: 300px;
-  border-right: 1px solid #DDDDDD;
+  border-right: 1px solid var(--dark-border);
 }
 
 
 #dock {
   padding: 4px;
+  background-color: var(--dark-bg-color2);
 }

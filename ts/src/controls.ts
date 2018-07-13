@@ -13,28 +13,18 @@ import {
 import '../ts/style/index.css';
 
 
-function autocomplete_ticker(path: string, value: string, autocomplete: HTMLDataListElement){
-    var xhr1 = new XMLHttpRequest();
-    xhr1.open('GET', path, true);
-    xhr1.onload = function () {
-        if(xhr1.response){
-            var jsn = JSON.parse(xhr1.response);
-            
-            if (jsn) {
-                while(autocomplete.lastChild){
-                    autocomplete.removeChild(autocomplete.lastChild);
-                }
-
-                for(let val of jsn){
-                    let option = document.createElement('option');
-                    option.value = val['symbol'];
-                    option.innerText = val['symbol'] + ' - ' + val['name'];
-                    autocomplete.appendChild(option);
-                }
-            }
-        }
-    };
-    xhr1.send(null);
+function fetch_and_load(value: string, psps: {[key:string]:PSPWidget;}, companyInfo: any){
+    fetch_and_load_cashflow('/api/json/v1/data?type=financials&ticker=' + value , psps['cashflow'].pspNode);
+    fetch_and_load_chart('/api/json/v1/data?type=chart&ticker=' + value, psps['chart'].pspNode);
+    fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + value, companyInfo);
+    fetch_and_load_grid('/api/json/v1/markets?ticker=' + value, psps['markets'].pspNode);
+    fetch_and_load_grid('/api/json/v1/data?type=dividends&ticker=' + value, psps['dividends'].pspNode);
+    fetch_and_load_grid('/api/json/v1/data?type=financials&ticker=' + value, psps['financials'].pspNode);
+    fetch_and_load_grid('/api/json/v1/data?type=earnings&ticker=' + value, psps['earnings'].pspNode);
+    fetch_and_load_grid('/api/json/v1/data?type=news&ticker=' + value, psps['news'].pspNode);
+    fetch_and_load_grid('/api/json/v1/data?type=peers&ticker=' + value, psps['peers'].pspNode);
+    fetch_and_load_grid('/api/json/v1/data?type=stats&ticker=' + value, psps['stats'].pspNode);
+    fetch_and_load_grid('/api/json/v1/data?type=quote&ticker=' + value, psps['quote'].pspNode, true);
 }
 
 
@@ -132,6 +122,31 @@ function fetch_and_load_company(path:string, loadto:HTMLTableElement){
 }
 
 
+function autocomplete_ticker(path: string, value: string, autocomplete: HTMLDataListElement){
+    var xhr1 = new XMLHttpRequest();
+    xhr1.open('GET', path, true);
+    xhr1.onload = function () {
+        if(xhr1.response){
+            var jsn = JSON.parse(xhr1.response);
+            
+            if (jsn) {
+                while(autocomplete.lastChild){
+                    autocomplete.removeChild(autocomplete.lastChild);
+                }
+
+                for(let val of jsn){
+                    let option = document.createElement('option');
+                    option.value = val['symbol'];
+                    option.innerText = val['symbol'] + ' - ' + val['name'];
+                    autocomplete.appendChild(option);
+                }
+            }
+        }
+    };
+    xhr1.send(null);
+}
+
+
 export
 class ControlsWidget extends Widget {
 
@@ -172,17 +187,7 @@ class ControlsWidget extends Widget {
 
     input.addEventListener('keyup', function(e: KeyboardEvent){
         if (e.keyCode === 13){
-            fetch_and_load_cashflow('/data?type=financials&ticker=' + input.value , psps['cashflow'].pspNode);
-            fetch_and_load_chart('/data?type=chart&ticker=' + input.value, psps['chart'].pspNode);
-            fetch_and_load_company('/data?type=company&ticker=' + input.value, this.companyInfoNode);
-            fetch_and_load_grid('/markets?ticker=' + input.value, psps['markets'].pspNode);
-            fetch_and_load_grid('/data?type=dividends&ticker=' + input.value, psps['dividends'].pspNode);
-            fetch_and_load_grid('/data?type=financials&ticker=' + input.value, psps['financials'].pspNode);
-            fetch_and_load_grid('/data?type=earnings&ticker=' + input.value, psps['earnings'].pspNode);
-            fetch_and_load_grid('/data?type=news&ticker=' + input.value, psps['news'].pspNode);
-            fetch_and_load_grid('/data?type=peers&ticker=' + input.value, psps['peers'].pspNode);
-            fetch_and_load_grid('/data?type=stats&ticker=' + input.value, psps['stats'].pspNode);
-            fetch_and_load_grid('/data?type=quote&ticker=' + input.value, psps['quote'].pspNode, true);
+            fetch_and_load(input.value, psps, this.companyInfoNode);
             this.entered = input.value;
         }
 
@@ -192,27 +197,17 @@ class ControlsWidget extends Widget {
         }
 
         if (e.keyCode !== 13){
-            autocomplete_ticker('/autocomplete?partial=' + input.value, input.value, autocomplete);
+            autocomplete_ticker('/api/json/v1/autocomplete?partial=' + input.value, input.value, autocomplete);
         }
 
         this.last = input.value;
     }.bind(this));
 
-    fetch_and_load_cashflow('/data?type=financials&ticker=' + def, psps['cashflow'].pspNode);
-    fetch_and_load_chart('/data?type=chart&ticker=' + def, psps['chart'].pspNode);
-    fetch_and_load_company('/data?type=company&ticker=' + def, this.companyInfoNode);
-    fetch_and_load_grid('/markets?ticker=' + def, psps['markets'].pspNode);
-    fetch_and_load_grid('/markets?ticker=' + def, psps['markets'].pspNode);
-    fetch_and_load_grid('/data?type=dividends&ticker=' + def, psps['dividends'].pspNode);
-    fetch_and_load_grid('/data?type=financials&ticker=' + def, psps['financials'].pspNode);
-    fetch_and_load_grid('/data?type=earnings&ticker=' + def, psps['earnings'].pspNode);
-    fetch_and_load_grid('/data?type=news&ticker=' + def, psps['news'].pspNode);
-    fetch_and_load_grid('/data?type=peers&ticker=' + def, psps['peers'].pspNode);
-    fetch_and_load_grid('/data?type=stats&ticker=' + def, psps['stats'].pspNode);
+    fetch_and_load(def, psps, this.companyInfoNode);
     this.entered = def;
 
     setInterval(() => {
-        fetch_and_load_grid('/data?type=quote&ticker=' + this.entered, psps['quote'].pspNode, true, false);
+        fetch_and_load_grid('/api/json/v1/data?type=quote&ticker=' + this.entered, psps['quote'].pspNode, true, false);
     }, 500);
   }
 

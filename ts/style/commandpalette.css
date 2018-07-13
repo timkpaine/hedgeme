@@ -9,7 +9,7 @@
 
 .p-CommandPalette {
   font-family: sans-serif;
-  background: #F5F5F5;
+  background: var(--dark-bg-color);
 }
 
 
@@ -20,8 +20,8 @@
 
 .p-CommandPalette-wrapper {
   padding: 4px 6px;
-  background: white;
-  border: 1px solid #E0E0E0;
+  background: black;
+  border: 1px solid var(--dark-border);
 }
 
 
@@ -35,10 +35,10 @@
 
 .p-CommandPalette-header {
   padding: 4px;
-  color: #757575;
+  color: var(--dark-color);
   font-size: 12px;
   font-weight: 600;
-  background: #E1E1E1;
+  background: var(--dark-bg-color);
   cursor: pointer;
 }
 
@@ -58,7 +58,7 @@
 
 .p-CommandPalette-item {
   padding: 4px 8px;
-  color: #757575;
+  color: var(--dark-color);
   font-size: 13px;
   font-weight: 500;
 }
@@ -66,7 +66,7 @@
 
 .p-CommandPalette-emptyMessage {
   padding: 4px;
-  color: #757575;
+  color: var(--dark-color);
   font-size: 12px;
   font-weight: 600;
   text-align: center;
@@ -74,17 +74,17 @@
 
 
 .p-CommandPalette-item.p-mod-disabled {
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--dark-color-disabled);
 }
 
 
 .p-CommandPalette-item.p-mod-active {
-  background: #7FDBFF;
+  background: var(--dark-bg-hover);
 }
 
 
 .p-CommandPalette-item:hover:not(.p-mod-active):not(.p-mod-disabled) {
-  background: #E5E5E5;
+  background: var(--dark-bg-hover);
 }
 
 
@@ -100,12 +100,12 @@
 
 
 .p-CommandPalette-item.p-mod-disabled mark {
-  color: rgba(0, 0, 0, 0.4);
+  color: var(--dark-color-disabled);
 }
 
 
 .p-CommandPalette-itemCaption {
-  color: #9E9E9E;
+  color: var(--dark-color);
   font-size: 11px;
   font-weight: 400;
 }

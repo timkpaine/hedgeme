@@ -1,7 +1,7 @@
-from .base import ServerHandler
+from .base import HTTPHandler
 
 
-class AutocompleteHandler(ServerHandler):
+class AutocompleteHandler(HTTPHandler):
     def initialize(self, tickers=None, **kwargs):
         super(AutocompleteHandler, self).initialize()
         self.tickers = tickers

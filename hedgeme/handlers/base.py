@@ -1,9 +1,10 @@
 import tornado.ioloop
 import tornado.web
+import tornado.websocket
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 
-class ServerHandler(tornado.web.RequestHandler):
+class HTTPHandler(tornado.web.RequestHandler):
     '''Just a default handler'''
     def initialize(self, *args, **kwargs):
         '''Initialize the server competition registry handler
@@ -14,7 +15,7 @@ class ServerHandler(tornado.web.RequestHandler):
         Arguments:
             competitions {dict} -- a reference to the server's dictionary of competitions
         '''
-        super(ServerHandler, self).initialize(*args, **kwargs)
+        super(HTTPHandler, self).initialize(*args, **kwargs)
 
     def render_template(self, template, **kwargs):
         if hasattr(self, 'template_dirs'):
@@ -36,3 +37,17 @@ class ServerHandler(tornado.web.RequestHandler):
         kwargs['current_user'] = self.current_user.decode('utf-8') if self.current_user else ''
         content = template.render(**kwargs)
         return content
+
+
+class WebSocketHandler(tornado.websocket.WebSocketHandler):
+    '''Just a default handler'''
+    def initialize(self, *args, **kwargs):
+        '''Initialize the server competition registry handler
+
+        This handler is responsible for managing competition
+        registration.
+
+        Arguments:
+            competitions {dict} -- a reference to the server's dictionary of competitions
+        '''
+        super(WebSocketHandler, self).initialize(*args, **kwargs)

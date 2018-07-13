@@ -1,8 +1,8 @@
 import tornado.web
-from .base import ServerHandler
+from .base import HTTPHandler
 
 
-class HTMLOpenHandler(ServerHandler):
+class HTMLOpenHandler(HTTPHandler):
     def initialize(self, template=None, template_kwargs=None, **kwargs):
         super(HTMLOpenHandler, self).initialize()
         self.template = template

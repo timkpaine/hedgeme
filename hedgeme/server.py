@@ -4,7 +4,7 @@ import pyEX
 import tornado.ioloop
 import tornado.web
 from .utils import log, parse_args
-from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler
+from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler, StockDataHandlerWS
 
 
 def getContext():
@@ -22,9 +22,10 @@ class ServerApplication(tornado.web.Application):
 
         default_handlers = [
             (r"/", HTMLOpenHandler, {'template': 'index.html'}),
-            (r"/data", StockDataHandler, context),
-            (r"/markets", MarketsDataHandler, context),
-            (r"/autocomplete", AutocompleteHandler, context),
+            (r"/api/json/v1/data", StockDataHandler, context),
+            (r"/api/ws/v1/data", StockDataHandler, context),
+            (r"/api/json/v1/markets", MarketsDataHandler, context),
+            (r"/api/json/v1/autocomplete", AutocompleteHandler, context),
             (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": static}),
             (r"/(.*)", HTMLOpenHandler, {'template': '404.html'})
         ]
@@ -40,7 +41,7 @@ class ServerApplication(tornado.web.Application):
 
 
 def main(*args, **kwargs):
-    port = kwargs.get('port', 8889)
+    port = kwargs.get('port', 8080)
 
     application = ServerApplication()
     log.info('LISTENING: %s', port)

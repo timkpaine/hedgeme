@@ -9,9 +9,9 @@
 
 .p-MenuBar {
   padding-left: 5px;
-  background: #FAFAFA;
-  color: rgba(0, 0, 0, 0.87);
-  border-bottom: 1px solid #DDDDDD;
+  background: var(--dark-bg-color);
+  color: var(--dark-color);
+  border-bottom: 1px solid var(--dark-border);
   font: 13px Helvetica, Arial, sans-serif;
 }
 
@@ -29,14 +29,14 @@
 
 
 .p-MenuBar-item.p-mod-active {
-  background: #E5E5E5;
+  background: var(--dark-bg-hover);
 }
 
 
 .p-MenuBar.p-mod-active .p-MenuBar-item.p-mod-active {
   z-index: 10001;
-  background: white;
-  border-left: 1px solid #C0C0C0;
-  border-right: 1px solid #C0C0C0;
-  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
+  background: var(--dark-bg-hover);
+  border-left: 1px solid var(--dark-border2);
+  border-right: 1px solid var(--dark-border2);
+  box-shadow: 0px 0px 6px var(--dark-drop-shadow);
 }

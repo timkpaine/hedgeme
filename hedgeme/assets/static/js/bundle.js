@@ -36520,76 +36520,66 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var widgets_1 = __webpack_require__(85);
 __webpack_require__(86);
 function fetch_and_load(value, psps, companyInfo) {
-    fetch_and_load_cashflow('/api/json/v1/data?type=financials&ticker=' + value, psps['cashflow'].pspNode);
-    fetch_and_load_chart('/api/json/v1/data?type=chart&ticker=' + value, psps['chart'].pspNode);
+    _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'cashflow', psps['cashflow']);
+    _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', psps['chart']);
+    _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', psps['chart']);
+    _fetch_and_load('/api/json/v1/markets?ticker=' + value, 'grid', psps['markets']);
+    _fetch_and_load('/api/json/v1/data?type=dividends&ticker=' + value, 'grid', psps['dividends']);
+    _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'grid', psps['financials']);
+    _fetch_and_load('/api/json/v1/data?type=earnings&ticker=' + value, 'grid', psps['earnings']);
+    _fetch_and_load('/api/json/v1/data?type=news&ticker=' + value, 'grid', psps['news']);
+    _fetch_and_load('/api/json/v1/data?type=peers&ticker=' + value, 'grid', psps['peers']);
+    _fetch_and_load('/api/json/v1/data?type=stats&ticker=' + value, 'grid', psps['stats']);
+    _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + value, 'grid', psps['quote'], true);
     fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + value, companyInfo);
-    fetch_and_load_grid('/api/json/v1/markets?ticker=' + value, psps['markets'].pspNode);
-    fetch_and_load_grid('/api/json/v1/data?type=dividends&ticker=' + value, psps['dividends'].pspNode);
-    fetch_and_load_grid('/api/json/v1/data?type=financials&ticker=' + value, psps['financials'].pspNode);
-    fetch_and_load_grid('/api/json/v1/data?type=earnings&ticker=' + value, psps['earnings'].pspNode);
-    fetch_and_load_grid('/api/json/v1/data?type=news&ticker=' + value, psps['news'].pspNode);
-    fetch_and_load_grid('/api/json/v1/data?type=peers&ticker=' + value, psps['peers'].pspNode);
-    fetch_and_load_grid('/api/json/v1/data?type=stats&ticker=' + value, psps['stats'].pspNode);
-    fetch_and_load_grid('/api/json/v1/data?type=quote&ticker=' + value, psps['quote'].pspNode, true);
 }
-function fetch_and_load_cashflow(path, loadto) {
-    var xhr1 = new XMLHttpRequest();
-    xhr1.open('GET', path, true);
-    xhr1.onload = function () {
-        loadto.delete();
-        if (xhr1.response) {
-            var jsn = JSON.parse(xhr1.response);
-            loadto.view = 'heatmap';
-            loadto.columns = '["currentDebt","currentAssets","currentCash","totalAssets","totalCash","totalDebt","totalRevenue"]';
-            loadto.aggregates = '{"operatingGainsLosses":"distinct count","symbol":"distinct count","totalLiabilities":"distinct count","reportDate":"distinct count","cashChange":"sum","cashFlow":"sum","costOfRevenue":"sum","currentAssets":"sum","currentCash":"sum","currentDebt":"sum","grossProfit":"sum","netIncome":"sum","operatingExpense":"sum","operatingIncome":"sum","operatingRevenue":"sum","researchAndDevelopment":"sum","shareholderEquity":"sum","totalAssets":"sum","totalCash":"sum","totalDebt":"sum","totalRevenue":"sum"}';
-            if (jsn) {
-                loadto.update(jsn);
-            }
-        }
-    };
-    xhr1.send(null);
-}
-function fetch_and_load_grid(path, loadto, convert, _delete) {
-    if (convert === void 0) { convert = false; }
+function _fetch_and_load(path, type, loadto, wrap_list, _delete) {
+    if (wrap_list === void 0) { wrap_list = false; }
     if (_delete === void 0) { _delete = true; }
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () {
-        if (_delete) {
-            loadto.delete();
-        }
         if (xhr1.response) {
             var jsn = JSON.parse(xhr1.response);
-            if (jsn) {
-                if (convert) {
-                    loadto.update([jsn]);
-                }
-                else {
-                    loadto.update(jsn);
-                }
-            }
+            setup_psp_and_load(type, jsn, loadto, wrap_list, _delete);
         }
     };
     xhr1.send(null);
 }
-function fetch_and_load_chart(path, loadto) {
-    var xhr1 = new XMLHttpRequest();
-    xhr1.open('GET', path, true);
-    xhr1.onload = function () {
-        loadto.delete();
-        if (xhr1.response) {
-            var jsn = JSON.parse(xhr1.response);
-            loadto.view = 'y_line';
-            loadto.columns = '["open","close","high","low"]';
-            loadto.aggregates = '{"ticker":"distinct count","date":"distinct count","close":"last","high":"sum","low":"sum","open":"sum"}';
-            loadto.setAttribute('column-pivots', '["ticker"]');
-            loadto.setAttribute('row-pivots', '["date"]');
-            if (jsn) {
-                loadto.update(jsn);
+function setup_psp_and_load(type, data, loadto, wrap_list, _delete) {
+    if (wrap_list === void 0) { wrap_list = false; }
+    if (_delete === void 0) { _delete = true; }
+    if (wrap_list) {
+        data = [data];
+    }
+    if (_delete) {
+        loadto.pspNode.delete();
+    }
+    if (data) {
+        switch (type) {
+            case 'cashflow': {
+                loadto.pspNode.view = 'heatmap';
+                loadto.pspNode.columns = '["currentDebt","currentAssets","currentCash","totalAssets","totalCash","totalDebt","totalRevenue"]';
+                loadto.pspNode.aggregates = '{"operatingGainsLosses":"distinct count","symbol":"distinct count","totalLiabilities":"distinct count","reportDate":"distinct count","cashChange":"sum","cashFlow":"sum","costOfRevenue":"sum","currentAssets":"sum","currentCash":"sum","currentDebt":"sum","grossProfit":"sum","netIncome":"sum","operatingExpense":"sum","operatingIncome":"sum","operatingRevenue":"sum","researchAndDevelopment":"sum","shareholderEquity":"sum","totalAssets":"sum","totalCash":"sum","totalDebt":"sum","totalRevenue":"sum"}';
+                loadto.pspNode.update(data);
+                break;
+            }
+            case 'grid': {
+                loadto.pspNode.view = 'hypergrid';
+                loadto.pspNode.update(data);
+                break;
+            }
+            case 'chart': {
+                loadto.pspNode.view = 'y_line';
+                loadto.pspNode.columns = '["open","close","high","low"]';
+                loadto.pspNode.aggregates = '{"ticker":"distinct count","date":"distinct count","close":"last","high":"sum","low":"sum","open":"sum"}';
+                loadto.pspNode.setAttribute('column-pivots', '["ticker"]');
+                loadto.pspNode.setAttribute('row-pivots', '["date"]');
+                loadto.pspNode.update(data);
+                break;
             }
         }
-    };
-    xhr1.send(null);
+    }
 }
 function fetch_and_load_company(path, loadto) {
     var xhr1 = new XMLHttpRequest();
@@ -36670,7 +36660,7 @@ var ControlsWidget = (function (_super) {
         fetch_and_load(def, psps, _this.companyInfoNode);
         _this.entered = def;
         setInterval(function () {
-            fetch_and_load_grid('/api/json/v1/data?type=quote&ticker=' + _this.entered, psps['quote'].pspNode, true, false);
+            _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + _this.entered, 'grid', psps['quote'], true, false);
         }, 500);
         return _this;
     }

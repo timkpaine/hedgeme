@@ -14,36 +14,36 @@ import '../ts/style/index.css';
 
 
 function fetch_and_load(value: string, psps: {[key:string]:PSPWidget;}, companyInfo: any){
-    _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value , 'cashflow', psps['cashflow']);
-    _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', psps['chart']);
-    _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', psps['chart']);
-    _fetch_and_load('/api/json/v1/markets?ticker=' + value, 'grid', psps['markets']);
-    _fetch_and_load('/api/json/v1/data?type=dividends&ticker=' + value, 'grid', psps['dividends']);
-    _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'grid', psps['financials']);
-    _fetch_and_load('/api/json/v1/data?type=earnings&ticker=' + value, 'grid', psps['earnings']);
-    _fetch_and_load('/api/json/v1/data?type=news&ticker=' + value, 'grid', psps['news']);
-    _fetch_and_load('/api/json/v1/data?type=peers&ticker=' + value, 'grid', psps['peers']);
-    _fetch_and_load('/api/json/v1/data?type=stats&ticker=' + value, 'grid', psps['stats']);
-    _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + value, 'grid', psps['quote'], true);
+    _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'financials', 'cashflow', psps['cashflow']);
+    _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', 'chart', psps['chart']);
+    _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', 'chart', psps['chart']);
+    _fetch_and_load('/api/json/v1/markets?ticker=' + value, 'grid', 'markets', psps['markets']);
+    _fetch_and_load('/api/json/v1/data?type=dividends&ticker=' + value, 'dividends', 'grid', psps['dividends']);
+    _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'financials', 'grid', psps['financials']);
+    _fetch_and_load('/api/json/v1/data?type=earnings&ticker=' + value, 'earnings', 'grid', psps['earnings']);
+    _fetch_and_load('/api/json/v1/data?type=news&ticker=' + value, 'news', 'grid', psps['news']);
+    _fetch_and_load('/api/json/v1/data?type=peers&ticker=' + value, 'peers', 'grid', psps['peers']);
+    _fetch_and_load('/api/json/v1/data?type=stats&ticker=' + value, 'stats', 'grid', psps['stats']);
+    _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + value, 'quote', 'grid', psps['quote'], true);
 
     fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + value, companyInfo);
 }
 
-function _fetch_and_load(path:string, type:string, loadto:PSPWidget, wrap_list=false, _delete=true){
+function _fetch_and_load(path:string, field:string, type:string, loadto:PSPWidget, wrap_list=false, _delete=true){
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
     xhr1.onload = function () { 
         if(xhr1.response){
             var jsn = JSON.parse(xhr1.response);
-            setup_psp_and_load(type, jsn, loadto, wrap_list, _delete);
+            setup_psp_and_load(field, type, jsn, loadto, wrap_list, _delete);
         }
     };
     xhr1.send(null);
 }
 
 
-function setup_psp_and_load(type: string, data: object, loadto: PSPWidget, wrap_list=false, _delete=true){
-    if (wrap_list) {data = [data];}
+function setup_psp_and_load(field: string, type: string, data: any, loadto: PSPWidget, wrap_list=false, _delete=true){
+    if (wrap_list) {data = [data[field]];} else {data = data[field];}
     if(_delete){loadto.pspNode.delete();}
     if (data){
         switch(type){
@@ -77,7 +77,7 @@ function fetch_and_load_company(path:string, loadto:HTMLTableElement){
     xhr1.open('GET', path, true);
     xhr1.onload = function () { 
         if(xhr1.response){
-            var jsn = JSON.parse(xhr1.response);
+            var jsn = JSON.parse(xhr1.response)['company'];
             while(loadto.lastChild){
                 loadto.removeChild(loadto.lastChild);
             }
@@ -185,7 +185,7 @@ class ControlsWidget extends Widget {
     this.entered = def;
 
     setInterval(() => {
-        _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + this.entered, 'grid', psps['quote'], true, false);
+        _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + this.entered, 'quote', 'grid', psps['quote'], true, false);
     }, 500);
   }
 

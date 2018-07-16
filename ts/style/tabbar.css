@@ -72,6 +72,9 @@
   margin-left: 4px;
 }
 
+.p-TabBar-tab.p-mod-closable > .p-TabBar-tabCloseIcon:hover {
+  color: var(--dark-color-disabled);
+}
 
 .p-TabBar-tab.p-mod-closable > .p-TabBar-tabCloseIcon:before {
   content: '\f00d';

@@ -36825,21 +36825,41 @@ var psp_1 = __webpack_require__(217);
 var controls_1 = __webpack_require__(216);
 var commands = new commands_1.CommandRegistry();
 function main() {
+    /* File Menu */
     var menu = new widgets_1.Menu({ commands: commands });
     menu.title.label = 'File';
     menu.title.mnemonic = 0;
     menu.addItem({ command: 'controls:open' });
     menu.addItem({ type: 'separator' });
-    menu.addItem({ command: 'save-dock-layout' });
-    menu.addItem({ command: 'restore-dock-layout' });
-    menu.title.label = 'File';
-    menu.title.mnemonic = 0;
+    /* Data Menu */
+    var menu2 = new widgets_1.Menu({ commands: commands });
+    menu2.title.label = 'Data';
+    menu2.title.mnemonic = 0;
+    menu2.addItem({ command: 'performance:open' });
+    menu2.addItem({ command: 'quotes:open' });
+    menu2.addItem({ command: 'dividends:open' });
+    menu2.addItem({ command: 'markets:open' });
+    menu2.addItem({ type: 'separator' });
+    menu2.addItem({ command: 'cashflow:open' });
+    menu2.addItem({ command: 'financials:open' });
+    menu2.addItem({ command: 'stats:open' });
+    menu2.addItem({ command: 'earnings:open' });
+    menu2.addItem({ command: 'news:open' });
+    menu2.addItem({ command: 'peers:open' });
+    /* layouts menu */
+    var menu3 = new widgets_1.Menu({ commands: commands });
+    menu3.title.label = 'Layout';
+    menu3.title.mnemonic = 0;
+    menu3.addItem({ command: 'save-dock-layout' });
+    menu3.addItem({ type: 'separator' });
+    menu3.addItem({ command: 'restore-dock-layout', args: { index: 0 } });
+    /* Top bar */
     var bar = new widgets_1.MenuBar();
     bar.addMenu(menu);
+    bar.addMenu(menu2);
+    bar.addMenu(menu3);
     bar.id = 'menuBar';
-    var palette = new widgets_1.CommandPalette({ commands: commands });
-    // palette.addItem({ command: 'controls:open', category: 'New' });
-    palette.id = 'palette';
+    /* context menu */
     var contextMenu = new widgets_1.ContextMenu({ commands: commands });
     document.addEventListener('contextmenu', function (event) {
         if (contextMenu.open(event)) {
@@ -36853,6 +36873,7 @@ function main() {
     document.addEventListener('keydown', function (event) {
         commands.processKeydownEvent(event);
     });
+    /* perspectives */
     var psp = new psp_1.PSPWidget('Performance'); // chart
     var psp2 = new psp_1.PSPWidget('Quotes'); // quote
     var psp3 = new psp_1.PSPWidget('Dividends'); //dividends
@@ -36873,6 +36894,7 @@ function main() {
         'peers': psp8,
         'stats': psp9,
         'markets': psp10 });
+    /* main dock */
     var dock = new widgets_1.DockPanel();
     dock.addWidget(ctrl);
     dock.addWidget(psp, { mode: 'split-right', ref: ctrl });
@@ -36886,22 +36908,22 @@ function main() {
     dock.addWidget(psp7, { mode: 'tab-after', ref: psp6 });
     dock.addWidget(psp8, { mode: 'tab-after', ref: psp7 });
     dock.id = 'dock';
+    /* save/restore layouts */
     var savedLayouts = [];
-    /* hack for custom sizing */
-    var layout = dock.saveLayout();
-    var sizes = layout.main.sizes;
-    sizes[0] = 0.3;
-    sizes[1] = 0.7;
-    dock.restoreLayout(layout);
-    savedLayouts.push(dock.saveLayout());
-    commands.addCommand('controls:open', {
-        label: 'Controls',
-        mnemonic: 1,
-        iconClass: 'fa fa-plus',
-        execute: function () {
-            dock.restoreLayout(savedLayouts[0]);
-        }
+    /* command palette */
+    var palette = new widgets_1.CommandPalette({ commands: commands });
+    palette.id = 'palette';
+    palette.addItem({
+        command: 'save-dock-layout',
+        category: 'Dock Layout',
+        rank: 0
     });
+    palette.addItem({
+        command: 'controls:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    /* command registry */
     commands.addCommand('save-dock-layout', {
         label: 'Save Layout',
         caption: 'Save the current dock layout',
@@ -36912,21 +36934,39 @@ function main() {
                 category: 'Dock Layout',
                 args: { index: savedLayouts.length - 1 }
             });
+            menu3.addItem({ command: 'restore-dock-layout', args: { index: savedLayouts.length - 1 } });
         }
     });
     commands.addCommand('restore-dock-layout', {
         label: function (args) {
+            console.log(args.index);
             return "Restore Layout " + args.index;
         },
         execute: function (args) {
             dock.restoreLayout(savedLayouts[args.index]);
         }
     });
-    palette.addItem({
-        command: 'save-dock-layout',
-        category: 'Dock Layout',
-        rank: 0
+    commands.addCommand('controls:open', {
+        label: 'Controls',
+        mnemonic: 1,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.restoreLayout(savedLayouts[0]);
+        }
     });
+    /* hack for custom sizing */
+    var layout = dock.saveLayout();
+    var sizes = layout.main.sizes;
+    sizes[0] = 0.3;
+    sizes[1] = 0.7;
+    dock.restoreLayout(layout);
+    savedLayouts.push(dock.saveLayout());
+    palette.addItem({
+        command: 'restore-dock-layout',
+        category: 'Dock Layout',
+        args: { index: 0 }
+    });
+    /* main area setup */
     widgets_1.BoxPanel.setStretch(dock, 1);
     var main = new widgets_1.BoxPanel({ direction: 'left-to-right', spacing: 0 });
     main.id = 'main';

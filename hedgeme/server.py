@@ -4,12 +4,15 @@ import pyEX
 import tornado.ioloop
 import tornado.web
 from .utils import log, parse_args
+from .cache import Cache
 from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler, StockDataHandlerWS
+from .define import FIELDS
 
 
 def getContext():
     d = {}
     d['tickers'] = pyEX.symbolsDF()
+    d['cache'] = Cache(['aapl', 'jpm'], FIELDS)
     return d
 
 

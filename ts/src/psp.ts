@@ -35,12 +35,11 @@ class PSPWidget extends Widget {
   }
 
   onAfterAttach(msg: Message) : void {
-      // (<any>this.pspNode).update([   
-      //               {'x': 1, 'y':'a', 'z': true},
-      //               {'x': 2, 'y':'b', 'z': false},
-      //               {'x': 3, 'y':'c', 'z': true},
-      //               {'x': 4, 'y':'d', 'z': false}
-      //       ]);
+    this.pspNode.notifyResize();
+  }
+
+  onAfterShow(msg: Message): void {
+    this.pspNode.notifyResize();
   }
 
   onResize(msg: Message): void {

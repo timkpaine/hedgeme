@@ -16,8 +16,7 @@ import '../ts/style/index.css';
 function fetch_and_load(value: string, psps: {[key:string]:PSPWidget;}, companyInfo: any){
     _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'financials', 'cashflow', psps['cashflow']);
     _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', 'chart', psps['chart']);
-    _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', 'chart', psps['chart']);
-    _fetch_and_load('/api/json/v1/markets?ticker=' + value, 'grid', 'markets', psps['markets']);
+    _fetch_and_load('/api/json/v1/markets', 'markets', 'grid', psps['markets']);
     _fetch_and_load('/api/json/v1/data?type=dividends&ticker=' + value, 'dividends', 'grid', psps['dividends']);
     _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'financials', 'grid', psps['financials']);
     _fetch_and_load('/api/json/v1/data?type=earnings&ticker=' + value, 'earnings', 'grid', psps['earnings']);

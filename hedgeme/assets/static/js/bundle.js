@@ -36522,8 +36522,7 @@ __webpack_require__(86);
 function fetch_and_load(value, psps, companyInfo) {
     _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'financials', 'cashflow', psps['cashflow']);
     _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', 'chart', psps['chart']);
-    _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', 'chart', psps['chart']);
-    _fetch_and_load('/api/json/v1/markets?ticker=' + value, 'grid', 'markets', psps['markets']);
+    _fetch_and_load('/api/json/v1/markets', 'markets', 'grid', psps['markets']);
     _fetch_and_load('/api/json/v1/data?type=dividends&ticker=' + value, 'dividends', 'grid', psps['dividends']);
     _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'financials', 'grid', psps['financials']);
     _fetch_and_load('/api/json/v1/data?type=earnings&ticker=' + value, 'earnings', 'grid', psps['earnings']);
@@ -36762,12 +36761,10 @@ var PSPWidget = (function (_super) {
         configurable: true
     });
     PSPWidget.prototype.onAfterAttach = function (msg) {
-        // (<any>this.pspNode).update([   
-        //               {'x': 1, 'y':'a', 'z': true},
-        //               {'x': 2, 'y':'b', 'z': false},
-        //               {'x': 3, 'y':'c', 'z': true},
-        //               {'x': 4, 'y':'d', 'z': false}
-        //       ]);
+        this.pspNode.notifyResize();
+    };
+    PSPWidget.prototype.onAfterShow = function (msg) {
+        this.pspNode.notifyResize();
     };
     PSPWidget.prototype.onResize = function (msg) {
         this.pspNode.notifyResize();

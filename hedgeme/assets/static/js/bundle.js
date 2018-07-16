@@ -36874,7 +36874,7 @@ function main() {
     var psp8 = new psp_1.PSPWidget('Peers');
     var psp9 = new psp_1.PSPWidget('Stats');
     var psp10 = new psp_1.PSPWidget('Markets');
-    var ctrl = new controls_1.ControlsWidget('JPM', { 'chart': psp,
+    var psps = { 'chart': psp,
         'quote': psp2,
         'dividends': psp3,
         'cashflow': psp4,
@@ -36883,20 +36883,21 @@ function main() {
         'news': psp7,
         'peers': psp8,
         'stats': psp9,
-        'markets': psp10 });
+        'markets': psp10 };
+    var ctrl = new controls_1.ControlsWidget('JPM', psps);
     /* main dock */
     var dock = new widgets_1.DockPanel();
     dock.addWidget(ctrl);
-    dock.addWidget(psp, { mode: 'split-right', ref: ctrl });
-    dock.addWidget(psp2, { mode: 'tab-after', ref: psp });
-    dock.addWidget(psp3, { mode: 'tab-after', ref: psp2 });
-    dock.addWidget(psp10, { mode: 'tab-after', ref: psp3 });
-    dock.addWidget(psp4, { mode: 'split-bottom', ref: psp });
-    dock.addWidget(psp5, { mode: 'tab-after', ref: psp4 });
-    dock.addWidget(psp9, { mode: 'tab-after', ref: psp5 });
-    dock.addWidget(psp6, { mode: 'tab-after', ref: psp9 });
-    dock.addWidget(psp7, { mode: 'tab-after', ref: psp6 });
-    dock.addWidget(psp8, { mode: 'tab-after', ref: psp7 });
+    dock.addWidget(psps['cashflow'], { mode: 'split-bottom', ref: ctrl });
+    dock.addWidget(psps['financials'], { mode: 'tab-after', ref: psp4 });
+    dock.addWidget(psps['stats'], { mode: 'tab-after', ref: psp5 });
+    dock.addWidget(psps['earnings'], { mode: 'tab-after', ref: psp9 });
+    dock.addWidget(psps['news'], { mode: 'tab-after', ref: psp6 });
+    dock.addWidget(psps['peers'], { mode: 'tab-after', ref: psp7 });
+    dock.addWidget(psps['chart'], { mode: 'split-right', ref: ctrl });
+    dock.addWidget(psps['quote'], { mode: 'tab-after', ref: psp });
+    dock.addWidget(psps['dividends'], { mode: 'tab-after', ref: psp2 });
+    dock.addWidget(psps['markets'], { mode: 'tab-after', ref: psp3 });
     dock.id = 'dock';
     /* save/restore layouts */
     var savedLayouts = [];
@@ -36910,6 +36911,56 @@ function main() {
     });
     palette.addItem({
         command: 'controls:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'performance:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'quotes:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'dividends:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'markets:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'cashflow:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'financials:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'stats:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'earnings:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'news:open',
+        category: 'Dock Layout',
+        rank: 0
+    });
+    palette.addItem({
+        command: 'peers:open',
         category: 'Dock Layout',
         rank: 0
     });
@@ -36929,7 +36980,6 @@ function main() {
     });
     commands.addCommand('restore-dock-layout', {
         label: function (args) {
-            console.log(args.index);
             return "Restore Layout " + args.index;
         },
         execute: function (args) {
@@ -36944,11 +36994,91 @@ function main() {
             dock.restoreLayout(savedLayouts[0]);
         }
     });
+    commands.addCommand('performance:open', {
+        label: 'Open Performance',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['chart']);
+        }
+    });
+    commands.addCommand('quotes:open', {
+        label: 'Open Quotes',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['quote']);
+        }
+    });
+    commands.addCommand('dividends:open', {
+        label: 'Open Dividends',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['dividends']);
+        }
+    });
+    commands.addCommand('markets:open', {
+        label: 'Open Markets',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['markets']);
+        }
+    });
+    commands.addCommand('cashflow:open', {
+        label: 'Open Cashflow',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['cashflow']);
+        }
+    });
+    commands.addCommand('financials:open', {
+        label: 'Open Financials',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['financials']);
+        }
+    });
+    commands.addCommand('stats:open', {
+        label: 'Open Stats',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['stats']);
+        }
+    });
+    commands.addCommand('earnings:open', {
+        label: 'Open Earnings',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['earnings']);
+        }
+    });
+    commands.addCommand('news:open', {
+        label: 'Open News',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['news']);
+        }
+    });
+    commands.addCommand('peers:open', {
+        label: 'Open Peers',
+        mnemonic: 2,
+        iconClass: 'fa fa-plus',
+        execute: function () {
+            dock.addWidget(psps['peers']);
+        }
+    });
     /* hack for custom sizing */
     var layout = dock.saveLayout();
     var sizes = layout.main.sizes;
-    sizes[0] = 0.3;
-    sizes[1] = 0.7;
+    sizes[0] = 0.6;
+    sizes[1] = 0.4;
     dock.restoreLayout(layout);
     savedLayouts.push(dock.saveLayout());
     palette.addItem({

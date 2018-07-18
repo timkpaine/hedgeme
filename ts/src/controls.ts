@@ -1,4 +1,4 @@
-http://localhost:8080/import {
+import {
   Message
 } from '@phosphor/messaging';
 

@@ -9,7 +9,7 @@
 
 .p-MenuBar {
   padding-left: 5px;
-  background: var(--dark-bg-color);
+  background: var(--dark-bg-color3);
   color: var(--dark-color);
   border-bottom: 1px solid var(--dark-border);
   font: 13px Helvetica, Arial, sans-serif;

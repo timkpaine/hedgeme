@@ -17,7 +17,7 @@ class StockDataHandler(HTTPHandler):
             self.write(json.dumps(data))
 
         except KeyError:
-            self.write('')
+            self.write(json.dumps({'key': 'error', 'data': ''}))
 
 
 class StockDataHandlerWS(WebSocketHandler):
@@ -37,7 +37,7 @@ class StockDataHandlerWS(WebSocketHandler):
             self.write_message(json.dumps(data))
 
         except KeyError:
-            self.write_message({'key': 'error', 'data': ''})
+            self.write_message(json.dumps({'key': 'error', 'data': ''}))
 
     def on_close(self):
         pass

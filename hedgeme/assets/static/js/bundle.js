@@ -57172,7 +57172,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, ".controls {\n  min-width: 40px;\n  min-height: 50px;\n  /*max-width: 350px;*/\n  display: flex;\n  flex-direction: column;\n  padding: 8px;\n  border: 1px solid var(--dark-border);\n  border-top: none;\n  background: var(--dark-bg-color);\n  box-shadow: 1px 1px 2px var(--dark-drop-shadow);\n}\n\n\n.controls > div {\n  flex: 1 1 auto;\n  border: 1px solid var(--dark-border2);\n  overflow: auto;\n}\n\n\n.controls  input {\n  margin: 8px;\n  width: 90%;\n}\n\n\n.controls input::-webkit-outer-spin-button,\n.controls input::-webkit-inner-spin-button {\n    /* display: none; <- Crashes Chrome on hover */\n    -webkit-appearance: none;\n    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */\n}\n\n/* specifically hide the arrow on focus */\n.controls input::-webkit-calendar-picker-indicator {\n    display: none;\n}", ""]);
+exports.push([module.i, ".controls {\n  min-width: 40px;\n  min-height: 50px;\n  /*max-width: 350px;*/\n  display: flex;\n  flex-direction: column;\n  padding: 8px;\n  border: 1px solid var(--dark-border);\n  border-top: none;\n  background: var(--dark-bg-color);\n  box-shadow: 1px 1px 2px var(--dark-drop-shadow);\n}\n\n\n.controls > div {\n  flex: 1 1 auto;\n  border: 1px solid var(--dark-border2);\n  overflow: auto;\n}\n\n\n.controls  input {\n  margin: 8px;\n  width: 90%;\n  background-color:var(--dark-bg-color2);\n  color:var(--dark-color);\n}\n\n\n.controls input::-webkit-outer-spin-button,\n.controls input::-webkit-inner-spin-button {\n    /* display: none; <- Crashes Chrome on hover */\n    -webkit-appearance: none;\n    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */\n}\n\n/* specifically hide the arrow on focus */\n.controls input::-webkit-calendar-picker-indicator {\n    display: none;\n}", ""]);
 
 // exports
 
@@ -57211,7 +57211,7 @@ exports.i(__webpack_require__(383), "");
 exports.i(__webpack_require__(386), "");
 
 // module
-exports.push([module.i, "/*-----------------------------------------------------------------------------\n| Copyright (c) 2014-2017, PhosphorJS Contributors\n|\n| Distributed under the terms of the BSD 3-Clause License.\n|\n| The full license is in the file LICENSE, distributed with this software.\n|----------------------------------------------------------------------------*/\n\n\nbody {\n  display: flex;\n  flex-direction: column;\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n  color: var(--dark-color);\n}\n\n\n#menuBar {\n  flex: 0 0 auto;\n  background-color: var(--dark-bg-color);\n  color: var(--dark-color);\n}\n\n\n#main {\n  flex: 1 1 auto;\n}\n\n\n#palette {\n  min-width: 300px;\n  border-right: 1px solid var(--dark-border);\n}\n\n\n#dock {\n  padding: 4px;\n  background-color: var(--dark-bg-color2);\n}\n", ""]);
+exports.push([module.i, "/*-----------------------------------------------------------------------------\n| Copyright (c) 2014-2017, PhosphorJS Contributors\n|\n| Distributed under the terms of the BSD 3-Clause License.\n|\n| The full license is in the file LICENSE, distributed with this software.\n|----------------------------------------------------------------------------*/\n\n\nbody {\n  display: flex;\n  flex-direction: column;\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n  color: var(--dark-color);\n  font-family: Arial;\n}\n\n\n#menuBar {\n  flex: 0 0 auto;\n  background-color: var(--dark-bg-color3);\n  color: var(--dark-color);\n}\n\n\n#main {\n  flex: 1 1 auto;\n}\n\n\n#palette {\n  min-width: 300px;\n  border-right: 1px solid var(--dark-border);\n}\n\n\n#dock {\n  padding: 4px;\n  background-color: var(--dark-bg-color2);\n}\n", ""]);
 
 // exports
 
@@ -57255,7 +57255,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, "/*-----------------------------------------------------------------------------\n| Copyright (c) 2014-2017, PhosphorJS Contributors\n|\n| Distributed under the terms of the BSD 3-Clause License.\n|\n| The full license is in the file LICENSE, distributed with this software.\n|----------------------------------------------------------------------------*/\n\n\n.p-MenuBar {\n  padding-left: 5px;\n  background: var(--dark-bg-color);\n  color: var(--dark-color);\n  border-bottom: 1px solid var(--dark-border);\n  font: 13px Helvetica, Arial, sans-serif;\n}\n\n\n.p-MenuBar-menu {\n  transform: translateY(-1px);\n}\n\n\n.p-MenuBar-item {\n  padding: 4px 8px;\n  border-left: 1px solid transparent;\n  border-right: 1px solid transparent;\n}\n\n\n.p-MenuBar-item.p-mod-active {\n  background: var(--dark-bg-hover);\n}\n\n\n.p-MenuBar.p-mod-active .p-MenuBar-item.p-mod-active {\n  z-index: 10001;\n  background: var(--dark-bg-hover);\n  border-left: 1px solid var(--dark-border2);\n  border-right: 1px solid var(--dark-border2);\n  box-shadow: 0px 0px 6px var(--dark-drop-shadow);\n}\n", ""]);
+exports.push([module.i, "/*-----------------------------------------------------------------------------\n| Copyright (c) 2014-2017, PhosphorJS Contributors\n|\n| Distributed under the terms of the BSD 3-Clause License.\n|\n| The full license is in the file LICENSE, distributed with this software.\n|----------------------------------------------------------------------------*/\n\n\n.p-MenuBar {\n  padding-left: 5px;\n  background: var(--dark-bg-color3);\n  color: var(--dark-color);\n  border-bottom: 1px solid var(--dark-border);\n  font: 13px Helvetica, Arial, sans-serif;\n}\n\n\n.p-MenuBar-menu {\n  transform: translateY(-1px);\n}\n\n\n.p-MenuBar-item {\n  padding: 4px 8px;\n  border-left: 1px solid transparent;\n  border-right: 1px solid transparent;\n}\n\n\n.p-MenuBar-item.p-mod-active {\n  background: var(--dark-bg-hover);\n}\n\n\n.p-MenuBar.p-mod-active .p-MenuBar-item.p-mod-active {\n  z-index: 10001;\n  background: var(--dark-bg-hover);\n  border-left: 1px solid var(--dark-border2);\n  border-right: 1px solid var(--dark-border2);\n  box-shadow: 0px 0px 6px var(--dark-drop-shadow);\n}\n", ""]);
 
 // exports
 
@@ -57269,7 +57269,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, ".pspwidget {\n  min-width: 50px;\n  min-height: 50px;\n  /*max-width: 350px;*/\n  display: flex;\n  flex-direction: column;\n  padding: 8px;\n  border: 1px solid var(--dark-bg-color);\n  border-top: none;\n  background: var(--dark-bg-color);\n  box-shadow: 1px 1px 2px var(--dark-drop-shadow);\n}\n\n.pspwidget > perspective-viewer {\n  width:100%;\n  height:100%;\n  border: 1px solid var(--dark-border2);\n  overflow: auto;\n  margin-left:1px;\n  padding:10px;\n}", ""]);
+exports.push([module.i, ".pspwidget {\n  min-width: 50px;\n  min-height: 50px;\n  /*max-width: 350px;*/\n  display: flex;\n  flex-direction: column;\n  padding: 8px;\n  border: 1px solid var(--dark-bg-color);\n  border-top: none;\n  background: var(--dark-bg-color);\n  box-shadow: 1px 1px 2px var(--dark-drop-shadow);\n}\n\n.pspwidget > perspective-viewer {\n  width:100%;\n  height:100%;\n  /*border: 1px solid var(--dark-border2);*/\n  overflow: auto;\n  margin-left:1px;\n  padding:10px;\n}", ""]);
 
 // exports
 
@@ -57297,7 +57297,7 @@ exports = module.exports = __webpack_require__(5)();
 
 
 // module
-exports.push([module.i, ":root {\n    --dark-bg-color: #2F3136;\n    --dark-bg-color2: black;\n\n    --dark-bg-hover: #636363;\n\n    --dark-color: white;\n    --dark-color-disabled: rgba(255, 255, 255, 0.25);\n    --dark-border: white;\n    --dark-border2: #3b3e44;\n    --dark-overlay: rgba(0, 0, 0, 0.6);\n    --dark-drop-shadow: rgba(255, 255, 255, 0.2);\n\n    --light-border: black;\n}", ""]);
+exports.push([module.i, ":root {\n    --dark-bg-color: #2F3136;\n    --dark-bg-color2: #2a2c2f;\n    --dark-bg-color3: #1a1c1f;\n    --dark-bg-hover: #636363;\n\n    --dark-color: white;\n    --dark-color-disabled: rgba(255, 255, 255, 0.25);\n    --dark-border: #666;\n    --dark-border2: #3b3e44;\n    --dark-overlay: rgba(0, 0, 0, 0.6);\n    --dark-drop-shadow: rgba(255, 255, 255, 0.2);\n\n    --light-border: black;\n}", ""]);
 
 // exports
 

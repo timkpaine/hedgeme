@@ -1,4 +1,5 @@
 import pyEX as p
+import numpy as np
 
 
 class Cache(object):
@@ -23,13 +24,13 @@ class Cache(object):
         data = {}
         if field in ('financials', 'all'):
             df = p.financialsDF(key).reset_index()
-            data['financials'] = df[-100:].to_dict(orient='records')
+            data['financials'] = df[-100:].replace({np.nan: None}).to_dict(orient='records')
             self._cache[key].update(data)
 
         if field in ('chart', 'all'):
             df = p.chartDF(key, '1m').reset_index()[['date', 'open', 'high', 'low', 'close']]
             df['ticker'] = key
-            data['chart'] = df.to_dict(orient='records')
+            data['chart'] = df.replace({np.nan: None}).to_dict(orient='records')
             self._cache[key].update(data)
 
         if field in ('company', 'all'):
@@ -41,23 +42,23 @@ class Cache(object):
             self._cache[key].update(data)
 
         if field in ('dividends', 'all'):
-            data['dividends'] = p.dividendsDF(key).to_dict(orient='records')
+            data['dividends'] = p.dividendsDF(key).replace({np.nan: None}).to_dict(orient='records')
             self._cache[key].update(data)
 
         if field in ('earnings', 'all'):
-            data['earnings'] = p.earningsDF(key).to_dict(orient='records')
+            data['earnings'] = p.earningsDF(key).replace({np.nan: None}).to_dict(orient='records')
             self._cache[key].update(data)
 
         if field in ('news', 'all'):
-            data['news'] = p.newsDF(key).to_dict(orient='records')
+            data['news'] = p.newsDF(key).replace({np.nan: None}).to_dict(orient='records')
             self._cache[key].update(data)
 
         if field in ('peers', 'all'):
-            data['peers'] = p.peersDF(key).to_dict(orient='records')
+            data['peers'] = p.peersDF(key).replace({np.nan: None}).to_dict(orient='records')
             self._cache[key].update(data)
 
         if field in ('stats', 'all'):
-            data['stats'] = p.stockStatsDF(key).to_dict(orient='records')
+            data['stats'] = p.stockStatsDF(key).replace({np.nan: None}).to_dict(orient='records')
             self._cache[key].update(data)
 
         if field == 'all':

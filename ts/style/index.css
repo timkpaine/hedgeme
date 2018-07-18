@@ -31,12 +31,13 @@ body {
   padding: 0;
   overflow: hidden;
   color: var(--dark-color);
+  font-family: Arial;
 }
 
 
 #menuBar {
   flex: 0 0 auto;
-  background-color: var(--dark-bg-color);
+  background-color: var(--dark-bg-color3);
   color: var(--dark-color);
 }
 

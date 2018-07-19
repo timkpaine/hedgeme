@@ -23,7 +23,7 @@ function fetch_and_load(value: string, psps: {[key:string]:PSPWidget;}, companyI
     _fetch_and_load('/api/json/v1/data?type=news&ticker=' + value, 'news', 'grid', psps['news']);
     _fetch_and_load('/api/json/v1/data?type=peers&ticker=' + value, 'peers', 'grid', psps['peers']);
     _fetch_and_load('/api/json/v1/data?type=stats&ticker=' + value, 'stats', 'grid', psps['stats']);
-    _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + value, 'quote', 'grid', psps['quote'], true);
+    _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + value, 'quote', 'quote', psps['quote'], true);
 
     fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + value, companyInfo);
 }
@@ -55,6 +55,12 @@ function setup_psp_and_load(field: string, type: string, data: any, loadto: PSPW
             }
             case 'grid': {
                 loadto.pspNode.view = 'hypergrid';
+                loadto.pspNode.update(data);
+                break;
+            }
+            case 'quote': {
+                loadto.pspNode.view = 'hypergrid';
+                loadto.pspNode.setAttribute('index', 'iexLastUpdated');
                 loadto.pspNode.update(data);
                 break;
             }

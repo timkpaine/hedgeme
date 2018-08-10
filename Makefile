@@ -41,4 +41,4 @@ help:
 print-%:
 	@echo '$*=$($*)'
 
-.PHONY: clean run test tests help annotate annotate_l docs run
+.PHONY: clean run test tests help annotate annotate_l docs run build js

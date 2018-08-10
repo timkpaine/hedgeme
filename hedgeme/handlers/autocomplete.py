@@ -1,3 +1,4 @@
+import pandas as pd
 from .base import HTTPHandler
 
 
@@ -10,9 +11,9 @@ class AutocompleteHandler(HTTPHandler):
         '''Get the login page'''
         arg = self.get_argument('partial', '')
         if arg:
-            self.write(self.tickers[
-                self.tickers['symbol'].str.startswith(arg.upper()) |
-                self.tickers['name'].str.lower().str.contains(arg.lower())]
-                [:10].to_json(orient='records'))
+            self.write(pd.concat([
+                self.tickers[self.tickers['symbol'].str.startswith(arg.upper())],
+                self.tickers[self.tickers['name'].str.lower().str.contains(arg.lower())]
+                ])[:10].to_json(orient='records'))
         else:
             self.write('[]')

@@ -191,7 +191,7 @@ class ControlsWidget extends Widget {
         let psps_schemas = {};
 
         let psps1 = {'chart': this.psps['chart'],
-                     'quote': this.psps['quote'],
+                     // 'quote': this.psps['quote'],
                      'dividends': this.psps['dividends'],
                      'cashflow': this.psps['cashflow'],
                      'financials': this.psps['financials'],
@@ -214,8 +214,8 @@ class ControlsWidget extends Widget {
 
         input.addEventListener('keyup', (e: KeyboardEvent) => {
             if (e.keyCode === 13){
-                _psps_helper._url = '/api/json/v1/data?ticker=' + input.value;
-                fetch_and_load_company('/api/json/sv1/data?type=company&ticker=' + input.value, this.companyInfoNode);
+                _psps_helper.set_url('/api/json/v1/data?ticker=' + input.value);
+                fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + input.value, this.companyInfoNode);
                 this.entered = input.value;
             }
 

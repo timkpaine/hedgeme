@@ -31,7 +31,7 @@ import {
 const commands = new CommandRegistry();
 
 function main(): void {
-
+  
   /* File Menu */
   let menu = new Menu({ commands });
   menu.title.label = 'File';

@@ -1,5 +1,6 @@
 import pyEX as p
 import numpy as np
+from .define import FIELDS
 
 
 class Cache(object):
@@ -13,7 +14,8 @@ class Cache(object):
     def _fetch(self, key, field):
         if key in self._cache:
             if field == 'all':
-                return self._cache[key]
+                if len(FIELDS) == len(self._cache[key]):
+                    return self._cache[key]
 
             elif field in self._cache[key]:
                 return {field: self._cache[key][field]}

@@ -22,7 +22,7 @@ import "@jpmorganchase/perspective-viewer-highcharts";
 
 import {
   PSPWidget
-} from './psp';
+} from './perspective-widget';
 
 import {
   ControlsWidget
@@ -359,6 +359,8 @@ function main(): void {
 
   Widget.attach(bar, document.body);
   Widget.attach(main, document.body);
+
+  setTimeout(()=>{ctrl.start()}, 500);
 }
 
 

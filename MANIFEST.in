@@ -1,2 +1,2 @@
-recursive-include crowdsource/assets *
+recursive-include hedgeme/assets *
 prune tests

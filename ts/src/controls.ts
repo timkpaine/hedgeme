@@ -1,80 +1,31 @@
 import {
-  Message
+    Message
 } from '@phosphor/messaging';
 
 import {
-  Widget
+    Widget
 } from '@phosphor/widgets';
 
 import {
-  PSPWidget
-} from './psp';
+    PSPWidget, PerspectiveHelper, ViewOption, DataOption
+} from './perspective-widget';
 
 import '../ts/style/index.css';
 
-
-function fetch_and_load(value: string, psps: {[key:string]:PSPWidget;}, companyInfo: any){
-    _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'financials', 'cashflow', psps['cashflow']);
-    _fetch_and_load('/api/json/v1/data?type=chart&ticker=' + value, 'chart', 'chart', psps['chart']);
-    _fetch_and_load('/api/json/v1/markets', 'markets', 'grid', psps['markets']);
-    _fetch_and_load('/api/json/v1/data?type=dividends&ticker=' + value, 'dividends', 'grid', psps['dividends']);
-    _fetch_and_load('/api/json/v1/data?type=financials&ticker=' + value, 'financials', 'grid', psps['financials']);
-    _fetch_and_load('/api/json/v1/data?type=earnings&ticker=' + value, 'earnings', 'grid', psps['earnings']);
-    _fetch_and_load('/api/json/v1/data?type=news&ticker=' + value, 'news', 'grid', psps['news']);
-    _fetch_and_load('/api/json/v1/data?type=peers&ticker=' + value, 'peers', 'grid', psps['peers']);
-    _fetch_and_load('/api/json/v1/data?type=stats&ticker=' + value, 'stats', 'grid', psps['stats']);
-    _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + value, 'quote', 'quote', psps['quote'], true);
-
-    fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + value, companyInfo);
-}
-
-function _fetch_and_load(path:string, field:string, type:string, loadto:PSPWidget, wrap_list=false, _delete=true){
+function _fetch_and_load_quote(path:string, field:string, type:string, loadto:PSPWidget, wrap_list=false, _delete=true){
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
-    xhr1.onload = function () { 
+    xhr1.onload = function () {
         if(xhr1.response){
-            var jsn = JSON.parse(xhr1.response);
-            setup_psp_and_load(field, type, jsn, loadto, wrap_list, _delete);
+            var data = JSON.parse(xhr1.response);
+            if (wrap_list) {data = [data[field]];} else {data = data[field];}
+            if(_delete){loadto.pspNode.delete();}
+            loadto.pspNode.view = 'hypergrid';
+            loadto.pspNode.setAttribute('index', 'iexLastUpdated');
+            loadto.pspNode.update(data);
         }
     };
     xhr1.send(null);
-}
-
-
-function setup_psp_and_load(field: string, type: string, data: any, loadto: PSPWidget, wrap_list=false, _delete=true){
-    if (wrap_list) {data = [data[field]];} else {data = data[field];}
-    if(_delete){loadto.pspNode.delete();}
-    if (data){
-        switch(type){
-            case 'cashflow': {
-                loadto.pspNode.view = 'heatmap';
-                loadto.pspNode.columns = '["currentDebt","currentAssets","currentCash","totalAssets","totalCash","totalDebt","totalRevenue"]';
-                loadto.pspNode.aggregates = '{"operatingGainsLosses":"distinct count","symbol":"distinct count","totalLiabilities":"distinct count","reportDate":"distinct count","cashChange":"sum","cashFlow":"sum","costOfRevenue":"sum","currentAssets":"sum","currentCash":"sum","currentDebt":"sum","grossProfit":"sum","netIncome":"sum","operatingExpense":"sum","operatingIncome":"sum","operatingRevenue":"sum","researchAndDevelopment":"sum","shareholderEquity":"sum","totalAssets":"sum","totalCash":"sum","totalDebt":"sum","totalRevenue":"sum"}';
-                loadto.pspNode.update(data);
-                break;
-            }
-            case 'grid': {
-                loadto.pspNode.view = 'hypergrid';
-                loadto.pspNode.update(data);
-                break;
-            }
-            case 'quote': {
-                loadto.pspNode.view = 'hypergrid';
-                loadto.pspNode.setAttribute('index', 'iexLastUpdated');
-                loadto.pspNode.update(data);
-                break;
-            }
-            case 'chart': {
-                loadto.pspNode.view = 'y_line';
-                loadto.pspNode.columns = '["open","close","high","low"]';
-                loadto.pspNode.aggregates = '{"ticker":"distinct count","date":"distinct count","close":"last","high":"sum","low":"sum","open":"sum"}';
-                loadto.pspNode.setAttribute('column-pivots', '["ticker"]');
-                loadto.pspNode.setAttribute('row-pivots', '["date"]');
-                loadto.pspNode.update(data);
-                break;
-            }
-        }
-    }
 }
 
 function fetch_and_load_company(path:string, loadto:HTMLTableElement){
@@ -111,7 +62,7 @@ function autocomplete_ticker(path: string, value: string, autocomplete: HTMLData
     xhr1.onload = function () {
         if(xhr1.response){
             var jsn = JSON.parse(xhr1.response);
-            
+
             if (jsn) {
                 while(autocomplete.lastChild){
                     autocomplete.removeChild(autocomplete.lastChild);
@@ -133,86 +84,183 @@ function autocomplete_ticker(path: string, value: string, autocomplete: HTMLData
 export
 class ControlsWidget extends Widget {
 
-  static createNode(def: string): HTMLElement {
-    let node = document.createElement('div');
-    let content = document.createElement('div');
-    let input = document.createElement('input');
-    let datalist = document.createElement('datalist');
+    static createNode(def: string): HTMLElement {
+        let node = document.createElement('div');
+        let content = document.createElement('div');
+        let input = document.createElement('input');
+        let datalist = document.createElement('datalist');
 
-    let table = document.createElement('table');
-    table.cellSpacing = '10';
-    input.placeholder = 'Ticker';
-    input.value = def;
-    input.id = 'controls_input';
-    datalist.id = 'controls_datalist';
-    input.setAttribute('list', datalist.id);
+        let table = document.createElement('table');
+        table.cellSpacing = '10';
+        input.placeholder = 'Ticker';
+        input.value = def;
+        input.id = 'controls_input';
+        datalist.id = 'controls_datalist';
+        input.setAttribute('list', datalist.id);
 
-    content.appendChild(input);
-    content.appendChild(datalist);
-    content.appendChild(table);
-    node.appendChild(content);
-    return node;
-  }
-
-  constructor(def: string, psps: {[key:string]:PSPWidget;}) {
-    super({ node: ControlsWidget.createNode(def) });
-    this.setFlag(Widget.Flag.DisallowLayout);
-    this.addClass('controls');
-    this.title.label = 'Controls';
-    this.title.closable = true;
-    this.title.caption = 'Controls';
-    this.node.id = 'controls';
-
-    let input = this.inputNode;
-    let autocomplete = this.datalistNode;
-    this.entered = '';
-    this.last = '';
-
-    input.addEventListener('keyup', function(e: KeyboardEvent){
-        if (e.keyCode === 13){
-            fetch_and_load(input.value, psps, this.companyInfoNode);
-            this.entered = input.value;
-        }
-
-        if (this.last == input.value){
-            // duplicate
-            return;
-        }
-
-        if (e.keyCode !== 13){
-            autocomplete_ticker('/api/json/v1/autocomplete?partial=' + input.value, input.value, autocomplete);
-        }
-
-        this.last = input.value;
-    }.bind(this));
-
-    fetch_and_load(def, psps, this.companyInfoNode);
-    this.entered = def;
-
-    setInterval(() => {
-        _fetch_and_load('/api/json/v1/data?type=quote&ticker=' + this.entered, 'quote', 'grid', psps['quote'], true, false);
-    }, 500);
-  }
-
-  get inputNode(): HTMLInputElement {
-    return this.node.getElementsByTagName('input')[0] as HTMLInputElement;
-  }
-
-  get datalistNode(): HTMLDataListElement {
-    return this.node.getElementsByTagName('datalist')[0] as HTMLDataListElement;
-  }
-
-  get companyInfoNode(): HTMLTableElement {
-    return this.node.getElementsByTagName('table')[0] as HTMLTableElement;
-  }
-
-
-  protected onActivateRequest(msg: Message): void {
-    if (this.isAttached) {
-      this.inputNode.focus();
+        content.appendChild(input);
+        content.appendChild(datalist);
+        content.appendChild(table);
+        node.appendChild(content);
+        return node;
     }
-  }
 
-  private entered:string;
-  private last:string;
+    constructor(def: string, psps: {[key:string]:PSPWidget;}) {
+        super({ node: ControlsWidget.createNode(def) });
+        this.setFlag(Widget.Flag.DisallowLayout);
+        this.addClass('controls');
+        this.title.label = 'Controls';
+        this.title.closable = true;
+        this.title.caption = 'Controls';
+        this.node.id = 'controls';
+
+        this.def = def;
+        this.entered = '';
+        this.last = '';
+        this.psps = psps;
+    }
+
+    start(): void {
+        let input = this.inputNode;
+        let autocomplete = this.datalistNode;
+        let psps_view_options = {
+            'cashflow': {
+                [ViewOption.VIEW]: 'heatmap',
+                [ViewOption.COLUMNS]: '["currentDebt","currentAssets","currentCash","totalAssets","totalCash","totalDebt","totalRevenue"]',
+                [ViewOption.AGGREGATES]: '{"operatingGainsLosses":"distinct count","symbol":"distinct count","totalLiabilities":"distinct count","reportDate":"distinct count","cashChange":"sum","cashFlow":"sum","costOfRevenue":"sum","currentAssets":"sum","currentCash":"sum","currentDebt":"sum","grossProfit":"sum","netIncome":"sum","operatingExpense":"sum","operatingIncome":"sum","operatingRevenue":"sum","researchAndDevelopment":"sum","shareholderEquity":"sum","totalAssets":"sum","totalCash":"sum","totalDebt":"sum","totalRevenue":"sum"}'
+            },
+            'chart': {
+                [ViewOption.VIEW]: 'y_line',
+                [ViewOption.COLUMNS]: '["open","close","high","low"]',
+                [ViewOption.AGGREGATES]: '{"ticker":"distinct count","date":"distinct count","close":"last","high":"sum","low":"sum","open":"sum"}',
+                [ViewOption.COLUMN_PIVOTS]: '["ticker"]',
+                [ViewOption.ROW_PIVOTS]: '["date"]'
+            },
+            'grid': {
+                [ViewOption.VIEW]: 'hypergrid'
+            },
+            'quote': {
+                [ViewOption.VIEW]: 'hypergrid',
+                [ViewOption.INDEX]: 'iexLastUpdated'
+            }
+        };
+
+        let psps_data_options = {
+            'chart':{
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'chart'
+            },
+            'quote': {
+                [DataOption.WRAP]: true,
+                [DataOption.KEY]: 'quote'
+            },
+            'dividends':{
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'dividends'
+            },
+            'cashflow': {
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'financials'
+            },
+            'financials': {
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'financials'
+            },
+            'earnings': {
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'earnings'
+            },
+            'news': {
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'news'
+            },
+            'peers': {
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'peers'
+            },
+            'stats': {
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'stats'
+            },
+            'markets': {
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'markets'
+            }
+        };
+
+        let psps_schemas = {};
+
+        let psps1 = {'chart': this.psps['chart'],
+                     'quote': this.psps['quote'],
+                     'dividends': this.psps['dividends'],
+                     'cashflow': this.psps['cashflow'],
+                     'financials': this.psps['financials'],
+                     'earnings': this.psps['earnings'],
+                     'news': this.psps['news'],
+                     'peers': this.psps['peers'],
+                     'stats': this.psps['stats']}
+
+        let psps2 = {'markets':this.psps['markets']};
+        let _psps_helper = new PerspectiveHelper('/api/json/v1/data?ticker=' + this.def,
+            psps1,
+            psps_view_options,
+            psps_data_options,
+            psps_schemas);
+        let _psps_helper2 = new PerspectiveHelper('/api/json/v1/markets',
+            psps2,
+            psps_view_options,
+            psps_data_options,
+            psps_schemas);
+
+        input.addEventListener('keyup', (e: KeyboardEvent) => {
+            if (e.keyCode === 13){
+                _psps_helper._url = '/api/json/v1/data?ticker=' + input.value;
+                fetch_and_load_company('/api/json/sv1/data?type=company&ticker=' + input.value, this.companyInfoNode);
+                this.entered = input.value;
+            }
+
+            if (this.last == input.value){
+                // duplicate
+                return;
+            }
+
+            if (e.keyCode !== 13){
+                autocomplete_ticker('/api/json/v1/autocomplete?partial=' + input.value, input.value, autocomplete);
+            }
+
+            this.last = input.value;
+        });
+
+        _psps_helper.start();
+        _psps_helper2.start();
+        fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + this.def, this.companyInfoNode);
+        this.entered = this.def;
+
+        setInterval(() => {
+            _fetch_and_load_quote('/api/json/v1/data?type=quote&ticker=' + this.entered, 'quote', 'grid', this.psps['quote'], true, false);
+        }, 500);
+    }
+
+    get inputNode(): HTMLInputElement {
+        return this.node.getElementsByTagName('input')[0] as HTMLInputElement;
+    }
+
+    get datalistNode(): HTMLDataListElement {
+        return this.node.getElementsByTagName('datalist')[0] as HTMLDataListElement;
+    }
+
+    get companyInfoNode(): HTMLTableElement {
+        return this.node.getElementsByTagName('table')[0] as HTMLTableElement;
+    }
+
+    protected onActivateRequest(msg: Message): void {
+        if (this.isAttached) {
+            this.inputNode.focus();
+        }
+    }
+
+    private psps: {[key:string]:PSPWidget;}
+    private def: string;
+    private entered:string;
+    private last:string;
 }

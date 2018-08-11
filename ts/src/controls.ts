@@ -142,7 +142,12 @@ class ControlsWidget extends Widget {
             'quote': {
                 [ViewOption.VIEW]: 'hypergrid',
                 [ViewOption.INDEX]: 'iexLastUpdated'
-            }
+            },
+            'peers': {
+                [ViewOption.VIEW]: 'hypergrid',
+                [ViewOption.COLUMNS]: '["symbol","companyName","description","industry","website","issueType"]',
+                [ViewOption.SORT]: '[["symbol", "asc"]]'
+            },
         };
 
         let psps_data_options = {

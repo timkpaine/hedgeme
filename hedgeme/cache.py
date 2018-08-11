@@ -1,6 +1,8 @@
+import copy
 import json
 import os
 import os.path
+import pandas as pd
 import pyEX as p
 import numpy as np
 from functools import lru_cache
@@ -55,9 +57,13 @@ class Cache(object):
                 for f in FIELDS:
                     filename = os.path.join(self._dir, k, f + '.json')
 
+                    if 'timestamp' not in self._cache[k]:
+                        self._cache[k]['timestamp'] = {}
+
                     if os.path.exists(filename):
                         with open(filename, 'r') as fp:
                             self._cache[k][f] = json.load(fp)
+                            self._cache[k]['timestamp'][f] = datetime.now()
 
     def save(self):
         if not os.path.exists(self._dir):
@@ -87,6 +93,7 @@ class Cache(object):
     def _fetch(self, key, field):
         # tickers always caps
         key = key.upper()
+
         # fields always lower
         field = field.lower()
 
@@ -96,7 +103,9 @@ class Cache(object):
         if key in self._cache:
             if field == 'all':
                 if len(FIELDS) == len(self._cache[key]):
-                    return self._cache[key]
+                    ret = copy.deepcopy(self._cache[key])
+                    del ret['timestamp']
+                    return ret
 
             elif field in self._cache[key]:
                 return {field: self._cache[key][field]}
@@ -144,7 +153,9 @@ class Cache(object):
 
         if field in ('peers', 'all'):
             if 'peers' not in self._cache[key] or self._check_timestamp(key, 'peers'):
-                self._cache[key]['peers'] = p.peersDF(key).replace({np.nan: None}).to_dict(orient='records')
+                peers = p.peersDF(key).replace({np.nan: None})
+                infos = pd.concat([p.companyDF(item) for item in peers[0].values])
+                self._cache[key]['peers'] = infos.to_dict(orient='records')
                 self._cache[key]['timestamp']['peers'] = datetime.now()
 
         if field in ('stats', 'all'):
@@ -153,6 +164,27 @@ class Cache(object):
                 self._cache[key]['timestamp']['stats'] = datetime.now()
 
         if field == 'all':
-            return self._cache[key]
+            ret = copy.deepcopy(self._cache[key])
+            del ret['timestamp']
+            return ret
 
         return {field: self._cache[key][field]}
+
+
+def main():
+    tickers = p.symbolsDF()
+    cache = Cache(tickers)
+    cache.load('./cache')
+
+    i = 0
+    for item in tickers.symbol.values.tolist():
+        try:
+            cache.preload([item], FIELDS)
+            i += 1
+            if i == 25:
+                cache.save()
+        except KeyError:
+            pass
+
+if __name__ == "__main__":
+    main()

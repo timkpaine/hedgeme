@@ -37068,7 +37068,12 @@ class ControlsWidget extends widgets_1.Widget {
             'quote': {
                 [perspective_widget_1.ViewOption.VIEW]: 'hypergrid',
                 [perspective_widget_1.ViewOption.INDEX]: 'iexLastUpdated'
-            }
+            },
+            'peers': {
+                [perspective_widget_1.ViewOption.VIEW]: 'hypergrid',
+                [perspective_widget_1.ViewOption.COLUMNS]: '["symbol","companyName","description","industry","website","issueType"]',
+                [perspective_widget_1.ViewOption.SORT]: '[["symbol", "asc"]]'
+            },
         };
         let psps_data_options = {
             'chart': {

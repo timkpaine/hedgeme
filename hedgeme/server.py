@@ -1,27 +1,37 @@
 import sys
 import os.path
 import pyEX
+import signal
 import tornado.ioloop
 import tornado.web
+from functools import partial
 from .utils import log, parse_args
 from .cache import Cache
 from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler, StockDataHandlerWS
 from .define import FIELDS
 
 
+def sig_handler(server, cache, sig, frame):
+    io_loop = tornado.ioloop.IOLoop.instance()
+
+    def shutdown():
+        io_loop.stop()
+
+    io_loop.add_callback_from_signal(shutdown)
+    cache.save()
+
+
 def getContext():
     d = {}
     d['tickers'] = pyEX.symbolsDF()
-    d['cache'] = Cache(['aapl', 'jpm'], FIELDS)
+    d['cache'] = Cache(d['tickers'])
     return d
 
 
 class ServerApplication(tornado.web.Application):
-    def __init__(self, cookie_secret=None, debug=True):
+    def __init__(self, context, cookie_secret=None, debug=True):
         root = os.path.join(os.path.dirname(__file__), 'assets')
         static = os.path.join(root, 'static')
-
-        context = getContext()
 
         default_handlers = [
             (r"/", HTMLOpenHandler, {'template': 'index.html'}),
@@ -46,11 +56,22 @@ class ServerApplication(tornado.web.Application):
 def main(*args, **kwargs):
     port = kwargs.get('port', 8080)
 
-    application = ServerApplication()
+    context = getContext()
+    cache = context['cache']
+    cache.load('./cache')
+    cache.preload(['aapl', 'jpm'], FIELDS)
+
+    application = ServerApplication(context)
     log.info('LISTENING: %s', port)
     application.listen(port)
-    tornado.ioloop.IOLoop.current().start()
 
+    signal.signal(signal.SIGTERM, partial(sig_handler, application, cache))
+    signal.signal(signal.SIGINT, partial(sig_handler, application, cache))
+
+    try:
+        tornado.ioloop.IOLoop.current().start()
+    except KeyboardInterrupt:
+        cache.save()
 
 if __name__ == "__main__":
     args, kwargs = parse_args(sys.argv)

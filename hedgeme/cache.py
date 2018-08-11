@@ -179,6 +179,7 @@ def main():
     i = 0
     for item in tickers.symbol.values.tolist():
         try:
+            print('loading %s' % item)
             cache.preload([item], FIELDS)
             i += 1
             if i == 25:

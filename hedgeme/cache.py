@@ -43,6 +43,10 @@ class Cache(object):
                     except KeyError:
                         self._cache[key][field] = pd.DataFrame()
 
+    def purge(self, tickers):
+        for ticker in tickers:
+            self._cache.pop(ticker)
+
     def load(self, dir, preload=True):
         self._dir = dir
 
@@ -233,6 +237,8 @@ def main():
             i += 1
             if i == 25:
                 cache.save()
+                cache.purge(list(cache._cache.keys()))
+
         except KeyError:
             pass
 

@@ -1,6 +1,6 @@
 import json
 import pyEX as p
-from tornado.concurrent import run_on_executor
+import tornado.concurrent
 from .base import HTTPHandler, WebSocketHandler
 
 
@@ -9,14 +9,16 @@ class StockDataHandler(HTTPHandler):
         self._cache = cache
         super(StockDataHandler, self).initialize()
 
-    # @run_on_executor(executor='_thread_pool')
-    def get(self, *args):
+    @tornado.concurrent.run_on_executor
+    def get_data(self, key, type):
+        return json.dumps(self._cache._fetch(key, type))
+
+    async def get(self, *args):
         try:
             key = self.get_argument('ticker', 'aapl')
-            type = self.get_argument('type', 'all')
-
-            data = self._cache._fetch(key, type)
-            self.write(json.dumps(data))
+            _type = self.get_argument('type', 'all')
+            data = await self.get_data(key, _type)
+            self.write(data)
 
         except KeyError:
             self.write(json.dumps({'key': 'error', 'data': ''}))

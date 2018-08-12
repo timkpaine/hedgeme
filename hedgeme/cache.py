@@ -230,17 +230,20 @@ def main():
     cache.load('./cache')
 
     i = 0
-    for item in tickers.symbol.values.tolist():
-        try:
-            print('loading %s' % item)
-            cache.preload([item], FIELDS)
-            i += 1
-            if i == 25:
-                cache.save()
-                cache.purge(list(cache._cache.keys()))
+    try:
+        for item in tickers.symbol.values.tolist():
+            try:
+                print('loading %s' % item)
+                cache.preload([item], FIELDS)
+                i += 1
+                if i == 25:
+                    cache.save()
+                    cache.purge(list(cache._cache.keys()))
 
-        except KeyError:
-            pass
+            except KeyError:
+                pass
+    except:
+        cache.save()
 
 if __name__ == "__main__":
     main()

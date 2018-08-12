@@ -1,5 +1,6 @@
 import json
 import pyEX as p
+from tornado.concurrent import run_on_executor
 from .base import HTTPHandler, WebSocketHandler
 
 
@@ -8,6 +9,7 @@ class StockDataHandler(HTTPHandler):
         self._cache = cache
         super(StockDataHandler, self).initialize()
 
+    # @run_on_executor(executor='_thread_pool')
     def get(self, *args):
         try:
             key = self.get_argument('ticker', 'aapl')

@@ -4,6 +4,7 @@
 
 [![Build Status](https://travis-ci.org/timkpaine/hedgeme.svg?branch=master)](https://travis-ci.org/timkpaine/hedgeme)
 
+[Cache Data (quilt)](https://quiltdata.com/package/timkpaine/hedgeme)
 
 
 ### Attribution

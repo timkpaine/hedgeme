@@ -30,7 +30,10 @@ class Cache(object):
                 field = field.lower()
                 if key not in self._cache or field not in self._cache[key]:
                     print('fetching %s for %s' % (field, key))
-                    self._fetch(key, field)
+                    try:
+                        self._fetch(key, field)
+                    except KeyError:
+                        self._cache[key][field] = {}
 
     def load(self, dir):
         self._dir = dir

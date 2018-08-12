@@ -154,7 +154,7 @@ class Cache(object):
         if field in ('peers', 'all'):
             if 'peers' not in self._cache[key] or self._check_timestamp(key, 'peers'):
                 peers = p.peersDF(key)
-                if peers:
+                if peers is not None and not peers.empty:
                     peers = peers.replace({np.nan: None})
                     infos = pd.concat([p.companyDF(item) for item in peers[0].values])
                     self._cache[key]['peers'] = infos.to_dict(orient='records')

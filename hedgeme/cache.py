@@ -35,7 +35,7 @@ class Cache(object):
                     except KeyError:
                         self._cache[key][field] = {}
 
-    def load(self, dir):
+    def load(self, dir, preload=True):
         self._dir = dir
 
         # dump tickers for reference
@@ -48,8 +48,7 @@ class Cache(object):
             os.makedirs(self._dir)
 
         for k in os.listdir(self._dir):
-            if self._sync < today():
-
+            if self._sync < today() and preload:
                 self.preload([k], FIELDS)
 
             else:

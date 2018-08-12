@@ -63,7 +63,7 @@ def main(*args, **kwargs):
     application.listen(port)
 
     cache = context['cache']
-    cache.load('./cache')
+    cache.load('./cache', preload=False)
     cache.preload(['aapl', 'jpm'], FIELDS)
 
     signal.signal(signal.SIGTERM, partial(sig_handler, application, cache))

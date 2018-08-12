@@ -153,9 +153,14 @@ class Cache(object):
 
         if field in ('peers', 'all'):
             if 'peers' not in self._cache[key] or self._check_timestamp(key, 'peers'):
-                peers = p.peersDF(key).replace({np.nan: None})
-                infos = pd.concat([p.companyDF(item) for item in peers[0].values])
-                self._cache[key]['peers'] = infos.to_dict(orient='records')
+                peers = p.peersDF(key)
+                if peers:
+                    peers = peers.replace({np.nan: None})
+                    infos = pd.concat([p.companyDF(item) for item in peers[0].values])
+                    self._cache[key]['peers'] = infos.to_dict(orient='records')
+                else:
+                    self._cache[key]['peers'] = {}
+
                 self._cache[key]['timestamp']['peers'] = datetime.now()
 
         if field in ('stats', 'all'):

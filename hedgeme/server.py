@@ -57,13 +57,14 @@ def main(*args, **kwargs):
     port = kwargs.get('port', 8080)
 
     context = getContext()
-    cache = context['cache']
-    cache.load('./cache')
-    cache.preload(['aapl', 'jpm'], FIELDS)
 
     application = ServerApplication(context)
     log.info('LISTENING: %s', port)
     application.listen(port)
+
+    cache = context['cache']
+    cache.load('./cache')
+    cache.preload(['aapl', 'jpm'], FIELDS)
 
     signal.signal(signal.SIGTERM, partial(sig_handler, application, cache))
     signal.signal(signal.SIGINT, partial(sig_handler, application, cache))

@@ -1,1 +1,1 @@
-web: python -m hedgeme.server --port=$PORT 
+web: tar xfzv cache.tgz && python -m hedgeme.server --port=$PORT 

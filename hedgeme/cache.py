@@ -105,7 +105,8 @@ class Cache(object):
                 if self._check_timestamp(k, f):
                     self._fetch(k, f)
                 print('writing %s for %s' % (f, k))
-                self._cache[k][f].to_csv(filename, index=False)
+                if not self._cache[k][f].empty:
+                    self._cache[k][f].to_csv(filename, index=False)
 
         with open(os.path.join(self._dir, 'TIMESTAMP'), 'w') as fp:
             fp.write(datetime.now().strftime('%Y/%m/%d-%H:%M:%S'))

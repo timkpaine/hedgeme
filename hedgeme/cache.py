@@ -71,7 +71,7 @@ class Cache(object):
             self._sync = yesterday()
 
         for k in os.listdir(self._dir):
-            if k in ('TICKERS.CSV', 'TIMESTAMP'):
+            if k in ('TICKERS.CSV', 'TICKERS.csv', 'TIMESTAMP'):
                 continue
 
             if self._sync < today() and preload:

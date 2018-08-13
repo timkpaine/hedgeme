@@ -101,7 +101,7 @@ class Cache(object):
 
                 if self._check_timestamp(k, f):
                     self._fetch(k, f)
-                self._cache[k][f].to_csv(filename)
+                self._cache[k][f].to_csv(filename, index=False)
 
         with open(os.path.join(self._dir, 'TIMESTAMP'), 'w') as fp:
             fp.write(datetime.now().strftime('%Y/%m/%d-%H:%M:%S'))
@@ -166,7 +166,7 @@ class Cache(object):
                 peers = p.peersDF(key)
                 if peers is not None and not peers.empty:
                     peers = peers.replace({np.nan: None})
-                    infos = pd.concat([self._fetch(item, 'company')['company'] for item in peers[0].values])
+                    infos = pd.concat([p.companyDF(item) for item in peers[0].values])
                     self._cache[key]['peers'] = infos
                 else:
                     self._cache[key]['peers'] = pd.DataFrame()

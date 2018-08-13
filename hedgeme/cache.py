@@ -262,7 +262,7 @@ class Cache(object):
 
             if field == 'company':
                 ret['company'] = ret['company'].replace({np.nan: None})[
-                    ['CEO', 'symbol', 'companyName', 'description', 'sector', 'industry', 'issueType', 'exchange', 'website']].replace({np.nan: None}).to_dict(orient='records')[0]
+                    ['CEO', 'companyName', 'description', 'sector', 'industry', 'issueType', 'exchange', 'website']].reset_index().replace({np.nan: None}).to_dict(orient='records')[0]
 
             if field == 'quote':
                 ret['quote'] = ret['quote'].replace({np.nan: None}).to_dict(orient='records')[0]

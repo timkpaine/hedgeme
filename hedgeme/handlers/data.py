@@ -14,14 +14,10 @@ class StockDataHandler(HTTPHandler):
         return json.dumps(self._cache.fetch(key, type))
 
     async def get(self, *args):
-        try:
-            key = self.get_argument('ticker', 'aapl')
-            _type = self.get_argument('type', 'all')
-            data = await self.get_data(key, _type)
-            self.write(data)
-
-        except KeyError:
-            self.write(json.dumps({'key': 'error', 'data': ''}))
+        key = self.get_argument('ticker', 'aapl')
+        _type = self.get_argument('type', 'all')
+        data = await self.get_data(key, _type)
+        self.write(data)
 
 
 class StockDataHandlerWS(WebSocketHandler):

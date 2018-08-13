@@ -112,7 +112,7 @@ class Cache(object):
                     self.fetch(k, f)
                 print('writing %s for %s' % (f, k))
                 if not self._cache[k][f].empty:
-                    self._cache[k][f].to_csv(filename, index=False)
+                    self._cache[k][f].to_csv(filename)
 
         with open(os.path.join(self._dir, 'TIMESTAMP'), 'w') as fp:
             fp.write(datetime.now().strftime('%Y/%m/%d-%H:%M:%S'))
@@ -144,7 +144,10 @@ class Cache(object):
 
         if field in ('financials', 'all'):
             if 'financials' not in self._cache[key] or self._check_timestamp(key, 'financials'):
-                self._cache[key]['financials'] = p.financialsDF(key)
+                try:
+                    self._cache[key]['financials'] = p.financialsDF(key)
+                except KeyError:
+                    self._cache[key]['financials'] = pd.DataFrame()
                 self._cache[key]['timestamp']['financials'] = datetime.now()
 
         if field in ('chart', 'all'):
@@ -163,22 +166,35 @@ class Cache(object):
 
         if field in ('dividends', 'all'):
             if 'dividends' not in self._cache[key] or self._check_timestamp(key, 'dividends'):
-                self._cache[key]['dividends'] = p.dividendsDF(key)
+                try:
+                    self._cache[key]['dividends'] = p.dividendsDF(key)
+                except KeyError:
+                    self._cache[key]['dividends'] = pd.DataFrame()
                 self._cache[key]['timestamp']['dividends'] = datetime.now()
 
         if field in ('earnings', 'all'):
             if 'earnings' not in self._cache[key] or self._check_timestamp(key, 'earnings'):
-                self._cache[key]['earnings'] = p.earningsDF(key)
+                try:
+                    self._cache[key]['earnings'] = p.earningsDF(key)
+                except KeyError:
+                    self._cache[key]['earnings'] = pd.DataFrame()
                 self._cache[key]['timestamp']['earnings'] = datetime.now()
 
         if field in ('news', 'all'):
             if 'news' not in self._cache[key] or self._check_timestamp(key, 'news'):
-                self._cache[key]['news'] = p.newsDF(key)
+                try:
+                    self._cache[key]['news'] = p.newsDF(key)
+                except KeyError:
+                    self._cache[key]['news'] = pd.DataFrame()
                 self._cache[key]['timestamp']['news'] = datetime.now()
 
         if field in ('peers', 'all'):
             if 'peers' not in self._cache[key] or self._check_timestamp(key, 'peers'):
-                peers = p.peersDF(key)
+                try:
+                    peers = p.peersDF(key)
+                except KeyError:
+                    self._cache[key]['peers'] = pd.DataFrame()
+
                 if peers is not None and not peers.empty:
                     peers = peers.replace({np.nan: None})
                     infos = pd.concat([p.companyDF(item) for item in peers[0].values])
@@ -189,7 +205,10 @@ class Cache(object):
 
         if field in ('stats', 'all'):
             if 'stats' not in self._cache[key] or self._check_timestamp(key, 'stats'):
-                self._cache[key]['stats'] = p.stockStatsDF(key)
+                try:
+                    self._cache[key]['stats'] = p.stockStatsDF(key)
+                except KeyError:
+                    self._cache[key]['stats'] = pd.DataFrame()
                 self._cache[key]['timestamp']['stats'] = datetime.now()
 
         if _ret:

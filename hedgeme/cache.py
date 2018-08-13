@@ -240,9 +240,10 @@ def main():
                 print('loading %s' % item)
                 cache.preload([item], FIELDS)
                 i += 1
-                if i == 25:
+                if i >= 25:
                     cache.save()
                     cache.purge(list(cache._cache.keys()))
+                    i = 0
 
             except KeyError:
                 pass

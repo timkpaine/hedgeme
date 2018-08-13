@@ -196,7 +196,7 @@ class ControlsWidget extends Widget {
         let psps_schemas = {};
 
         let psps1 = {'chart': this.psps['chart'],
-                     // 'quote': this.psps['quote'],
+                     'quote': this.psps['quote'],
                      'dividends': this.psps['dividends'],
                      'cashflow': this.psps['cashflow'],
                      'financials': this.psps['financials'],

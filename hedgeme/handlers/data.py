@@ -11,7 +11,7 @@ class StockDataHandler(HTTPHandler):
 
     @tornado.concurrent.run_on_executor
     def get_data(self, key, type):
-        return json.dumps(self._cache._fetch(key, type))
+        return json.dumps(self._cache.fetch(key, type))
 
     async def get(self, *args):
         try:
@@ -37,7 +37,7 @@ class StockDataHandlerWS(WebSocketHandler):
             key = message.get('ticker', 'aapl')
             type = message.get('type', 'all')
 
-            data = self._cache._fetch(key, type)
+            data = self._cache.fetch(key, type)
             self.write_message(json.dumps(data))
 
         except KeyError:

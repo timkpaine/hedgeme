@@ -1,5 +1,4 @@
 import copy
-import json
 import os
 import os.path
 import pandas as pd
@@ -26,6 +25,13 @@ class Cache(object):
     def __init__(self, tickers):
         self._cache = {}
         self._tickers = tickers
+        self._tickers_ts = datetime.now()
+
+    def tickers(self):
+        if self._tickers_ts < today():
+            self._tickers = p.symbolsDF()
+            self._tickers_ts = datetime.now()
+        return self._tickers
 
     def preload(self, keys, fields):
         for key in keys:
@@ -39,7 +45,7 @@ class Cache(object):
                 if key not in self._cache or field not in self._cache[key]:
                     print('fetching %s for %s' % (field, key))
                     try:
-                        self._fetch(key, field)
+                        self.fetch(key, field)
                     except KeyError:
                         self._cache[key][field] = pd.DataFrame()
 
@@ -103,7 +109,7 @@ class Cache(object):
                 filename = os.path.join(self._dir, k, f + '.csv')
 
                 if self._check_timestamp(k, f):
-                    self._fetch(k, f)
+                    self.fetch(k, f)
                 print('writing %s for %s' % (f, k))
                 if not self._cache[k][f].empty:
                     self._cache[k][f].to_csv(filename, index=False)
@@ -117,6 +123,10 @@ class Cache(object):
         return False
 
     def _fetch(self, key, field):
+        # deprecated
+        return self.fetch(key, field)
+
+    def fetchDF(self, key, field, _ret=True):
         # tickers always caps
         key = key.upper()
 
@@ -125,7 +135,7 @@ class Cache(object):
 
         if not (self._tickers['symbol'] == key).any():
             # FIXME
-            return {}
+            return pd.DataFrame()
 
         if key not in self._cache:
             # initialize cache
@@ -181,6 +191,30 @@ class Cache(object):
             if 'stats' not in self._cache[key] or self._check_timestamp(key, 'stats'):
                 self._cache[key]['stats'] = p.stockStatsDF(key)
                 self._cache[key]['timestamp']['stats'] = datetime.now()
+
+        if _ret:
+            # pull data
+            if field == 'all':
+                ret = copy.deepcopy(self._cache[key])
+                del ret['timestamp']
+                ret = pd.concat(ret)
+
+            elif field in self._cache[key]:
+                # or i have that field
+                ret = pd.concat({field: self._cache[key][field]})
+            else:
+                raise Exception('No ticker provided!')
+
+            return ret
+
+    def fetch(self, key, field):
+        # tickers always caps
+        key = key.upper()
+
+        # fields always lower
+        field = field.lower()
+
+        self.fetchDF(key, field, _ret=False)
 
         # pull data
         if field == 'all':
@@ -248,7 +282,7 @@ def main():
 
             except KeyError:
                 pass
-    except:
+    except KeyboardInterrupt:
         cache.save()
 
 if __name__ == "__main__":

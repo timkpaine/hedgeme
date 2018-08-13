@@ -83,8 +83,11 @@ class Cache(object):
                         self._cache[k]['timestamp'] = {}
 
                     if os.path.exists(filename):
-                        self._cache[k][f] = pd.read_csv(filename)
-                        self._cache[k]['timestamp'][f] = datetime.now()
+                        try:
+                            self._cache[k][f] = pd.read_csv(filename)
+                            self._cache[k]['timestamp'][f] = datetime.now()
+                        except pd.errors.EmptyDataError:
+                            print('skipping %s for %s' % (f, k))
 
     def save(self):
         if not os.path.exists(self._dir):
@@ -101,6 +104,7 @@ class Cache(object):
 
                 if self._check_timestamp(k, f):
                     self._fetch(k, f)
+                print('writing %s for %s' % (f, k))
                 self._cache[k][f].to_csv(filename, index=False)
 
         with open(os.path.join(self._dir, 'TIMESTAMP'), 'w') as fp:

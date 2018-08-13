@@ -197,7 +197,7 @@ class Cache(object):
 
                 if peers is not None and not peers.empty:
                     peers = peers.replace({np.nan: None})
-                    infos = pd.concat([p.companyDF(item) for item in peers[0].values])
+                    infos = pd.concat([p.companyDF(item) for item in peers['symbol'].values])
                     self._cache[key]['peers'] = infos
                 else:
                     self._cache[key]['peers'] = pd.DataFrame()

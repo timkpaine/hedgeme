@@ -193,7 +193,7 @@ class Cache(object):
                 try:
                     peers = p.peersDF(key)
                 except KeyError:
-                    self._cache[key]['peers'] = pd.DataFrame()
+                    peers = pd.DataFrame()
 
                 if peers is not None and not peers.empty:
                     peers = peers.replace({np.nan: None})

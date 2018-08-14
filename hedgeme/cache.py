@@ -287,18 +287,13 @@ def main():
     cache = Cache(tickers)
     cache.load('./cache')
 
-    i = 0
     try:
         for item in tickers.symbol.values.tolist():
             try:
                 print('loading %s' % item)
                 cache.preload([item], FIELDS)
-                i += 1
-                if i >= 25:
-                    cache.save()
-                    cache.purge(list(cache._cache.keys()))
-                    i = 0
-
+                cache.save()
+                cache.purge(list(cache._cache.keys()))
             except KeyError:
                 pass
     except KeyboardInterrupt:

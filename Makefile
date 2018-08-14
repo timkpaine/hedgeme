@@ -13,7 +13,6 @@ annotate: ## MyPy type annotation check
 annotate_l: ## MyPy type annotation check - count only
 	mypy -s hedgeme | wc -l 
 
-
 clean: ## clean the repository
 	find . -name "__pycache__" | xargs  rm -rf 
 	find . -name "*.pyc" | xargs rm -rf 

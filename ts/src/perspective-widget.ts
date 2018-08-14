@@ -156,6 +156,7 @@ constructor(url: string,  // The url to fetch data from
     this._datatype = Private.data_source(url);
     this._psp_widgets = psps;
     this._data_options = data_options;
+    this._view_options = view_options;
 
     if (repeat){this._repeat = repeat}
     for (let psp of Object.keys(this._psp_widgets)){
@@ -238,6 +239,16 @@ constructor(url: string,  // The url to fetch data from
           if(data_key && data_key !== true && data_key !== ''){
             jsn = jsn[data_key];
           }
+
+          // workaround for heatmap non-refresh issue
+          if(this._view_options && Object.keys(this._view_options).includes(psp_key)){
+            if(Object.keys(this._view_options[psp_key]).includes('view') && this._view_options[psp_key]['view'] == 'heatmap'){
+              if(!Object.keys(this._view_options[psp_key]).includes('columns')) {
+                this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(Object.keys(jsn[0])));
+                this._psp_widgets[psp_key].pspNode.removeAttribute('aggregates');
+              }
+            }
+          }
           this._psp_widgets[psp_key].pspNode.update(jsn);
         }
       }
@@ -251,6 +262,7 @@ constructor(url: string,  // The url to fetch data from
   private _psp_widgets: {[key:string]:PSPWidget};
   private _data_options?: {[psp_key: string]: DataSettings};
   private _repeat = -1;
+  private _view_options?: {[psp_key: string]: ViewSettings};
   // private _worker: any; // TODO make this a shared perspective worker
 }
 

@@ -25952,6 +25952,7 @@ class PerspectiveHelper {
         this._datatype = Private.data_source(url);
         this._psp_widgets = psps;
         this._data_options = data_options;
+        this._view_options = view_options;
         if (repeat) {
             this._repeat = repeat;
         }
@@ -26032,6 +26033,15 @@ class PerspectiveHelper {
                     }
                     if (data_key && data_key !== true && data_key !== '') {
                         jsn = jsn[data_key];
+                    }
+                    // workaround for heatmap non-refresh issue
+                    if (this._view_options && Object.keys(this._view_options).includes(psp_key)) {
+                        if (Object.keys(this._view_options[psp_key]).includes('view') && this._view_options[psp_key]['view'] == 'heatmap') {
+                            if (!Object.keys(this._view_options[psp_key]).includes('columns')) {
+                                this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(Object.keys(jsn[0])));
+                                this._psp_widgets[psp_key].pspNode.removeAttribute('aggregates');
+                            }
+                        }
                     }
                     this._psp_widgets[psp_key].pspNode.update(jsn);
                 }

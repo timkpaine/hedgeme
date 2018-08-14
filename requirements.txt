@@ -3,7 +3,7 @@ jinja2
 numpy
 pandas
 pillow
-pyEX
+pyEX>=0.0.10
 socketIO_client_nexus
 tornado
 ujson

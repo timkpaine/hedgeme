@@ -151,7 +151,7 @@ class Cache(object):
         if field in ('chart', 'all'):
             if 'chart' not in self._cache[key] or self._check_timestamp(key, 'chart'):
                 try:
-                    self._cache[key]['chart'] = p.chartDF(key, '1m')
+                    self._cache[key]['chart'] = p.chartDF(key, '1y')
                 except KeyError:
                     self._cache[key]['chart'] = pd.DataFrame()
 
@@ -257,7 +257,7 @@ class Cache(object):
             if field == 'chart':
                 df = ret['chart'].reset_index()[['date', 'open', 'high', 'low', 'close']]
                 df['ticker'] = key
-                ret['chart'] = df.replace({np.nan: None}).to_dict(orient='records')
+                ret['chart'] = df[-100:].replace({np.nan: None}).to_dict(orient='records')
 
             if field == 'dividends':
                 ret['dividends'] = ret['dividends'].replace({np.nan: None}).to_dict(orient='records')

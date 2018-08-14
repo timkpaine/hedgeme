@@ -7,7 +7,8 @@ import tornado.web
 from functools import partial
 from .utils import log, parse_args
 from .cache import Cache
-from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler, StockDataHandlerWS
+from .metrics import Metrics
+from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler, StockDataHandlerWS, StockMetricsHandler
 from .define import FIELDS
 
 
@@ -25,6 +26,7 @@ def getContext():
     d = {}
     d['tickers'] = pyEX.symbolsDF()
     d['cache'] = Cache(d['tickers'])
+    d['metrics'] = Metrics(d['cache'])
     return d
 
 
@@ -37,6 +39,7 @@ class ServerApplication(tornado.web.Application):
             (r"/", HTMLOpenHandler, {'template': 'index.html'}),
             (r"/api/json/v1/data", StockDataHandler, context),
             (r"/api/ws/v1/data", StockDataHandler, context),
+            (r"/api/json/v1/metrics", StockMetricsHandler, context),
             (r"/api/json/v1/markets", MarketsDataHandler, context),
             (r"/api/json/v1/autocomplete", AutocompleteHandler, context),
             (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": static}),

@@ -103,6 +103,7 @@ function main(): void {
   let psp8 = new PSPWidget('Peers');
   let psp9 = new PSPWidget('Stats');
   let psp10 = new PSPWidget('Markets');
+  let psp11 = new PSPWidget('PeerCorrelation');
 
   let psps= {'chart':psp,
              'quote':psp2,
@@ -113,7 +114,8 @@ function main(): void {
              'news': psp7,
              'peers': psp8,
              'stats': psp9,
-             'markets':psp10}
+             'markets':psp10,
+             'peerCorrelation': psp11}
 
   let ctrl = new ControlsWidget('JPM', psps);
 
@@ -126,6 +128,7 @@ function main(): void {
   dock.addWidget(psps['earnings'], { mode: 'tab-after', ref: psp9 });
   dock.addWidget(psps['news'], { mode: 'tab-after', ref: psp6 });
   dock.addWidget(psps['peers'], { mode: 'tab-after', ref: psp7 });
+  dock.addWidget(psps['peerCorrelation'], { mode: 'split-right', ref: psp4});
 
   dock.addWidget(psps['chart'], { mode: 'split-right', ref: ctrl });
   dock.addWidget(psps['quote'], { mode: 'tab-after', ref: psp });

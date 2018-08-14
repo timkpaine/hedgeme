@@ -148,6 +148,9 @@ class ControlsWidget extends Widget {
                 [ViewOption.COLUMNS]: '["symbol","companyName","description","industry","website","issueType"]',
                 [ViewOption.SORT]: '[["symbol", "asc"]]'
             },
+            'peerCorrelation': {
+                [ViewOption.VIEW]: 'heatmap',
+            }
         };
 
         let psps_data_options = {
@@ -190,7 +193,11 @@ class ControlsWidget extends Widget {
             'markets': {
                 [DataOption.DELETE]: true,
                 [DataOption.KEY]: 'markets'
-            }
+            },
+            'peerCorrelation': {
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'peerCorrelation'
+            },
         };
 
         let psps_schemas = {};
@@ -206,20 +213,32 @@ class ControlsWidget extends Widget {
                      'stats': this.psps['stats']}
 
         let psps2 = {'markets':this.psps['markets']};
+
+        let psps3 = {'peerCorrelation': this.psps['peerCorrelation']};
+
         let _psps_helper = new PerspectiveHelper('/api/json/v1/data?ticker=' + this.def,
             psps1,
             psps_view_options,
             psps_data_options,
             psps_schemas);
+
         let _psps_helper2 = new PerspectiveHelper('/api/json/v1/markets',
             psps2,
             psps_view_options,
             psps_data_options,
             psps_schemas);
 
+        let _psps_helper3 = new PerspectiveHelper('/api/json/v1/metrics?ticker=' + this.def,
+            psps3,
+            psps_view_options,
+            psps_data_options,
+            psps_schemas);
+
+
         input.addEventListener('keyup', (e: KeyboardEvent) => {
             if (e.keyCode === 13){
                 _psps_helper.set_url('/api/json/v1/data?ticker=' + input.value);
+                _psps_helper3.set_url('/api/json/v1/metrics?ticker=' + input.value);
                 fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + input.value, this.companyInfoNode);
                 this.entered = input.value;
             }
@@ -238,6 +257,7 @@ class ControlsWidget extends Widget {
 
         _psps_helper.start();
         _psps_helper2.start();
+        _psps_helper3.start();
         fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + this.def, this.companyInfoNode);
         this.entered = this.def;
 

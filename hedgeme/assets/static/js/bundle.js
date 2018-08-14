@@ -37074,6 +37074,9 @@ class ControlsWidget extends widgets_1.Widget {
                 [perspective_widget_1.ViewOption.COLUMNS]: '["symbol","companyName","description","industry","website","issueType"]',
                 [perspective_widget_1.ViewOption.SORT]: '[["symbol", "asc"]]'
             },
+            'peerCorrelation': {
+                [perspective_widget_1.ViewOption.VIEW]: 'heatmap',
+            }
         };
         let psps_data_options = {
             'chart': {
@@ -37115,11 +37118,15 @@ class ControlsWidget extends widgets_1.Widget {
             'markets': {
                 [perspective_widget_1.DataOption.DELETE]: true,
                 [perspective_widget_1.DataOption.KEY]: 'markets'
-            }
+            },
+            'peerCorrelation': {
+                [perspective_widget_1.DataOption.DELETE]: true,
+                [perspective_widget_1.DataOption.KEY]: 'peerCorrelation'
+            },
         };
         let psps_schemas = {};
         let psps1 = { 'chart': this.psps['chart'],
-            // 'quote': this.psps['quote'],
+            'quote': this.psps['quote'],
             'dividends': this.psps['dividends'],
             'cashflow': this.psps['cashflow'],
             'financials': this.psps['financials'],
@@ -37128,11 +37135,14 @@ class ControlsWidget extends widgets_1.Widget {
             'peers': this.psps['peers'],
             'stats': this.psps['stats'] };
         let psps2 = { 'markets': this.psps['markets'] };
+        let psps3 = { 'peerCorrelation': this.psps['peerCorrelation'] };
         let _psps_helper = new perspective_widget_1.PerspectiveHelper('/api/json/v1/data?ticker=' + this.def, psps1, psps_view_options, psps_data_options, psps_schemas);
         let _psps_helper2 = new perspective_widget_1.PerspectiveHelper('/api/json/v1/markets', psps2, psps_view_options, psps_data_options, psps_schemas);
+        let _psps_helper3 = new perspective_widget_1.PerspectiveHelper('/api/json/v1/metrics?ticker=' + this.def, psps3, psps_view_options, psps_data_options, psps_schemas);
         input.addEventListener('keyup', (e) => {
             if (e.keyCode === 13) {
                 _psps_helper.set_url('/api/json/v1/data?ticker=' + input.value);
+                _psps_helper3.set_url('/api/json/v1/metrics?ticker=' + input.value);
                 fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + input.value, this.companyInfoNode);
                 this.entered = input.value;
             }
@@ -37147,6 +37157,7 @@ class ControlsWidget extends widgets_1.Widget {
         });
         _psps_helper.start();
         _psps_helper2.start();
+        _psps_helper3.start();
         fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + this.def, this.companyInfoNode);
         this.entered = this.def;
         setInterval(() => {
@@ -37266,6 +37277,7 @@ function main() {
     let psp8 = new perspective_widget_1.PSPWidget('Peers');
     let psp9 = new perspective_widget_1.PSPWidget('Stats');
     let psp10 = new perspective_widget_1.PSPWidget('Markets');
+    let psp11 = new perspective_widget_1.PSPWidget('PeerCorrelation');
     let psps = { 'chart': psp,
         'quote': psp2,
         'dividends': psp3,
@@ -37275,7 +37287,8 @@ function main() {
         'news': psp7,
         'peers': psp8,
         'stats': psp9,
-        'markets': psp10 };
+        'markets': psp10,
+        'peerCorrelation': psp11 };
     let ctrl = new controls_1.ControlsWidget('JPM', psps);
     /* main dock */
     let dock = new widgets_1.DockPanel();
@@ -37286,6 +37299,7 @@ function main() {
     dock.addWidget(psps['earnings'], { mode: 'tab-after', ref: psp9 });
     dock.addWidget(psps['news'], { mode: 'tab-after', ref: psp6 });
     dock.addWidget(psps['peers'], { mode: 'tab-after', ref: psp7 });
+    dock.addWidget(psps['peerCorrelation'], { mode: 'split-right', ref: psp4 });
     dock.addWidget(psps['chart'], { mode: 'split-right', ref: ctrl });
     dock.addWidget(psps['quote'], { mode: 'tab-after', ref: psp });
     dock.addWidget(psps['dividends'], { mode: 'tab-after', ref: psp2 });

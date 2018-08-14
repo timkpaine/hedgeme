@@ -258,7 +258,7 @@ class ControlsWidget extends Widget {
         _psps_helper.start();
         _psps_helper2.start();
         _psps_helper3.start();
-        fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + this.entered, this.companyInfoNode);
+        fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + this.def, this.companyInfoNode);
         this.entered = this.def;
 
         setInterval(() => {

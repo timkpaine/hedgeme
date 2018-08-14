@@ -292,6 +292,7 @@ def main():
     try:
         for item in tickers.symbol.values.tolist():
             if item in cache._cache:
+                cache.preload([item], FIELDS)
                 cache.purge([item])
                 continue
             print('loading %s' % item)

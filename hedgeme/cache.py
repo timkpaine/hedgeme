@@ -42,18 +42,19 @@ class Cache(object):
                 # fields always lower
                 field = field.lower()
 
-                if key not in self._cache or field not in self._cache[key]:
+                if key == 'AA':
+                    import ipdb; ipdb.set_trace()
+                if key not in self._cache or field not in self._cache[key] and self._cache[key]['timestamp'].get(field, yesterday()) < today():
                     print('fetching %s for %s' % (field, key))
-                    try:
-                        self.fetch(key, field)
-                    except KeyError:
-                        self._cache[key][field] = pd.DataFrame()
+                    self.fetchDF(key, field)
+                else:
+                    print('skipping %s for %s' % (field, key))
 
     def purge(self, tickers):
         for ticker in tickers:
             self._cache.pop(ticker)
 
-    def load(self, dir, preload=True):
+    def load(self, dir, preload=False):
         self._dir = dir
 
         # make if not exists
@@ -87,7 +88,6 @@ class Cache(object):
 
                     if 'timestamp' not in self._cache[k]:
                         self._cache[k]['timestamp'] = {}
-
                     if os.path.exists(filename):
                         try:
                             self._cache[k][f] = pd.read_csv(filename, index_col=0)
@@ -289,13 +289,13 @@ def main():
 
     try:
         for item in tickers.symbol.values.tolist():
-            try:
-                print('loading %s' % item)
-                cache.preload([item], FIELDS)
-                cache.save()
-                cache.purge(list(cache._cache.keys()))
-            except KeyError:
-                pass
+            if item in cache._cache:
+                cache.purge([item])
+                continue
+            print('loading %s' % item)
+            cache.preload([item], FIELDS)
+            cache.save()
+            cache.purge([item])
     except KeyboardInterrupt:
         cache.save()
 

@@ -37158,7 +37158,7 @@ class ControlsWidget extends widgets_1.Widget {
         _psps_helper.start();
         _psps_helper2.start();
         _psps_helper3.start();
-        fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + this.def, this.companyInfoNode);
+        fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + this.entered, this.companyInfoNode);
         this.entered = this.def;
         setInterval(() => {
             _fetch_and_load_quote('/api/json/v1/data?type=quote&ticker=' + this.entered, 'quote', 'grid', this.psps['quote'], true, false);

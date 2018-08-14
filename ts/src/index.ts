@@ -122,13 +122,14 @@ function main(): void {
   /* main dock */
   let dock = new DockPanel();
   dock.addWidget(ctrl);
+  dock.addWidget(psps['news'], { mode: 'tab-after', ref: ctrl });
+  
   dock.addWidget(psps['cashflow'], { mode: 'split-bottom', ref: ctrl });
   dock.addWidget(psps['financials'], { mode: 'tab-after', ref: psp4 });
   dock.addWidget(psps['stats'], { mode: 'tab-after', ref: psp5 });
   dock.addWidget(psps['earnings'], { mode: 'tab-after', ref: psp9 });
-  dock.addWidget(psps['news'], { mode: 'tab-after', ref: psp6 });
-  dock.addWidget(psps['peers'], { mode: 'tab-after', ref: psp7 });
   dock.addWidget(psps['peerCorrelation'], { mode: 'split-right', ref: psp4});
+  dock.addWidget(psps['peers'], { mode: 'tab-after', ref: psp11 });
 
   dock.addWidget(psps['chart'], { mode: 'split-right', ref: ctrl });
   dock.addWidget(psps['quote'], { mode: 'tab-after', ref: psp });

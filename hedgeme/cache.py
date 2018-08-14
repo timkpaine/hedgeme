@@ -22,9 +22,9 @@ def yesterday():
 
 
 class Cache(object):
-    def __init__(self, tickers):
+    def __init__(self, tickers=None):
         self._cache = {}
-        self._tickers = tickers
+        self._tickers = tickers if tickers is not None and not tickers.empty else p.symbolsDF()
         self._tickers_ts = datetime.now()
 
     def tickers(self):
@@ -90,7 +90,7 @@ class Cache(object):
 
                     if os.path.exists(filename):
                         try:
-                            self._cache[k][f] = pd.read_csv(filename)
+                            self._cache[k][f] = pd.read_csv(filename, index_col=0)
                             self._cache[k]['timestamp'][f] = datetime.now()
                         except pd.errors.EmptyDataError:
                             print('skipping %s for %s' % (f, k))

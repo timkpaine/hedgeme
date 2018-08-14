@@ -42,8 +42,6 @@ class Cache(object):
                 # fields always lower
                 field = field.lower()
 
-                if key == 'AA':
-                    import ipdb; ipdb.set_trace()
                 if key not in self._cache or field not in self._cache[key] and self._cache[key]['timestamp'].get(field, yesterday()) < today():
                     print('fetching %s for %s' % (field, key))
                     self.fetchDF(key, field)
@@ -152,7 +150,11 @@ class Cache(object):
 
         if field in ('chart', 'all'):
             if 'chart' not in self._cache[key] or self._check_timestamp(key, 'chart'):
-                self._cache[key]['chart'] = p.chartDF(key, '1m')
+                try:
+                    self._cache[key]['chart'] = p.chartDF(key, '1m')
+                except KeyError:
+                    self._cache[key]['chart'] = pd.DataFrame()
+
                 self._cache[key]['timestamp']['chart'] = datetime.now()
 
         if field in ('company', 'all'):

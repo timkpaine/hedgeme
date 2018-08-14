@@ -1,12 +1,24 @@
 import copy
 import os
 import os.path
+import numpy as np
 import pandas as pd
 import pyEX as p
-import numpy as np
-from functools import lru_cache
+import sys
+from multiprocessing.pool import ThreadPool
+from functools import lru_cache, partial
 from datetime import datetime, timedelta, date
 from .define import FIELDS
+from .utils import log, logging
+
+# a threadpool should be fine as the biggest
+# delay is the HTTP request, which should
+# release GIL
+#
+# if porting to process pool, should pipe
+# records in between as opposed to pickling
+# cache object
+_POOL = ThreadPool(len(FIELDS))
 
 
 @lru_cache(1)
@@ -19,6 +31,16 @@ def today():
 def yesterday():
     today = date.today()
     return datetime(year=today.year, month=today.month, day=today.day) - timedelta(days=1)
+
+
+def fetch(key, cache, field):
+    # fields always lower
+    field = field.lower()
+    if key not in cache._cache or field not in cache._cache[key] and cache._cache[key]['timestamp'].get(field, yesterday()) < today():
+        log.info('fetching %s for %s' % (field, key))
+        cache.fetchDF(key, field)
+    else:
+        log.info('skipping %s for %s' % (field, key))
 
 
 class Cache(object):
@@ -38,15 +60,7 @@ class Cache(object):
             # tickers always caps
             key = key.upper()
 
-            for field in fields:
-                # fields always lower
-                field = field.lower()
-
-                if key not in self._cache or field not in self._cache[key] and self._cache[key]['timestamp'].get(field, yesterday()) < today():
-                    print('fetching %s for %s' % (field, key))
-                    self.fetchDF(key, field)
-                else:
-                    print('skipping %s for %s' % (field, key))
+            _POOL.map(partial(fetch, key, self), FIELDS)
 
     def purge(self, tickers):
         for ticker in tickers:
@@ -76,7 +90,7 @@ class Cache(object):
             if self._sync < today() and preload:
                 self.preload([k], FIELDS)
 
-            else:
+            elif preload:
                 if k not in self._cache:
                     self._cache[k] = {}
                     self._cache[k]['timestamp'] = {}
@@ -91,7 +105,7 @@ class Cache(object):
                             self._cache[k][f] = pd.read_csv(filename, index_col=0)
                             self._cache[k]['timestamp'][f] = datetime.now()
                         except pd.errors.EmptyDataError:
-                            print('skipping %s for %s' % (f, k))
+                            log.info('skipping %s for %s' % (f, k))
 
     def save(self):
         if not os.path.exists(self._dir):
@@ -108,7 +122,7 @@ class Cache(object):
 
                 if self._check_timestamp(k, f):
                     self.fetch(k, f)
-                print('writing %s for %s' % (f, k))
+                log.info('writing %s for %s' % (f, k))
                 if not self._cache[k][f].empty:
                     self._cache[k][f].to_csv(filename)
 
@@ -287,6 +301,10 @@ class Cache(object):
 def main():
     tickers = p.symbolsDF()
     cache = Cache(tickers)
+
+    if '-v' in sys.argv:
+        log.setLevel(logging.DEBUG)
+
     cache.load('./cache')
 
     try:
@@ -295,8 +313,11 @@ def main():
                 cache.preload([item], FIELDS)
                 cache.purge([item])
                 continue
-            print('loading %s' % item)
+
+            log.info('loading %s' % item)
             cache.preload([item], FIELDS)
+
+            # save right away to keep low memory footprint on server
             cache.save()
             cache.purge([item])
     except KeyboardInterrupt:

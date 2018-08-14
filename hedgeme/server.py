@@ -62,7 +62,7 @@ def main(*args, **kwargs):
     context = getContext()
 
     application = ServerApplication(context)
-    log.info('LISTENING: %s', port)
+    log.critical('LISTENING: %s', port)
     application.listen(port)
 
     cache = context['cache']

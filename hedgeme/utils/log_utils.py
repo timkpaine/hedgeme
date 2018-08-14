@@ -4,13 +4,6 @@ import time
 
 moment = time.strftime("%Y%m%d_%H%M%S", time.localtime())
 
-# if not os.path.isdir('./cs_logs'):
-#     os.mkdir('./cs_logs')
-
-# if not os.path.isdir('./cs_logs' + moment):
-#     os.mkdir('./cs_logs/' + moment)
-
-
 LOGGING_CONFIG = {
     'version': 1,  # required
     'disable_existing_loggers': False,
@@ -28,14 +21,6 @@ LOGGING_CONFIG = {
             'class': 'logging.StreamHandler',
             'formatter': 'whenAndWhere'
         },
-        # 'file': {
-        #     'level': 'DEBUG',
-        #     'class': 'logging.FileHandler',
-        #     'formatter': 'whenAndWhere',
-        #     'filename': 'cs_logs/' + moment + '/out.log',
-        #     'mode': 'w',
-        #     'encoding': 'utf-8'
-        # },
     },
     'loggers': {
         '': {  # 'root' logger
@@ -47,3 +32,5 @@ LOGGING_CONFIG = {
 
 logging.config.dictConfig(LOGGING_CONFIG)
 LOG = logging.getLogger('')  # factory method
+
+LOG.setLevel(logging.CRITICAL)

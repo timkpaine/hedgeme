@@ -1,12 +1,14 @@
 import json
 import numpy as np
 import pandas as pd
+from functools import lru_cache
 
 
 class Metrics(object):
     def __init__(self, cache):
         self._cache = cache
 
+    @lru_cache(1)
     def peerCorrelation(self, target):
         target = target.upper()
 

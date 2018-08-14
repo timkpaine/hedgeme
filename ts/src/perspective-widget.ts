@@ -244,7 +244,12 @@ constructor(url: string,  // The url to fetch data from
           if(this._view_options && Object.keys(this._view_options).includes(psp_key)){
             if(Object.keys(this._view_options[psp_key]).includes('view') && this._view_options[psp_key]['view'] == 'heatmap'){
               if(!Object.keys(this._view_options[psp_key]).includes('columns')) {
-                this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(Object.keys(jsn[0])));
+                let columns = Object.keys(jsn[0]);
+                var index = columns.indexOf('index');
+                if (index > -1) {
+                  columns.splice(index, 1);
+                }
+                this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(columns));
                 this._psp_widgets[psp_key].pspNode.removeAttribute('aggregates');
               }
             }

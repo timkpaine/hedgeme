@@ -150,6 +150,7 @@ class ControlsWidget extends Widget {
             },
             'peerCorrelation': {
                 [ViewOption.VIEW]: 'heatmap',
+                [ViewOption.ROW_PIVOTS]: '["index"]'
             }
         };
 

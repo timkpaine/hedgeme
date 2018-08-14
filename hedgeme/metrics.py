@@ -24,11 +24,12 @@ class Metrics(object):
         # make multiindex
         rets = pd.concat(to_merge)
 
-        rets = rets.unstack(0)['changePercent'][[target] + peers]
+        all = sorted(peers + [target])
+        rets = rets.unstack(0)['changePercent'][all]
         rets = rets.corr()
         rets['symbol'] = rets.index
         return rets.corr()
 
     def fetch(self, target, type):
         if type in ('peerCorrelation', 'all'):
-            return json.dumps({'peerCorrelation': self.peerCorrelation(target).replace({np.nan: None}).to_dict(orient='records')})
+            return json.dumps({'peerCorrelation': self.peerCorrelation(target).replace({np.nan: None}).reset_index().to_dict(orient='records')})

@@ -8,3 +8,8 @@
     background: var(--dark-bg-color);
     box-shadow: 1px 1px 2px var(--dark-drop-shadow);
 }
+
+.tableWidget a{
+    text-decoration: underline;
+    color:white;
+}

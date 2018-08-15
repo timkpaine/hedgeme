@@ -243,7 +243,7 @@ class Cache(object):
                 self._cache[key]['composition'].columns = ['Symbol', 'Name', 'Percent']
                 self._cache[key]['composition'] = self._cache[key]['composition'][['Symbol', 'Percent', 'Name']]
 
-            except (IndexError, requests.HTTPError, AttributeError):
+            except (IndexError, requests.HTTPError, ValueError):
                 self._cache[key]['composition'] = pd.DataFrame()
 
             self._cache[key]['timestamp']['composition'] = datetime.now()

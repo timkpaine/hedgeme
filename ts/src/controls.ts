@@ -196,6 +196,10 @@ class ControlsWidget extends Widget {
                 [DataOption.DELETE]: true,
                 [DataOption.KEY]: 'peerCorrelation'
             },
+            'composition': {
+                [DataOption.DELETE]: true,
+                [DataOption.KEY]: 'composition'
+            },
         };
 
 
@@ -219,7 +223,8 @@ class ControlsWidget extends Widget {
                      'cashflow': this.psps['cashflow'],
                      'financials': this.psps['financials'],
                      'earnings': this.psps['earnings'],
-                     'peers': this.psps['peers']}
+                     'peers': this.psps['peers'],
+                     'composition': this.psps['composition']}
 
         let psps2 = {'markets':this.psps['markets']};
 

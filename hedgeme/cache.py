@@ -4,11 +4,12 @@ import os.path
 import numpy as np
 import pandas as pd
 import pyEX as p
+import requests
 import sys
 from multiprocessing.pool import ThreadPool
 from functools import lru_cache, partial
 from datetime import datetime, timedelta, date
-from .define import FIELDS
+from .define import FIELDS, ETF_URL
 from .utils import log, logging
 
 # a threadpool should be fine as the biggest
@@ -59,8 +60,13 @@ class Cache(object):
         for key in keys:
             # tickers always caps
             key = key.upper()
-
-            _POOL.map(partial(fetch, key, self), FIELDS)
+            log.info('Preloading %s' % key)
+            while(True):
+                try:
+                    _POOL.map(partial(fetch, key, self), FIELDS)
+                    break
+                except requests.exceptions.ConnectionError:
+                    pass
 
     def purge(self, tickers):
         for ticker in tickers:
@@ -227,6 +233,21 @@ class Cache(object):
                     self._cache[key]['stats'] = pd.DataFrame()
                 self._cache[key]['timestamp']['stats'] = datetime.now()
 
+        if field in ('composition', 'all'):
+            if 'company' not in self._cache[key]:
+                self.fetchDF(key, 'company', _ret=False)
+
+            try:
+                self._cache[key]['composition'] = pd.read_html(ETF_URL % key, attrs={'id': 'etfs-that-own'})[0]
+                self._cache[key]['composition']['% of Total'] = self._cache[key]['composition']['% of Total'].str.rstrip('%').astype(float) / 100.0
+                self._cache[key]['composition'].columns = ['Symbol', 'Name', 'Percent']
+                self._cache[key]['composition'] = self._cache[key]['composition'][['Symbol', 'Percent', 'Name']]
+
+            except (IndexError, requests.HTTPError, AttributeError):
+                self._cache[key]['composition'] = pd.DataFrame()
+
+            self._cache[key]['timestamp']['composition'] = datetime.now()
+
         if _ret:
             # pull data
             if field == 'all':
@@ -304,6 +325,9 @@ class Cache(object):
             if field == 'stats':
                 ret['stats'] = ret['stats'].replace({np.nan: None}).to_dict(orient='records')
 
+            if field == 'composition':
+                ret['composition'] = ret['composition'].replace({np.nan: None}).to_dict(orient='records')
+
         return ret
 
 
@@ -312,7 +336,7 @@ def main():
     cache = Cache(tickers)
 
     if '-v' in sys.argv:
-        log.setLevel(logging.DEBUG)
+        log.setLevel(logging.INFO)
 
     cache.load('./cache', preload=True)
 

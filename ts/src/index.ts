@@ -61,6 +61,7 @@ function main(): void {
   menu2.addItem({ command: 'news:open' });
   menu2.addItem({ command: 'peers:open' });
   menu2.addItem({ command: 'peerCorrelation:open' });
+  menu2.addItem({ command: 'composition:open' });
 
   /* layouts menu */
   let menu3 = new Menu({ commands });
@@ -98,25 +99,27 @@ function main(): void {
 
 
   /* perspectives */
-  let psp = new PSPWidget('Performance');  // chart
-  let psp2 = new PSPWidget('Quotes');  // quote
-  let psp3 = new PSPWidget('Dividends'); //dividends
-  let psp4 = new PSPWidget('Cashflow');
-  let psp5 = new PSPWidget('Financials'); // financials
-  let psp6 = new PSPWidget('Earnings');
-  let psp8 = new PSPWidget('Peers');
-  let psp10 = new PSPWidget('Markets');
-  let psp11 = new PSPWidget('PeerCorrelation');
+  let performance = new PSPWidget('Performance');  // chart
+  let quotes = new PSPWidget('Quotes');  // quote
+  let dividends = new PSPWidget('Dividends'); //dividends
+  let cashflow = new PSPWidget('Cashflow');
+  let financials = new PSPWidget('Financials'); // financials
+  let earnings = new PSPWidget('Earnings');
+  let peers = new PSPWidget('Peers');
+  let markets = new PSPWidget('Markets');
+  let peercorrelation = new PSPWidget('PeerCorrelation');
+  let composition = new PSPWidget('Composition');
 
-  let psps= {'chart':psp,
-             'quote':psp2,
-             'dividends': psp3,
-             'cashflow': psp4,
-             'financials': psp5,
-             'earnings': psp6,
-             'peers': psp8,
-             'markets':psp10,
-             'peerCorrelation': psp11}
+  let psps= {'chart':performance,
+             'quote':quotes,
+             'dividends': dividends,
+             'cashflow': cashflow,
+             'financials': financials,
+             'earnings': earnings,
+             'peers': peers,
+             'markets':markets,
+             'peerCorrelation': peercorrelation,
+             'composition': composition}
 
   let table1 = new TableWidget('Stats');
   let table2 = new TableWidget('News');
@@ -130,17 +133,18 @@ function main(): void {
   dock.addWidget(ctrl);
   dock.addWidget(table1, {mode: 'tab-after', ref:ctrl});
   dock.addWidget(table2, {mode: 'tab-after', ref:table1});
+  dock.addWidget(psps['composition'], { mode: 'tab-after', ref: table2 });
 
   dock.addWidget(psps['cashflow'], { mode: 'split-bottom', ref: ctrl });
-  dock.addWidget(psps['financials'], { mode: 'tab-after', ref: psp4 });
-  dock.addWidget(psps['earnings'], { mode: 'tab-after', ref: psp5 });
-  dock.addWidget(psps['peerCorrelation'], { mode: 'split-right', ref: psp4});
-  dock.addWidget(psps['peers'], { mode: 'tab-after', ref: psp11 });
+  dock.addWidget(psps['financials'], { mode: 'tab-after', ref: cashflow });
+  dock.addWidget(psps['earnings'], { mode: 'tab-after', ref: financials });
+  dock.addWidget(psps['peerCorrelation'], { mode: 'split-right', ref: cashflow});
+  dock.addWidget(psps['peers'], { mode: 'tab-after', ref: peercorrelation });
 
   dock.addWidget(psps['chart'], { mode: 'split-right', ref: ctrl });
-  dock.addWidget(psps['quote'], { mode: 'tab-after', ref: psp });
-  dock.addWidget(psps['dividends'], { mode: 'tab-after', ref: psp2 });
-  dock.addWidget(psps['markets'], { mode: 'tab-after', ref: psp3 });
+  dock.addWidget(psps['quote'], { mode: 'tab-after', ref: performance });
+  dock.addWidget(psps['dividends'], { mode: 'tab-after', ref: quotes });
+  dock.addWidget(psps['markets'], { mode: 'tab-after', ref: dividends });
   dock.id = 'dock';
 
   /* save/restore layouts */
@@ -218,6 +222,12 @@ function main(): void {
 
   palette.addItem({
     command: 'peers:open',
+    category: 'Dock Layout',
+    rank: 0
+  });
+
+  palette.addItem({
+    command: 'peerCorrelation:open',
     category: 'Dock Layout',
     rank: 0
   });
@@ -351,12 +361,12 @@ function main(): void {
     }
   });
 
-  commands.addCommand('peerCorrelation:open', {
-    label: 'Open Peer Correlation',
+  commands.addCommand('composition:open', {
+    label: 'Open Composition',
     mnemonic: 2,
     iconClass: 'fa fa-plus',
     execute: () => {
-      dock.addWidget(psps['peerCorrelation']);
+      dock.addWidget(psps['composition']);
     }
   });
 

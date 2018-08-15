@@ -19,6 +19,19 @@ div.pspwidget perspective-hypergrid {
   background-color: @coolgrey700;
 }
 
+div.pspwidget perspective-hypergrid th {
+    border-color: @coolgrey700;
+    background-color: @coolgrey700;
+}
+
+div.pspwidget perspective-hypergrid td.hover {
+    background-color: #444;
+}
+
+div.pspwidget perspective-hypergrid tr.hover {
+    background-color: #555;
+}
+
 div.pspwidget perspective-viewer:not([settings]) {
   z-index: 3;
 }

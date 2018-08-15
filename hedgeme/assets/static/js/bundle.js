@@ -57957,7 +57957,7 @@ exports = module.exports = __webpack_require__(4)();
 
 
 // module
-exports.push([module.i, ".tableWidget {\n    overflow: scroll !important;\n    min-width: 50px;\n    min-height: 50px;\n    padding: 8px;\n    border: 1px solid var(--dark-bg-color);\n    border-top: none;\n    background: var(--dark-bg-color);\n    box-shadow: 1px 1px 2px var(--dark-drop-shadow);\n}\n\n.tableWidget a{\n    text-decoration: none;\n    color:white;\n}", ""]);
+exports.push([module.i, ".tableWidget {\n    overflow: scroll !important;\n    min-width: 50px;\n    min-height: 50px;\n    padding: 8px;\n    border: 1px solid var(--dark-bg-color);\n    border-top: none;\n    background: var(--dark-bg-color);\n    box-shadow: 1px 1px 2px var(--dark-drop-shadow);\n}\n\n.tableWidget a{\n    text-decoration: underline;\n    color:white;\n}", ""]);
 
 // exports
 

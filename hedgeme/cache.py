@@ -6,6 +6,7 @@ import pandas as pd
 import pyEX as p
 import requests
 import sys
+from urllib.error import HTTPError
 from multiprocessing.pool import ThreadPool
 from functools import lru_cache, partial
 from datetime import datetime, timedelta, date
@@ -19,7 +20,7 @@ from .utils import log, logging
 # if porting to process pool, should pipe
 # records in between as opposed to pickling
 # cache object
-_POOL = ThreadPool(len(FIELDS))
+_POOL = ThreadPool(len(FIELDS)-1)
 
 
 @lru_cache(1)
@@ -60,10 +61,12 @@ class Cache(object):
         for key in keys:
             # tickers always caps
             key = key.upper()
+
             log.info('Preloading %s' % key)
+
             while(True):
                 try:
-                    _POOL.map(partial(fetch, key, self), FIELDS)
+                    _POOL.map(partial(fetch, key, self), fields)
                     break
                 except requests.exceptions.ConnectionError:
                     pass
@@ -243,7 +246,7 @@ class Cache(object):
                 self._cache[key]['composition'].columns = ['Symbol', 'Name', 'Percent']
                 self._cache[key]['composition'] = self._cache[key]['composition'][['Symbol', 'Percent', 'Name']]
 
-            except (IndexError, requests.HTTPError, ValueError):
+            except (IndexError, requests.HTTPError, ValueError, HTTPError):
                 self._cache[key]['composition'] = pd.DataFrame()
 
             self._cache[key]['timestamp']['composition'] = datetime.now()
@@ -339,11 +342,16 @@ def main():
         log.setLevel(logging.INFO)
 
     cache.load('./cache', preload=True)
+    fields = copy.deepcopy(FIELDS)
+    fields.remove('composition')
 
+    log.info('loading IEX data')
+
+    # fetch stuff from IEX
     try:
         for item in tickers.symbol.values.tolist():
             if item in cache._cache:
-                cache.preload([item], FIELDS)
+                cache.preload([item], fields)
                 cache.purge([item])
                 continue
 
@@ -353,6 +361,18 @@ def main():
             # save right away to keep low memory footprint on server
             cache.save()
             cache.purge([item])
+    except KeyboardInterrupt:
+        cache.save()
+
+    log.info('loading ETF compositions')
+    # fetch compositions (slower)
+    try:
+        while(True):
+            try:
+                _POOL.map(partial(fetch, cache=cache, field='composition'), tickers.symbol.values.tolist())
+                break
+            except requests.exceptions.ConnectionError:
+                pass
     except KeyboardInterrupt:
         cache.save()
 

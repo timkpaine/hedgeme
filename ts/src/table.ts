@@ -21,7 +21,7 @@ class TableWidget extends Widget {
 
   constructor(name: string) {
     super({ node: TableWidget.createNode() });
-    this.addClass('tablewidget');
+    this.addClass('tableWidget');
     this.title.label = name;
     this.title.closable = true;
     this.title.caption = `${name}`;

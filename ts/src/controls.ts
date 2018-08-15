@@ -10,6 +10,10 @@ import {
     PSPWidget, PerspectiveHelper, ViewOption, DataOption
 } from './perspective-widget';
 
+import {
+    TableWidget, TableHelper
+} from './table';
+
 import '../ts/style/index.css';
 
 function _fetch_and_load_quote(path:string, field:string, type:string, loadto:PSPWidget, wrap_list=false, _delete=true){
@@ -105,7 +109,7 @@ class ControlsWidget extends Widget {
         return node;
     }
 
-    constructor(def: string, psps: {[key:string]:PSPWidget;}) {
+    constructor(def: string, psps: {[key:string]:PSPWidget;}, tables: {[key:string]:TableWidget;}) {
         super({ node: ControlsWidget.createNode(def) });
         this.setFlag(Widget.Flag.DisallowLayout);
         this.addClass('controls');
@@ -118,6 +122,7 @@ class ControlsWidget extends Widget {
         this.entered = '';
         this.last = '';
         this.psps = psps;
+        this.tables = tables;
     }
 
     start(): void {
@@ -179,17 +184,9 @@ class ControlsWidget extends Widget {
                 [DataOption.DELETE]: true,
                 [DataOption.KEY]: 'earnings'
             },
-            'news': {
-                [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'news'
-            },
             'peers': {
                 [DataOption.DELETE]: true,
                 [DataOption.KEY]: 'peers'
-            },
-            'stats': {
-                [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'stats'
             },
             'markets': {
                 [DataOption.DELETE]: true,
@@ -201,6 +198,19 @@ class ControlsWidget extends Widget {
             },
         };
 
+
+        let table_data_options = {
+            'stats': {
+                ['unwrap']: true,
+                ['key']: 'stats'
+            },
+            'news': {
+                ['unwrap']: false,
+                ['key']: 'news',
+                ['raw']: true
+            }
+        };
+
         let psps_schemas = {};
 
         let psps1 = {'chart': this.psps['chart'],
@@ -209,13 +219,14 @@ class ControlsWidget extends Widget {
                      'cashflow': this.psps['cashflow'],
                      'financials': this.psps['financials'],
                      'earnings': this.psps['earnings'],
-                     'news': this.psps['news'],
-                     'peers': this.psps['peers'],
-                     'stats': this.psps['stats']}
+                     'peers': this.psps['peers']}
 
         let psps2 = {'markets':this.psps['markets']};
 
         let psps3 = {'peerCorrelation': this.psps['peerCorrelation']};
+
+        let tables = {'stats': this.tables['stats'],
+                      'news': this.tables['news']};
 
         let _psps_helper = new PerspectiveHelper('/api/json/v1/data?ticker=' + this.def,
             psps1,
@@ -235,11 +246,15 @@ class ControlsWidget extends Widget {
             psps_data_options,
             psps_schemas);
 
+        let _tables_helper = new TableHelper('/api/json/v1/data?ticker=' + this.def,
+            tables,
+            table_data_options);
 
         input.addEventListener('keyup', (e: KeyboardEvent) => {
             if (e.keyCode === 13){
                 _psps_helper.set_url('/api/json/v1/data?ticker=' + input.value);
                 _psps_helper3.set_url('/api/json/v1/metrics?ticker=' + input.value);
+                _tables_helper.set_url('/api/json/v1/data?ticker=' + input.value);
                 fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + input.value, this.companyInfoNode);
                 this.entered = input.value;
             }
@@ -259,6 +274,7 @@ class ControlsWidget extends Widget {
         _psps_helper.start();
         _psps_helper2.start();
         _psps_helper3.start();
+        _tables_helper.start();
         fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + this.def, this.companyInfoNode);
         this.entered = this.def;
 
@@ -286,6 +302,7 @@ class ControlsWidget extends Widget {
     }
 
     private psps: {[key:string]:PSPWidget;}
+    private tables: {[key:string]:TableWidget;}
     private def: string;
     private entered:string;
     private last:string;

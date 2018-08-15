@@ -25,6 +25,10 @@ import {
 } from './perspective-widget';
 
 import {
+    TableWidget
+} from './table';
+
+import {
   ControlsWidget
 } from './controls';
 
@@ -56,6 +60,7 @@ function main(): void {
   menu2.addItem({ command: 'earnings:open' });
   menu2.addItem({ command: 'news:open' });
   menu2.addItem({ command: 'peers:open' });
+  menu2.addItem({ command: 'peerCorrelation:open' });
 
   /* layouts menu */
   let menu3 = new Menu({ commands });
@@ -99,9 +104,7 @@ function main(): void {
   let psp4 = new PSPWidget('Cashflow');
   let psp5 = new PSPWidget('Financials'); // financials
   let psp6 = new PSPWidget('Earnings');
-  let psp7 = new PSPWidget('News');
   let psp8 = new PSPWidget('Peers');
-  let psp9 = new PSPWidget('Stats');
   let psp10 = new PSPWidget('Markets');
   let psp11 = new PSPWidget('PeerCorrelation');
 
@@ -111,23 +114,26 @@ function main(): void {
              'cashflow': psp4,
              'financials': psp5,
              'earnings': psp6,
-             'news': psp7,
              'peers': psp8,
-             'stats': psp9,
              'markets':psp10,
              'peerCorrelation': psp11}
 
-  let ctrl = new ControlsWidget('JPM', psps);
+  let table1 = new TableWidget('Stats');
+  let table2 = new TableWidget('News');
+  let tables = {'stats': table1,
+                'news': table2};
+
+  let ctrl = new ControlsWidget('JPM', psps, tables);
 
   /* main dock */
   let dock = new DockPanel();
   dock.addWidget(ctrl);
-  dock.addWidget(psps['news'], { mode: 'tab-after', ref: ctrl });
-  
+  dock.addWidget(table1, {mode: 'tab-after', ref:ctrl});
+  dock.addWidget(table2, {mode: 'tab-after', ref:table1});
+
   dock.addWidget(psps['cashflow'], { mode: 'split-bottom', ref: ctrl });
   dock.addWidget(psps['financials'], { mode: 'tab-after', ref: psp4 });
-  dock.addWidget(psps['stats'], { mode: 'tab-after', ref: psp5 });
-  dock.addWidget(psps['earnings'], { mode: 'tab-after', ref: psp9 });
+  dock.addWidget(psps['earnings'], { mode: 'tab-after', ref: psp5 });
   dock.addWidget(psps['peerCorrelation'], { mode: 'split-right', ref: psp4});
   dock.addWidget(psps['peers'], { mode: 'tab-after', ref: psp11 });
 
@@ -212,6 +218,12 @@ function main(): void {
 
   palette.addItem({
     command: 'peers:open',
+    category: 'Dock Layout',
+    rank: 0
+  });
+
+  palette.addItem({
+    command: 'peerCorrelation:open',
     category: 'Dock Layout',
     rank: 0
   });
@@ -308,7 +320,7 @@ function main(): void {
     mnemonic: 2,
     iconClass: 'fa fa-plus',
     execute: () => {
-      dock.addWidget(psps['stats']);
+      dock.addWidget(tables['stats']);
     }
   });
 
@@ -326,7 +338,7 @@ function main(): void {
     mnemonic: 2,
     iconClass: 'fa fa-plus',
     execute: () => {
-      dock.addWidget(psps['news']);
+      dock.addWidget(tables['news']);
     }
   });
 
@@ -336,6 +348,15 @@ function main(): void {
     iconClass: 'fa fa-plus',
     execute: () => {
       dock.addWidget(psps['peers']);
+    }
+  });
+
+  commands.addCommand('peerCorrelation:open', {
+    label: 'Open Peer Correlation',
+    mnemonic: 2,
+    iconClass: 'fa fa-plus',
+    execute: () => {
+      dock.addWidget(psps['peerCorrelation']);
     }
   });
 

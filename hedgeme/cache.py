@@ -286,8 +286,17 @@ class Cache(object):
             if field == 'earnings':
                 ret['earnings'] = ret['earnings'].replace({np.nan: None}).to_dict(orient='records')
 
+            # if field == 'news':
+            #     ret['news'] = ret['news'].replace({np.nan: None}).to_dict(orient='records')
+
             if field == 'news':
-                ret['news'] = ret['news'].replace({np.nan: None}).to_dict(orient='records')
+                ret['news'] = ret['news'].replace({np.nan: None})
+                if not ret['news'].empty:
+                    ret['news']['headline'] = '<a href="' + ret['news']['url'] + '">' + ret['news']['headline'] + ' [<strong>' + ret['news']['source'] + '</strong>]' + '</a>'
+                    ret['news']['summary'] = '<p>' + ret['news']['summary'] + '</p>'
+                    ret['news'] = ret['news'][['headline', 'summary']].to_dict(orient='records')
+                else:
+                    ret['news'] = {}
 
             if field == 'peers':
                 ret['peers'] = ret['peers'].replace({np.nan: None}).to_dict(orient='records')
@@ -305,7 +314,7 @@ def main():
     if '-v' in sys.argv:
         log.setLevel(logging.DEBUG)
 
-    cache.load('./cache')
+    cache.load('./cache', preload=True)
 
     try:
         for item in tickers.symbol.values.tolist():

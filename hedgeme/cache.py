@@ -94,14 +94,19 @@ class Cache(object):
         else:
             self._sync = yesterday()
 
+        if self._sync < today() and preload:
+            fields = copy.deepcopy(FIELDS)
+            fields.remove('composition')
+            for k in os.listdir(self._dir):
+                if k in ('TICKERS.CSV', 'TICKERS.csv', 'TIMESTAMP'):
+                    continue
+                self.preload([k], fields)
+            self.preload([k for k in os.listdir(self._dir)], ['composition'])
+
         for k in os.listdir(self._dir):
             if k in ('TICKERS.CSV', 'TICKERS.csv', 'TIMESTAMP'):
                 continue
-
-            if self._sync < today() and preload:
-                self.preload([k], FIELDS)
-
-            elif preload:
+            if preload:
                 if k not in self._cache:
                     self._cache[k] = {}
                     self._cache[k]['timestamp'] = {}

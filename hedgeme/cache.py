@@ -25,12 +25,14 @@ _POOL = ThreadPool(len(FIELDS)-1)
 
 @lru_cache(1)
 def today():
+    '''today starts at 4pm the previous close'''
     today = date.today()
     return datetime(year=today.year, month=today.month, day=today.day)
 
 
 @lru_cache(1)
 def yesterday():
+    '''yesterday is anytime before the previous 4pm close'''
     today = date.today()
     return datetime(year=today.year, month=today.month, day=today.day) - timedelta(days=1)
 

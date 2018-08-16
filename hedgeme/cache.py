@@ -356,7 +356,7 @@ def main():
                 continue
 
             log.info('loading %s' % item)
-            cache.preload([item], FIELDS)
+            cache.preload([item], fields)
 
             # save right away to keep low memory footprint on server
             cache.save()

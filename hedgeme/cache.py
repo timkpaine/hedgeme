@@ -338,6 +338,9 @@ class Cache(object):
             if field == 'composition':
                 ret['composition'] = ret['composition'].replace({np.nan: None}).to_dict(orient='records')
 
+            if field == 'options':
+                ret['options'] = ret['composition'].replace({np.nan: None}).to_dict(orient='records')
+
         return ret
 
 

@@ -363,7 +363,7 @@ def main():
     fields = copy.deepcopy(FIELDS)
     fields.remove('composition')
 
-    df1 = cache.fetchDF('IWD', 'composition')
+    df1 = cache.fetchDF('IWN', 'composition')
     df2 = cache.fetchDF('SPY', 'composition')
 
     symbols = list(set(

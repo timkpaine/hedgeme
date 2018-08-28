@@ -378,11 +378,10 @@ def main():
             log.info('loading %s' % item)
             cache.preload([item], fields)
 
-            # save right away to keep low memory footprint on server
-            cache.save()
-            cache.purge([item])
     except KeyboardInterrupt:
         cache.save()
+
+    cache.save()
 
     log.info('loading ETF compositions')
     # fetch compositions (slower)

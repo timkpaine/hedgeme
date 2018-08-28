@@ -25872,6 +25872,7 @@ class PSPWidget extends widgets_1.Widget {
         this.pspNode.notifyResize();
     }
     onActivateRequest(msg) {
+        this.pspNode.notifyResize();
         if (this.isAttached) {
             this.pspNode.focus();
         }

@@ -124,11 +124,16 @@ class Cache(object):
                         except pd.errors.EmptyDataError:
                             log.info('skipping %s for %s' % (f, k))
 
-    def save(self):
+    def save(self, tickers=None):
         if not os.path.exists(self._dir):
             os.makedirs(self._dir)
 
-        for k in self._cache:
+        if tickers:
+            _iter = tickers
+        else:
+            _iter = self._cache
+
+        for k in _iter:
             for f in self._cache[k]:
                 if f == 'timestamp':
                     continue
@@ -372,11 +377,14 @@ def main():
         for item in symbols:
             if item in cache._cache:
                 cache.preload([item], fields)
+                cache.save([item])
                 cache.purge([item])
                 continue
 
             log.info('loading %s' % item)
             cache.preload([item], fields)
+            cache.save([item])
+            cache.purge([item])
 
     except KeyboardInterrupt:
         cache.save()
@@ -394,6 +402,18 @@ def main():
                 pass
     except KeyboardInterrupt:
         cache.save()
+
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
+    log.critical('Complete')
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
 
 if __name__ == "__main__":
     main()

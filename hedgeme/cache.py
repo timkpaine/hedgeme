@@ -6,6 +6,7 @@ import pandas as pd
 import pyEX as p
 import requests
 import sys
+from tqdm import tqdm
 from urllib.error import HTTPError
 from multiprocessing.pool import ThreadPool
 from functools import lru_cache, partial
@@ -374,7 +375,7 @@ def main():
 
     # fetch stuff from IEX
     try:
-        for item in symbols:
+        for item in tqdm(symbols):
             if item in cache._cache:
                 cache.preload([item], fields)
                 cache.save([item])

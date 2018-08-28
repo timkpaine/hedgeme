@@ -7,4 +7,5 @@ pillow
 pyEX>=0.0.10
 socketIO_client_nexus
 tornado
+tqdm
 ujson

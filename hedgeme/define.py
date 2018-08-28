@@ -8,8 +8,7 @@ FIELDS = [
     'news',
     'peers',
     'stats',
-    'composition',
-    'options'
+    'composition'
 ]
 
 ETF_URL = 'https://etfdailynews.com/etf/%s/'

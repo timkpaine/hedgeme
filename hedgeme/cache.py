@@ -75,7 +75,7 @@ class Cache(object):
 
     def purge(self, tickers):
         for ticker in tickers:
-            self._cache.pop(ticker)
+            self._cache.pop(ticker, None)
 
     def load(self, dir, preload=False):
         self._dir = dir
@@ -101,7 +101,8 @@ class Cache(object):
                 if k in ('TICKERS.CSV', 'TICKERS.csv', 'TIMESTAMP'):
                     continue
                 self.preload([k], fields)
-            self.preload([k for k in os.listdir(self._dir)], ['composition'])
+
+            self.preload([k for k in os.listdir(self._dir) if k not in ('TICKERS.CSV', 'TICKERS.csv', 'TIMESTAMP')], ['composition'])
 
         for k in os.listdir(self._dir):
             if k in ('TICKERS.CSV', 'TICKERS.csv', 'TIMESTAMP'):
@@ -352,14 +353,23 @@ def main():
         log.setLevel(logging.INFO)
 
     cache.load('./cache', preload=True)
+
     fields = copy.deepcopy(FIELDS)
     fields.remove('composition')
 
-    log.info('loading IEX data')
+    df1 = cache.fetchDF('IWD', 'composition')
+    df2 = cache.fetchDF('SPY', 'composition')
+
+    symbols = list(set(
+        df1['Symbol'].dropna().values.tolist() +
+        df2['Symbol'].dropna().values.tolist()))
+
+    log.info('loading IEX data for symbols:')
+    log.info(symbols)
 
     # fetch stuff from IEX
     try:
-        for item in tickers.symbol.values.tolist():
+        for item in symbols:
             if item in cache._cache:
                 cache.preload([item], fields)
                 cache.purge([item])
@@ -379,7 +389,7 @@ def main():
     try:
         while(True):
             try:
-                _POOL.map(partial(fetch, cache=cache, field='composition'), tickers.symbol.values.tolist())
+                _POOL.map(partial(fetch, cache=cache, field='composition'), symbols)
                 break
             except requests.exceptions.ConnectionError:
                 pass

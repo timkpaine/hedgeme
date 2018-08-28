@@ -134,7 +134,7 @@ class Cache(object):
             _iter = self._cache
 
         for k in _iter:
-            for f in self._cache[k]:
+            for f in self._cache.get(k, {}):
                 if f == 'timestamp':
                     continue
 

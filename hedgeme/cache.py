@@ -9,10 +9,10 @@ import sys
 from tqdm import tqdm
 from urllib.error import HTTPError
 from multiprocessing.pool import ThreadPool
-from functools import lru_cache, partial
-from datetime import datetime, timedelta, date
-from .define import FIELDS, ETF_URL
-from .utils import log, logging
+from functools import partial
+from datetime import datetime
+from .define import FIELDS, OTHERS, ETF_URL, POPULAR_ETFS_URL
+from .utils import log, logging, today, yesterday
 
 # a threadpool should be fine as the biggest
 # delay is the HTTP request, which should
@@ -22,20 +22,6 @@ from .utils import log, logging
 # records in between as opposed to pickling
 # cache object
 _POOL = ThreadPool(len(FIELDS)-1)
-
-
-@lru_cache(1)
-def today():
-    '''today starts at 4pm the previous close'''
-    today = date.today()
-    return datetime(year=today.year, month=today.month, day=today.day)
-
-
-@lru_cache(1)
-def yesterday():
-    '''yesterday is anytime before the previous 4pm close'''
-    today = date.today()
-    return datetime(year=today.year, month=today.month, day=today.day) - timedelta(days=1)
 
 
 def fetch(key, cache, field):
@@ -53,6 +39,9 @@ class Cache(object):
         self._cache = {}
         self._tickers = tickers if tickers is not None and not tickers.empty else p.symbolsDF()
         self._tickers_ts = datetime.now()
+
+        self._others = {}
+        self._others_ts = {}
 
     def tickers(self):
         if self._tickers_ts < today():
@@ -96,14 +85,14 @@ class Cache(object):
             self._sync = yesterday()
 
         if self._sync < today() and preload:
-            fields = copy.deepcopy(FIELDS)
+            fields = list(FIELDS)
             fields.remove('composition')
             for k in os.listdir(self._dir):
-                if k in ('TICKERS.CSV', 'TICKERS.csv', 'TIMESTAMP'):
+                if k.lower().endswith('.csv'):
                     continue
                 self.preload([k], fields)
 
-            self.preload([k for k in os.listdir(self._dir) if k not in ('TICKERS.CSV', 'TICKERS.csv', 'TIMESTAMP')], ['composition'])
+            self.preload([k for k in os.listdir(self._dir) if k.lower().endswith('.csv')], ['composition'])
 
         for k in os.listdir(self._dir):
             if k in ('TICKERS.CSV', 'TICKERS.csv', 'TIMESTAMP'):
@@ -152,6 +141,10 @@ class Cache(object):
         with open(os.path.join(self._dir, 'TIMESTAMP'), 'w') as fp:
             fp.write(datetime.now().strftime('%Y/%m/%d-%H:%M:%S'))
 
+        for k in self._others:
+            path = os.path.join(self._dir, k.upper() + '.csv')
+            self._others[k].to_csv(path)
+
     def _check_timestamp(self, key, field):
         if self._cache[key].get('timestamp', {}).get(field, yesterday()) < today():
             return True
@@ -160,6 +153,17 @@ class Cache(object):
     def _fetch(self, key, field):
         # deprecated
         return self.fetch(key, field)
+
+    def othersDF(self, field, _ret=True):
+        if self._others_ts.get(field, yesterday()) < today():
+            if field in ('popularEtfs', 'all'):
+                self._others['popularEtfs'] = pd.read_html(POPULAR_ETFS_URL)[0]
+                self._others_ts['popularEtfs'] = datetime.now()
+
+        if _ret:
+            if field == 'all':
+                return pd.concat(self._others)
+            return pd.concat({field: self._others[field]})
 
     def fetchDF(self, key, field, _ret=True):
         # tickers always caps
@@ -352,15 +356,14 @@ class Cache(object):
 
 
 def main():
-    tickers = p.symbolsDF()
-    cache = Cache(tickers)
+    cache = Cache()
 
     if '-v' in sys.argv:
         log.setLevel(logging.INFO)
 
     cache.load('./cache', preload=True)
 
-    fields = copy.deepcopy(FIELDS)
+    fields = list(FIELDS)
     fields.remove('composition')
 
     df1 = cache.fetchDF('IWN', 'composition')
@@ -370,8 +373,14 @@ def main():
         df1['Symbol'].dropna().values.tolist() +
         df2['Symbol'].dropna().values.tolist()))
 
-    log.info('loading IEX data for symbols:')
-    log.info(symbols)
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
+    log.critical('loading IEX data for symbols:')
+    log.critical(symbols)
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
 
     # fetch stuff from IEX
     try:
@@ -392,7 +401,21 @@ def main():
 
     cache.save()
 
-    log.info('loading ETF compositions')
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
+    log.critical('loading other data')
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
+
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
+    log.critical('loading ETF compositions')
+    log.critical('#')
+    log.critical('#')
+    log.critical('#')
     # fetch compositions (slower)
     try:
         while(True):

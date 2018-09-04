@@ -2,9 +2,13 @@ try:
     from urllib.parse import urljoin
 except ImportError:
     from urlparse import urljoin
+
 import requests
 import tornado
 import ujson
+
+from datetime import datetime, timedelta, date
+from functools import lru_cache
 from .log_utils import LOG as log
 
 
@@ -63,3 +67,17 @@ def safe_post_cookies(path, *args, **kwargs):
 
 def construct_path(host, method):
     return urljoin(host, method)
+
+
+@lru_cache(1)
+def today():
+    '''today starts at 4pm the previous close'''
+    today = date.today()
+    return datetime(year=today.year, month=today.month, day=today.day)
+
+
+@lru_cache(1)
+def yesterday():
+    '''yesterday is anytime before the previous 4pm close'''
+    today = date.today()
+    return datetime(year=today.year, month=today.month, day=today.day) - timedelta(days=1)

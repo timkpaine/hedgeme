@@ -1,2 +1,3 @@
 notebooks/* linguist-documentation
 hedgeme/static/assets/js/* linguist-vendored
+hedgeme/quantlib/* linguist-vendored

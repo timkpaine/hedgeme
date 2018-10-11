@@ -12,7 +12,7 @@ from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, Ma
 
 def getContext(arctic_host='localhost'):
     d = {}
-    d['tickers'] = pyEX.symbolsDF()
+    d['tickers'] = pyEX.symbolsDF().reset_index()
     d['cache'] = Cache(arctic_host)
     d['metrics'] = Metrics(d['cache'])
     return d

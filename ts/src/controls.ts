@@ -32,31 +32,34 @@ function _fetch_and_load_quote(path:string, field:string, type:string, loadto:PS
     xhr1.send(null);
 }
 
-function fetch_and_load_company(path:string, loadto:HTMLTableElement){
-    var xhr1 = new XMLHttpRequest();
-    xhr1.open('GET', path, true);
-    xhr1.onload = function () { 
-        if(xhr1.response){
-            var jsn = JSON.parse(xhr1.response)['COMPANY'];
-            while(loadto.lastChild){
-                loadto.removeChild(loadto.lastChild);
-            }
-
-            if (jsn){
-                for (let x of Object.keys(jsn)){
-                    let row = document.createElement('tr');
-                    let td1 = document.createElement('td');
-                    let td2 = document.createElement('td');
-                    td1.textContent = x;
-                    td2.textContent = jsn[x];
-                    row.appendChild(td1);
-                    row.appendChild(td2);
-                    loadto.appendChild(row)
+function fetch_and_load_company(path:string, loadto:HTMLTableElement): Promise<void> {
+    return new Promise((resolve) => {
+        var xhr1 = new XMLHttpRequest();
+        xhr1.open('GET', path, true);
+        xhr1.onload = function () { 
+            if(xhr1.response){
+                var jsn = JSON.parse(xhr1.response)['COMPANY'];
+                while(loadto.lastChild){
+                    loadto.removeChild(loadto.lastChild);
                 }
+
+                if (jsn){
+                    for (let x of Object.keys(jsn)){
+                        let row = document.createElement('tr');
+                        let td1 = document.createElement('td');
+                        let td2 = document.createElement('td');
+                        td1.textContent = x;
+                        td2.textContent = jsn[x];
+                        row.appendChild(td1);
+                        row.appendChild(td2);
+                        loadto.appendChild(row)
+                    }
+                }
+                resolve();
             }
-        }
-    };
-    xhr1.send(null);
+        };
+        xhr1.send(null);
+    });
 }
 
 
@@ -123,6 +126,17 @@ class ControlsWidget extends Widget {
         this.last = '';
         this.psps = psps;
         this.tables = tables;
+
+        this.sync  = Object.keys(psps).length + Object.keys(tables).length;
+        this.synced = 0;
+
+        this.loader = document.createElement('div');
+        this.loader.classList.add('loader');
+        let loader_icon = document.createElement('div');
+        loader_icon.classList.add('loader_icon');
+        this.loader.appendChild(loader_icon);
+        document.body.appendChild(this.loader);
+
     }
 
     start(): void {
@@ -256,17 +270,31 @@ class ControlsWidget extends Widget {
             table_data_options);
 
         input.addEventListener('keyup', (e: KeyboardEvent) => {
-            if (e.keyCode === 13){
-                _psps_helper.set_url('/api/json/v1/data?ticker=' + input.value);
-                _psps_helper3.set_url('/api/json/v1/metrics?ticker=' + input.value);
-                _tables_helper.set_url('/api/json/v1/data?ticker=' + input.value);
-                fetch_and_load_company('/api/json/v1/data?type=COMPANY&ticker=' + input.value, this.companyInfoNode);
-                this.entered = input.value;
-            }
-
             if (this.last == input.value){
                 // duplicate
                 return;
+            }
+
+            if (e.keyCode === 13){
+                this.displayLoad();
+
+                _psps_helper.setUrl('/api/json/v1/data?ticker=' + input.value).then((count: number)=>{
+                    this.hideLoad(count);
+                });
+
+                _psps_helper3.setUrl('/api/json/v1/metrics?ticker=' + input.value).then((count: number)=>{
+                    this.hideLoad(count);
+                });
+
+                _tables_helper.setUrl('/api/json/v1/data?ticker=' + input.value).then((count: number)=>{
+                    this.hideLoad(count);
+                });
+
+                fetch_and_load_company('/api/json/v1/data?type=COMPANY&ticker=' + input.value, this.companyInfoNode).then(() => {
+                    this.hideLoad(1);
+                });
+
+                this.entered = input.value;
             }
 
             if (e.keyCode !== 13){
@@ -276,16 +304,36 @@ class ControlsWidget extends Widget {
             this.last = input.value;
         });
 
-        _psps_helper.start();
-        _psps_helper2.start();
-        _psps_helper3.start();
-        _tables_helper.start();
+        _psps_helper.start().then((count: number)=>{
+            this.hideLoad(count);
+        });
+        _psps_helper2.start().then((count: number)=>{
+            this.hideLoad(count);
+        });
+        _psps_helper3.start().then((count: number)=>{
+            this.hideLoad(count);
+        });
+        _tables_helper.start().then((count: number)=>{
+            this.hideLoad(count);
+        });
         fetch_and_load_company('/api/json/v1/data?type=COMPANY&ticker=' + this.def, this.companyInfoNode);
         this.entered = this.def;
 
         setInterval(() => {
             _fetch_and_load_quote('/api/json/v1/data?type=quote&ticker=' + this.entered, 'QUOTE', 'grid', this.psps['quote'], true, false);
         }, 5000);
+    }
+
+    private displayLoad(){
+        this.synced = 0;
+        this.loader.style.display = 'flex';
+    }
+
+    private hideLoad(count: number){
+        this.synced += count;
+        if (this.synced === this.sync){
+            this.loader.style.display = 'none';
+        }
     }
 
     get inputNode(): HTMLInputElement {
@@ -311,4 +359,8 @@ class ControlsWidget extends Widget {
     private def: string;
     private entered:string;
     private last:string;
+
+    private loader: HTMLDivElement;
+    private sync:number;
+    private synced:number;
 }

@@ -12,6 +12,8 @@ class StockDataHandler(HTTPHandler):
 
     @tornado.concurrent.run_on_executor
     def get_data(self, key, type):
+        if type == 'QUOTE':
+            return json.dumps(self._cache.fetch(key, type, False))
         return json.dumps(self._cache.fetch(key, type))
 
     async def get(self, *args):
@@ -48,10 +50,14 @@ class MarketsDataHandler(HTTPHandler):
     def initialize(self, **kwargs):
         super(MarketsDataHandler, self).initialize()
 
-    def get(self, *args):
-        '''Get the login page'''
+    @tornado.concurrent.run_on_executor
+    def get_data(self):
         df = p.marketsDF()
         for col in df.select_dtypes(np.datetime64):
             df[col] = df[col].astype(str)
+        return df
 
-        self.write(json.dumps({'MARKETS': df.to_dict(orient='records')}))
+    async def get(self, *args):
+        '''Get the login page'''
+        data = await self.get_data()
+        self.write(json.dumps({'MARKETS': data.to_dict(orient='records')}))

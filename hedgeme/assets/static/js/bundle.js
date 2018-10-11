@@ -26134,27 +26134,41 @@ class PerspectiveHelper {
         }
     }
     start(delay) {
-        if (this._datatype === 'http') {
-            if (this._preload_url) {
-                this.fetch_and_load(true);
+        return new Promise((resolve) => {
+            if (this._datatype === 'http') {
+                if (this._preload_url) {
+                    this.fetchAndLoad(true).then((count) => {
+                        resolve(count);
+                    });
+                }
+                if (this._repeat > 0) {
+                    setInterval(() => {
+                        this.fetchAndLoad();
+                    }, this._repeat);
+                    resolve(0);
+                }
+                else {
+                    this.fetchAndLoad().then((count) => {
+                        resolve(count);
+                    });
+                }
             }
-            if (this._repeat > 0) {
-                setInterval(() => {
-                    this.fetch_and_load();
-                }, this._repeat);
+        });
+    }
+    setUrl(url, refetch = true) {
+        return new Promise((resolve) => {
+            this._url = url;
+            if (refetch) {
+                this.fetchAndLoad().then((count) => {
+                    resolve(count);
+                });
             }
             else {
-                this.fetch_and_load();
+                resolve(0);
             }
-        }
+        });
     }
-    set_url(url, refetch = true) {
-        this._url = url;
-        if (refetch) {
-            this.fetch_and_load();
-        }
-    }
-    fetch_and_load(use_preload_url = false) {
+    fetchAndLoad(use_preload_url = false) {
         let url = '';
         if (use_preload_url && this._preload_url) {
             url = this._preload_url;
@@ -26162,60 +26176,86 @@ class PerspectiveHelper {
         else {
             url = this._url;
         }
-        for (let psp of Object.keys(this._psp_widgets)) {
-            let _delete;
-            let wrap;
-            let data_key;
-            if (this._data_options && Object.keys(this._data_options).includes(psp)) {
-                //TODO
-                if (Object.keys(this._data_options[psp]).includes(DataOption.DELETE)) {
-                    _delete = this._data_options[psp][DataOption.DELETE] || false;
-                }
-                if (Object.keys(this._data_options[psp]).includes(DataOption.WRAP)) {
-                    wrap = this._data_options[psp][DataOption.WRAP] || false;
-                }
-                if (Object.keys(this._data_options[psp]).includes(DataOption.KEY)) {
-                    data_key = this._data_options[psp][DataOption.KEY] || '';
-                }
-            }
-            this._fetch_and_load_http(url, psp, data_key, wrap, _delete);
+        let count = 0;
+        let total;
+        if (this._psp_widgets) {
+            total = Object.keys(this._psp_widgets).length;
         }
+        else {
+            total = 0;
+        }
+        return new Promise((resolve) => {
+            for (let psp of Object.keys(this._psp_widgets)) {
+                let _delete;
+                let wrap;
+                let data_key;
+                if (this._data_options && Object.keys(this._data_options).includes(psp)) {
+                    //TODO
+                    if (Object.keys(this._data_options[psp]).includes(DataOption.DELETE)) {
+                        _delete = this._data_options[psp][DataOption.DELETE] || false;
+                    }
+                    if (Object.keys(this._data_options[psp]).includes(DataOption.WRAP)) {
+                        wrap = this._data_options[psp][DataOption.WRAP] || false;
+                    }
+                    if (Object.keys(this._data_options[psp]).includes(DataOption.KEY)) {
+                        data_key = this._data_options[psp][DataOption.KEY] || '';
+                    }
+                }
+                this._fetchAndLoadHttp(url, psp, data_key, wrap, _delete).then(() => {
+                    count++;
+                    if (count >= total) {
+                        console.log(total);
+                        return resolve(count);
+                    }
+                });
+            }
+        });
     }
-    _fetch_and_load_http(url, psp_key, data_key, wrap, _delete) {
-        var xhr1 = new XMLHttpRequest();
-        xhr1.open('GET', url, true);
-        xhr1.onload = () => {
-            if (xhr1.response) {
-                let jsn = JSON.parse(xhr1.response);
-                if (Object.keys(jsn).length > 0) {
-                    if (wrap) {
-                        jsn = [jsn];
-                    }
-                    if (_delete) {
-                        this._psp_widgets[psp_key].pspNode.delete();
-                    }
-                    if (data_key && data_key !== true && data_key !== '') {
-                        jsn = jsn[data_key];
-                    }
-                    // workaround for heatmap non-refresh issue
-                    if (this._view_options && Object.keys(this._view_options).includes(psp_key)) {
-                        if (Object.keys(this._view_options[psp_key]).includes('view') && this._view_options[psp_key]['view'] == 'heatmap') {
-                            if (!Object.keys(this._view_options[psp_key]).includes('columns')) {
-                                let columns = Object.keys(jsn[0]);
-                                var index = columns.indexOf('index');
-                                if (index > -1) {
-                                    columns.splice(index, 1);
+    _fetchAndLoadHttp(url, psp_key, data_key, wrap, _delete) {
+        return new Promise((resolve) => {
+            var xhr1 = new XMLHttpRequest();
+            xhr1.open('GET', url, true);
+            xhr1.onload = () => {
+                if (xhr1.response) {
+                    let jsn = JSON.parse(xhr1.response);
+                    if (Object.keys(jsn).length > 0) {
+                        if (wrap) {
+                            jsn = [jsn];
+                        }
+                        if (_delete) {
+                            this._psp_widgets[psp_key].pspNode.delete();
+                        }
+                        if (data_key && data_key !== true && data_key !== '') {
+                            jsn = jsn[data_key];
+                        }
+                        // workaround for heatmap non-refresh issue
+                        if (this._view_options && Object.keys(this._view_options).includes(psp_key)) {
+                            if (Object.keys(this._view_options[psp_key]).includes('view') && this._view_options[psp_key]['view'] == 'heatmap') {
+                                if (!Object.keys(this._view_options[psp_key]).includes('columns')) {
+                                    let columns = Object.keys(jsn[0]);
+                                    var index = columns.indexOf('index');
+                                    if (index > -1) {
+                                        columns.splice(index, 1);
+                                    }
+                                    this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(columns));
+                                    this._psp_widgets[psp_key].pspNode.removeAttribute('aggregates');
                                 }
-                                this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(columns));
-                                this._psp_widgets[psp_key].pspNode.removeAttribute('aggregates');
                             }
                         }
+                        if (jsn && jsn.length) {
+                            this._psp_widgets[psp_key].pspNode.update(jsn);
+                            setTimeout(() => {
+                                resolve();
+                            }, 100);
+                        }
+                        else {
+                            resolve();
+                        }
                     }
-                    this._psp_widgets[psp_key].pspNode.update(jsn);
                 }
-            }
-        };
-        xhr1.send(null);
+            };
+            xhr1.send(null);
+        });
     }
 }
 exports.PerspectiveHelper = PerspectiveHelper;
@@ -26354,25 +26394,39 @@ class TableHelper {
         }
     }
     start(delay) {
-        if (this._preload_url) {
-            this.fetch_and_load(true);
-        }
-        if (this._repeat > 0) {
-            setInterval(() => {
-                this.fetch_and_load();
-            }, this._repeat);
-        }
-        else {
-            this.fetch_and_load();
-        }
+        return new Promise((resolve) => {
+            if (this._preload_url) {
+                this.fetchAndLoad(true).then((count) => {
+                    resolve(count);
+                });
+            }
+            if (this._repeat > 0) {
+                setInterval(() => {
+                    this.fetchAndLoad();
+                }, this._repeat);
+                resolve(0);
+            }
+            else {
+                this.fetchAndLoad().then((count) => {
+                    resolve(count);
+                });
+            }
+        });
     }
-    set_url(url, refetch = true) {
-        this._url = url;
-        if (refetch) {
-            this.fetch_and_load();
-        }
+    setUrl(url, refetch = true) {
+        return new Promise((resolve) => {
+            this._url = url;
+            if (refetch) {
+                this.fetchAndLoad().then((count) => {
+                    resolve(count);
+                });
+            }
+            else {
+                resolve(0);
+            }
+        });
     }
-    fetch_and_load(use_preload_url = false) {
+    fetchAndLoad(use_preload_url = false) {
         let url = '';
         if (use_preload_url && this._preload_url) {
             url = this._preload_url;
@@ -26380,49 +26434,61 @@ class TableHelper {
         else {
             url = this._url;
         }
-        for (let table of Object.keys(this._table_widgets)) {
-            let wrap;
-            let unwrap;
-            let data_key;
-            let raw;
-            if (this._data_options && Object.keys(this._data_options).includes(table)) {
-                if (Object.keys(this._data_options[table]).includes('wrap')) {
-                    wrap = this._data_options[table]['wrap'] || false;
+        let count = 0;
+        let total = Object.keys(this._table_widgets).length;
+        return new Promise((resolve) => {
+            for (let table of Object.keys(this._table_widgets)) {
+                let wrap;
+                let unwrap;
+                let data_key;
+                let raw;
+                if (this._data_options && Object.keys(this._data_options).includes(table)) {
+                    if (Object.keys(this._data_options[table]).includes('wrap')) {
+                        wrap = this._data_options[table]['wrap'] || false;
+                    }
+                    if (Object.keys(this._data_options[table]).includes('unwrap')) {
+                        unwrap = this._data_options[table]['unwrap'] || false;
+                    }
+                    if (Object.keys(this._data_options[table]).includes('key')) {
+                        data_key = this._data_options[table]['key'] || '';
+                    }
+                    if (Object.keys(this._data_options[table]).includes('raw')) {
+                        raw = this._data_options[table]['raw'] || false;
+                    }
                 }
-                if (Object.keys(this._data_options[table]).includes('unwrap')) {
-                    unwrap = this._data_options[table]['unwrap'] || false;
-                }
-                if (Object.keys(this._data_options[table]).includes('key')) {
-                    data_key = this._data_options[table]['key'] || '';
-                }
-                if (Object.keys(this._data_options[table]).includes('raw')) {
-                    raw = this._data_options[table]['raw'] || false;
-                }
+                this._fetchAndLoadHttp(url, table, data_key, wrap, unwrap, raw).then(() => {
+                    count++;
+                    if (count >= total) {
+                        resolve(count);
+                    }
+                });
             }
-            this._fetch_and_load_http(url, table, data_key, wrap, unwrap, raw);
-        }
+        });
     }
-    _fetch_and_load_http(url, table_key, data_key, wrap, unwrap, raw) {
-        var xhr1 = new XMLHttpRequest();
-        xhr1.open('GET', url, true);
-        xhr1.onload = () => {
-            if (xhr1.response) {
-                let jsn = JSON.parse(xhr1.response);
-                if (Object.keys(jsn).length > 0) {
-                    if (wrap) {
-                        jsn = [jsn];
+    _fetchAndLoadHttp(url, table_key, data_key, wrap, unwrap, raw) {
+        return new Promise((resolve) => {
+            var xhr1 = new XMLHttpRequest();
+            xhr1.open('GET', url, true);
+            xhr1.onload = () => {
+                if (xhr1.response) {
+                    let jsn = JSON.parse(xhr1.response);
+                    if (Object.keys(jsn).length > 0) {
+                        if (wrap) {
+                            jsn = [jsn];
+                        }
+                        if (data_key && data_key !== true && data_key !== '') {
+                            jsn = jsn[data_key];
+                        }
+                        if (unwrap) {
+                            jsn = jsn[0];
+                        }
+                        this._table_widgets[table_key].loadData(jsn, unwrap, raw);
                     }
-                    if (data_key && data_key !== true && data_key !== '') {
-                        jsn = jsn[data_key];
-                    }
-                    if (unwrap) {
-                        jsn = jsn[0];
-                    }
-                    this._table_widgets[table_key].loadData(jsn, unwrap, raw);
+                    resolve();
                 }
-            }
-        };
-        xhr1.send(null);
+            };
+            xhr1.send(null);
+        });
     }
 }
 exports.TableHelper = TableHelper;
@@ -37562,29 +37628,32 @@ function _fetch_and_load_quote(path, field, type, loadto, wrap_list = false, _de
     xhr1.send(null);
 }
 function fetch_and_load_company(path, loadto) {
-    var xhr1 = new XMLHttpRequest();
-    xhr1.open('GET', path, true);
-    xhr1.onload = function () {
-        if (xhr1.response) {
-            var jsn = JSON.parse(xhr1.response)['COMPANY'];
-            while (loadto.lastChild) {
-                loadto.removeChild(loadto.lastChild);
-            }
-            if (jsn) {
-                for (let x of Object.keys(jsn)) {
-                    let row = document.createElement('tr');
-                    let td1 = document.createElement('td');
-                    let td2 = document.createElement('td');
-                    td1.textContent = x;
-                    td2.textContent = jsn[x];
-                    row.appendChild(td1);
-                    row.appendChild(td2);
-                    loadto.appendChild(row);
+    return new Promise((resolve) => {
+        var xhr1 = new XMLHttpRequest();
+        xhr1.open('GET', path, true);
+        xhr1.onload = function () {
+            if (xhr1.response) {
+                var jsn = JSON.parse(xhr1.response)['COMPANY'];
+                while (loadto.lastChild) {
+                    loadto.removeChild(loadto.lastChild);
                 }
+                if (jsn) {
+                    for (let x of Object.keys(jsn)) {
+                        let row = document.createElement('tr');
+                        let td1 = document.createElement('td');
+                        let td2 = document.createElement('td');
+                        td1.textContent = x;
+                        td2.textContent = jsn[x];
+                        row.appendChild(td1);
+                        row.appendChild(td2);
+                        loadto.appendChild(row);
+                    }
+                }
+                resolve();
             }
-        }
-    };
-    xhr1.send(null);
+        };
+        xhr1.send(null);
+    });
 }
 function autocomplete_ticker(path, value, autocomplete) {
     var xhr1 = new XMLHttpRequest();
@@ -37639,6 +37708,14 @@ class ControlsWidget extends widgets_1.Widget {
         this.last = '';
         this.psps = psps;
         this.tables = tables;
+        this.sync = Object.keys(psps).length + Object.keys(tables).length;
+        this.synced = 0;
+        this.loader = document.createElement('div');
+        this.loader.classList.add('loader');
+        let loader_icon = document.createElement('div');
+        loader_icon.classList.add('loader_icon');
+        this.loader.appendChild(loader_icon);
+        document.body.appendChild(this.loader);
     }
     start() {
         let input = this.inputNode;
@@ -37744,31 +37821,58 @@ class ControlsWidget extends widgets_1.Widget {
         let _psps_helper3 = new perspective_widget_1.PerspectiveHelper('/api/json/v1/metrics?ticker=' + this.def, psps3, psps_view_options, psps_data_options, psps_schemas);
         let _tables_helper = new table_1.TableHelper('/api/json/v1/data?ticker=' + this.def, tables, table_data_options);
         input.addEventListener('keyup', (e) => {
-            if (e.keyCode === 13) {
-                _psps_helper.set_url('/api/json/v1/data?ticker=' + input.value);
-                _psps_helper3.set_url('/api/json/v1/metrics?ticker=' + input.value);
-                _tables_helper.set_url('/api/json/v1/data?ticker=' + input.value);
-                fetch_and_load_company('/api/json/v1/data?type=COMPANY&ticker=' + input.value, this.companyInfoNode);
-                this.entered = input.value;
-            }
             if (this.last == input.value) {
                 // duplicate
                 return;
+            }
+            if (e.keyCode === 13) {
+                this.displayLoad();
+                _psps_helper.setUrl('/api/json/v1/data?ticker=' + input.value).then((count) => {
+                    this.hideLoad(count);
+                });
+                _psps_helper3.setUrl('/api/json/v1/metrics?ticker=' + input.value).then((count) => {
+                    this.hideLoad(count);
+                });
+                _tables_helper.setUrl('/api/json/v1/data?ticker=' + input.value).then((count) => {
+                    this.hideLoad(count);
+                });
+                fetch_and_load_company('/api/json/v1/data?type=COMPANY&ticker=' + input.value, this.companyInfoNode).then(() => {
+                    this.hideLoad(1);
+                });
+                this.entered = input.value;
             }
             if (e.keyCode !== 13) {
                 autocomplete_ticker('/api/json/v1/autocomplete?partial=' + input.value, input.value, autocomplete);
             }
             this.last = input.value;
         });
-        _psps_helper.start();
-        _psps_helper2.start();
-        _psps_helper3.start();
-        _tables_helper.start();
+        _psps_helper.start().then((count) => {
+            this.hideLoad(count);
+        });
+        _psps_helper2.start().then((count) => {
+            this.hideLoad(count);
+        });
+        _psps_helper3.start().then((count) => {
+            this.hideLoad(count);
+        });
+        _tables_helper.start().then((count) => {
+            this.hideLoad(count);
+        });
         fetch_and_load_company('/api/json/v1/data?type=COMPANY&ticker=' + this.def, this.companyInfoNode);
         this.entered = this.def;
         setInterval(() => {
             _fetch_and_load_quote('/api/json/v1/data?type=quote&ticker=' + this.entered, 'QUOTE', 'grid', this.psps['quote'], true, false);
         }, 5000);
+    }
+    displayLoad() {
+        this.synced = 0;
+        this.loader.style.display = 'flex';
+    }
+    hideLoad(count) {
+        this.synced += count;
+        if (this.synced === this.sync) {
+            this.loader.style.display = 'none';
+        }
     }
     get inputNode() {
         return this.node.getElementsByTagName('input')[0];
@@ -55226,7 +55330,7 @@ exports = module.exports = __webpack_require__(4)();
 
 
 // module
-exports.push([module.i, ".controls {\n  min-width: 40px;\n  min-height: 50px;\n  /*max-width: 350px;*/\n  display: flex;\n  flex-direction: column;\n  padding: 8px;\n  border: 1px solid var(--dark-border);\n  border-top: none;\n  background: var(--dark-bg-color);\n  box-shadow: 1px 1px 2px var(--dark-drop-shadow);\n}\n\n\n.controls > div {\n  flex: 1 1 auto;\n  border: 1px solid var(--dark-border2);\n  overflow: auto;\n}\n\n\n.controls  input {\n  margin: 8px;\n  width: 90%;\n  background-color:var(--dark-bg-color2);\n  color:var(--dark-color);\n}\n\n\n.controls input::-webkit-outer-spin-button,\n.controls input::-webkit-inner-spin-button {\n    /* display: none; <- Crashes Chrome on hover */\n    -webkit-appearance: none;\n    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */\n}\n\n/* specifically hide the arrow on focus */\n.controls input::-webkit-calendar-picker-indicator {\n    display: none;\n}\n", ""]);
+exports.push([module.i, ".controls {\n  min-width: 40px;\n  min-height: 50px;\n  /*max-width: 350px;*/\n  display: flex;\n  flex-direction: column;\n  padding: 8px;\n  border: 1px solid var(--dark-border);\n  border-top: none;\n  background: var(--dark-bg-color);\n  box-shadow: 1px 1px 2px var(--dark-drop-shadow);\n}\n\n\n.controls > div {\n  flex: 1 1 auto;\n  border: 1px solid var(--dark-border2);\n  overflow: auto;\n}\n\n\n.controls  input {\n  margin: 8px;\n  width: 90%;\n  background-color:var(--dark-bg-color2);\n  color:var(--dark-color);\n}\n\n\n.controls input::-webkit-outer-spin-button,\n.controls input::-webkit-inner-spin-button {\n    /* display: none; <- Crashes Chrome on hover */\n    -webkit-appearance: none;\n    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */\n}\n\n/* specifically hide the arrow on focus */\n.controls input::-webkit-calendar-picker-indicator {\n    display: none;\n}\n\n\ndiv.loader {\n  top: 45px;\n  z-index: 1000;\n  position: absolute;\n  background-color: rgba(0, 0, 0, .9);\n  height:100%;\n  width:100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\ndiv.loader_icon {\n  border: 24px solid #333; \n  /*border: 16px solid #f3f3f3; */\n  /*border-top: 16px solid #3498db; */\n  border-right: 24px solid #0f0;\n  border-left: 24px solid #f00;\n\n  border-radius: 50%;\n  animation: spin 2s linear infinite;\n\n  height:200px;\n  width:200px;\n}\n\n@keyframes spin {\n    0% { transform: rotate(0deg); }\n    100% { transform: rotate(360deg); }\n}\n", ""]);
 
 // exports
 

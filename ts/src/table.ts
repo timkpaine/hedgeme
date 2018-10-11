@@ -111,28 +111,42 @@ constructor(url: string,  // The url to fetch data from
     if (repeat){this._repeat = repeat}
   }
 
-  start(delay?: number): void {
-    if (this._preload_url){
-      this.fetch_and_load(true);
-    }
+  start(delay?: number): Promise<number> {
+    return new Promise((resolve) => {
+      if (this._preload_url){
+        this.fetchAndLoad(true).then((count:number) => {
+            resolve(count);
+          });
+      } 
 
-    if (this._repeat > 0){
-      setInterval(() => {
-        this.fetch_and_load();
-      }, this._repeat);
-    } else {
-      this.fetch_and_load();
-    }
+      if (this._repeat > 0){
+        setInterval(() => {
+          this.fetchAndLoad();
+        }, this._repeat);
+        resolve(0);
+      } else {
+        this.fetchAndLoad().then((count: number) => {
+            resolve(count);
+          });
+      }
+    });
   }
 
-  set_url(url: string, refetch = true): void{
-    this._url = url;
-    if (refetch){
-      this.fetch_and_load();
-    }
+  setUrl(url: string, refetch = true):  Promise<number>{
+    return new Promise((resolve) => {
+      this._url = url;
+      if (refetch){
+        this.fetchAndLoad().then((count: number)=>{
+          resolve(count);
+        });
+      } else {
+        resolve(0);
+      }
+    });
   }
 
-  fetch_and_load(use_preload_url = false): void {
+  fetchAndLoad(use_preload_url = false): Promise<number> {
+
     let url = '';
     if(use_preload_url && this._preload_url){
       url = this._preload_url;
@@ -140,47 +154,60 @@ constructor(url: string,  // The url to fetch data from
       url = this._url;
     }
 
-    for(let table of Object.keys(this._table_widgets)){
-      let wrap;
-      let unwrap;
-      let data_key;
-      let raw;
+    let count = 0;
+    let total = Object.keys(this._table_widgets).length;
 
-      if(this._data_options && Object.keys(this._data_options).includes(table)){
-        if(Object.keys(this._data_options[table]).includes('wrap')){
-          wrap = this._data_options[table]['wrap'] || false;
+    return new Promise((resolve) => {
+      for(let table of Object.keys(this._table_widgets)){
+        let wrap;
+        let unwrap;
+        let data_key;
+        let raw;
+
+        if(this._data_options && Object.keys(this._data_options).includes(table)){
+          if(Object.keys(this._data_options[table]).includes('wrap')){
+            wrap = this._data_options[table]['wrap'] || false;
+          }
+          if(Object.keys(this._data_options[table]).includes('unwrap')){
+            unwrap = this._data_options[table]['unwrap'] || false;
+          }
+          if(Object.keys(this._data_options[table]).includes('key')){
+            data_key = this._data_options[table]['key'] || '';
+          }
+          if(Object.keys(this._data_options[table]).includes('raw')){
+            raw = this._data_options[table]['raw'] || false;
+          }
         }
-        if(Object.keys(this._data_options[table]).includes('unwrap')){
-          unwrap = this._data_options[table]['unwrap'] || false;
-        }
-        if(Object.keys(this._data_options[table]).includes('key')){
-          data_key = this._data_options[table]['key'] || '';
-        }
-        if(Object.keys(this._data_options[table]).includes('raw')){
-          raw = this._data_options[table]['raw'] || false;
-        }
+        this._fetchAndLoadHttp(url, table, data_key, wrap, unwrap, raw).then(() => {
+          count++;
+          if (count >= total){
+            resolve(count);
+          }
+        });
       }
-      this._fetch_and_load_http(url, table, data_key, wrap, unwrap, raw);
-    }
+    });
   }
 
-  private _fetch_and_load_http(url: string, table_key: string, data_key?: string | boolean, wrap?: string | boolean, unwrap?: string | boolean, raw?: string | boolean): void {
-    var xhr1 = new XMLHttpRequest();
-    xhr1.open('GET', url, true);
-    xhr1.onload = () => { 
-      if(xhr1.response){
-        let jsn = JSON.parse(xhr1.response);
-        if (Object.keys(jsn).length > 0){
-          if (wrap){jsn = [jsn];}
-          if(data_key && data_key !== true && data_key !== ''){
-            jsn = jsn[data_key];
+  private _fetchAndLoadHttp(url: string, table_key: string, data_key?: string | boolean, wrap?: string | boolean, unwrap?: string | boolean, raw?: string | boolean): Promise<void> {
+    return new Promise((resolve) => {
+      var xhr1 = new XMLHttpRequest();
+      xhr1.open('GET', url, true);
+      xhr1.onload = () => { 
+        if(xhr1.response){
+          let jsn = JSON.parse(xhr1.response);
+          if (Object.keys(jsn).length > 0){
+            if (wrap){jsn = [jsn];}
+            if(data_key && data_key !== true && data_key !== ''){
+              jsn = jsn[data_key];
+            }
+            if (unwrap){jsn = jsn[0];}
+            this._table_widgets[table_key].loadData(jsn, unwrap, raw);
           }
-          if (unwrap){jsn = jsn[0];}
-          this._table_widgets[table_key].loadData(jsn, unwrap, raw);
+          resolve();
         }
-      }
-    };
-    xhr1.send(null);
+      };
+      xhr1.send(null);
+    });
   }
 
   _url: string;

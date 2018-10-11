@@ -176,30 +176,43 @@ constructor(url: string,  // The url to fetch data from
     }
   }
 
-  start(delay?: number): void {
-    if (this._datatype === 'http'){
-      if (this._preload_url){
-        this.fetch_and_load(true);
-      }
+  start(delay?: number): Promise<number> {
+    return new Promise((resolve) => {
+      if (this._datatype === 'http'){
+        if (this._preload_url){
+          this.fetchAndLoad(true).then((count:number) => {
+            resolve(count);
+          });
+        }
 
-      if (this._repeat > 0){
-        setInterval(() => {
-          this.fetch_and_load();
-        }, this._repeat);
-      } else {
-        this.fetch_and_load();
+        if (this._repeat > 0){
+          setInterval(() => {
+            this.fetchAndLoad();
+          }, this._repeat);
+          resolve(0);
+        } else {
+          this.fetchAndLoad().then((count: number) => {
+            resolve(count);
+          });
+        }
       }
-    }
+    });
   }
 
-  set_url(url: string, refetch = true): void{
-    this._url = url;
-    if (refetch){
-      this.fetch_and_load();
-    }
+  setUrl(url: string, refetch = true): Promise<number>{
+    return new Promise((resolve) => {
+      this._url = url;
+      if (refetch){
+        this.fetchAndLoad().then((count: number)=>{
+          resolve(count);
+        });
+      } else{
+        resolve(0);
+      }
+    });
   }
 
-  fetch_and_load(use_preload_url = false): void {
+  fetchAndLoad(use_preload_url = false): Promise<number> {
     let url = '';
     if(use_preload_url && this._preload_url){
       url = this._preload_url;
@@ -207,59 +220,85 @@ constructor(url: string,  // The url to fetch data from
       url = this._url;
     }
 
-    for(let psp of Object.keys(this._psp_widgets)){
-      let _delete;
-      let wrap;
-      let data_key;
+    let count = 0;
+    let total:number;
+    if (this._psp_widgets){
+      total = Object.keys(this._psp_widgets).length;
 
-      if(this._data_options && Object.keys(this._data_options).includes(psp)){
-        //TODO
-        if(Object.keys(this._data_options[psp]).includes(DataOption.DELETE)){
-          _delete = this._data_options[psp][DataOption.DELETE] || false;
-        }
-        if(Object.keys(this._data_options[psp]).includes(DataOption.WRAP)){
-          wrap = this._data_options[psp][DataOption.WRAP] || false;
-        }
-        if(Object.keys(this._data_options[psp]).includes(DataOption.KEY)){
-          data_key = this._data_options[psp][DataOption.KEY] || '';
-        }
-      }
-      this._fetch_and_load_http(url, psp, data_key, wrap, _delete);
+    } else {
+      total = 0;
     }
+
+    return new Promise((resolve) => {
+      for(let psp of Object.keys(this._psp_widgets)){
+        let _delete;
+        let wrap;
+        let data_key;
+
+        if(this._data_options && Object.keys(this._data_options).includes(psp)){
+          //TODO
+          if(Object.keys(this._data_options[psp]).includes(DataOption.DELETE)){
+            _delete = this._data_options[psp][DataOption.DELETE] || false;
+          }
+          if(Object.keys(this._data_options[psp]).includes(DataOption.WRAP)){
+            wrap = this._data_options[psp][DataOption.WRAP] || false;
+          }
+          if(Object.keys(this._data_options[psp]).includes(DataOption.KEY)){
+            data_key = this._data_options[psp][DataOption.KEY] || '';
+          }
+        }
+        this._fetchAndLoadHttp(url, psp, data_key, wrap, _delete).then(() => {
+          count++;
+          if (count >= total){
+            console.log(total);
+            return resolve(count);
+          }
+        });
+      }
+    });
   }
 
-  private _fetch_and_load_http(url: string, psp_key: string, data_key?: string | boolean, wrap?: string | boolean, _delete?: string | boolean): void {
-    var xhr1 = new XMLHttpRequest();
-    xhr1.open('GET', url, true);
-    xhr1.onload = () => { 
-      if(xhr1.response){
-        let jsn = JSON.parse(xhr1.response);
-        if (Object.keys(jsn).length > 0){
-          if (wrap){jsn = [jsn];}
-          if(_delete){this._psp_widgets[psp_key].pspNode.delete();}
-          if(data_key && data_key !== true && data_key !== ''){
-            jsn = jsn[data_key];
-          }
+  private _fetchAndLoadHttp(url: string, psp_key: string, data_key?: string | boolean, wrap?: string | boolean, _delete?: string | boolean): Promise<void> {
+    return new Promise((resolve) => {
+      var xhr1 = new XMLHttpRequest();
+      xhr1.open('GET', url, true);
+      xhr1.onload = () => { 
+        if(xhr1.response){
+          let jsn = JSON.parse(xhr1.response);
+          if (Object.keys(jsn).length > 0){
+            if (wrap){jsn = [jsn];}
+            if(_delete){this._psp_widgets[psp_key].pspNode.delete();}
+            if(data_key && data_key !== true && data_key !== ''){
+              jsn = jsn[data_key];
+            }
 
-          // workaround for heatmap non-refresh issue
-          if(this._view_options && Object.keys(this._view_options).includes(psp_key)){
-            if(Object.keys(this._view_options[psp_key]).includes('view') && this._view_options[psp_key]['view'] == 'heatmap'){
-              if(!Object.keys(this._view_options[psp_key]).includes('columns')) {
-                let columns = Object.keys(jsn[0]);
-                var index = columns.indexOf('index');
-                if (index > -1) {
-                  columns.splice(index, 1);
+            // workaround for heatmap non-refresh issue
+            if(this._view_options && Object.keys(this._view_options).includes(psp_key)){
+              if(Object.keys(this._view_options[psp_key]).includes('view') && this._view_options[psp_key]['view'] == 'heatmap'){
+                if(!Object.keys(this._view_options[psp_key]).includes('columns')) {
+                  let columns = Object.keys(jsn[0]);
+                  var index = columns.indexOf('index');
+                  if (index > -1) {
+                    columns.splice(index, 1);
+                  }
+                  this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(columns));
+                  this._psp_widgets[psp_key].pspNode.removeAttribute('aggregates');
                 }
-                this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(columns));
-                this._psp_widgets[psp_key].pspNode.removeAttribute('aggregates');
               }
             }
+            if(jsn && jsn.length){
+              this._psp_widgets[psp_key].pspNode.update(jsn);
+              setTimeout(() => {
+                resolve();
+              }, 100);
+            } else {
+              resolve();
+            }
           }
-          this._psp_widgets[psp_key].pspNode.update(jsn);
         }
-      }
-    };
-    xhr1.send(null);
+      };
+      xhr1.send(null);
+    });
   }
 
   _url: string;

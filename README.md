@@ -6,7 +6,10 @@
 [![GitHub issues](https://img.shields.io/github/issues/timkpaine/hedgeme.svg)]()
 [![codecov](https://codecov.io/gh/timkpaine/hedgeme/branch/master/graph/badge.svg)](https://codecov.io/gh/timkpaine/hedgeme)
 
-[Cache Data (quilt)](https://quiltdata.com/package/timkpaine/hedgeme)
+[Data Cache](https://quiltdata.com/package/timkpaine/hedgedata)
+
+![](https://raw.githubusercontent.com/timkpaine/hedgeme/master/docs/demo.gif)
+
 
 
 ### Attribution

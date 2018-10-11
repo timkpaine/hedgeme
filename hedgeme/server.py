@@ -1,31 +1,19 @@
 import sys
 import os.path
 import pyEX
-import signal
 import tornado.ioloop
 import tornado.web
-from functools import partial
+
+from hedgedata import Cache
 from .utils import log, parse_args
-from .cache import Cache
 from .metrics import Metrics
 from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler, StockDataHandlerWS, StockMetricsHandler
-from .define import FIELDS
 
 
-def sig_handler(server, cache, sig, frame):
-    io_loop = tornado.ioloop.IOLoop.instance()
-
-    def shutdown():
-        io_loop.stop()
-
-    io_loop.add_callback_from_signal(shutdown)
-    cache.save()
-
-
-def getContext():
+def getContext(arctic_host='localhost'):
     d = {}
     d['tickers'] = pyEX.symbolsDF()
-    d['cache'] = Cache(d['tickers'])
+    d['cache'] = Cache(arctic_host)
     d['metrics'] = Metrics(d['cache'])
     return d
 
@@ -65,17 +53,10 @@ def main(*args, **kwargs):
     log.critical('LISTENING: %s', port)
     application.listen(port)
 
-    cache = context['cache']
-    cache.load('./cache', preload=False)
-    cache.preload(['aapl', 'jpm'], FIELDS)
-
-    signal.signal(signal.SIGTERM, partial(sig_handler, application, cache))
-    signal.signal(signal.SIGINT, partial(sig_handler, application, cache))
-
     try:
         tornado.ioloop.IOLoop.current().start()
     except KeyboardInterrupt:
-        cache.save()
+        log.critical('Exiting...')
 
 if __name__ == "__main__":
     args, kwargs = parse_args(sys.argv)

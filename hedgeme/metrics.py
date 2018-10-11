@@ -14,5 +14,5 @@ class Metrics(object):
         return peerCorrelation(self._cache, target)
 
     def fetch(self, target, type):
-        if type in ('peerCorrelation', 'all'):
-            return json.dumps({'peerCorrelation': self.peerCorrelation(target).replace({np.nan: None}).reset_index().to_dict(orient='records')})
+        if type in ('PEERCORRELATION', 'all'):
+            return json.dumps({'PEERCORRELATION': self.peerCorrelation(target).replace({np.nan: None}).reset_index().to_dict(orient='records')})

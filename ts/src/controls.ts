@@ -37,7 +37,7 @@ function fetch_and_load_company(path:string, loadto:HTMLTableElement){
     xhr1.open('GET', path, true);
     xhr1.onload = function () { 
         if(xhr1.response){
-            var jsn = JSON.parse(xhr1.response)['company'];
+            var jsn = JSON.parse(xhr1.response)['COMPANY'];
             while(loadto.lastChild){
                 loadto.removeChild(loadto.lastChild);
             }
@@ -162,43 +162,43 @@ class ControlsWidget extends Widget {
         let psps_data_options = {
             'chart':{
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'chart'
+                [DataOption.KEY]: 'DAILY'
             },
             'quote': {
                 [DataOption.WRAP]: true,
-                [DataOption.KEY]: 'quote'
+                [DataOption.KEY]: 'QUOTE'
             },
             'dividends':{
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'dividends'
+                [DataOption.KEY]: 'DIVIDENDS'
             },
             'cashflow': {
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'financials'
+                [DataOption.KEY]: 'FINANCIALS'
             },
             'financials': {
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'financials'
+                [DataOption.KEY]: 'FINANCIALS'
             },
             'earnings': {
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'earnings'
+                [DataOption.KEY]: 'EARNINGS'
             },
             'peers': {
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'peers'
+                [DataOption.KEY]: 'PEERS'
             },
             'markets': {
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'markets'
+                [DataOption.KEY]: 'MARKETS'
             },
             'peerCorrelation': {
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'peerCorrelation'
+                [DataOption.KEY]: 'PEERCORRELATION'
             },
             'composition': {
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'composition'
+                [DataOption.KEY]: 'COMPOSITION'
             },
         };
 
@@ -206,11 +206,11 @@ class ControlsWidget extends Widget {
         let table_data_options = {
             'stats': {
                 ['unwrap']: true,
-                ['key']: 'stats'
+                ['key']: 'STATS'
             },
             'news': {
                 ['unwrap']: false,
-                ['key']: 'news',
+                ['key']: 'NEWS',
                 ['raw']: true
             }
         };
@@ -260,7 +260,7 @@ class ControlsWidget extends Widget {
                 _psps_helper.set_url('/api/json/v1/data?ticker=' + input.value);
                 _psps_helper3.set_url('/api/json/v1/metrics?ticker=' + input.value);
                 _tables_helper.set_url('/api/json/v1/data?ticker=' + input.value);
-                fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + input.value, this.companyInfoNode);
+                fetch_and_load_company('/api/json/v1/data?type=COMPANY&ticker=' + input.value, this.companyInfoNode);
                 this.entered = input.value;
             }
 
@@ -280,12 +280,12 @@ class ControlsWidget extends Widget {
         _psps_helper2.start();
         _psps_helper3.start();
         _tables_helper.start();
-        fetch_and_load_company('/api/json/v1/data?type=company&ticker=' + this.def, this.companyInfoNode);
+        fetch_and_load_company('/api/json/v1/data?type=COMPANY&ticker=' + this.def, this.companyInfoNode);
         this.entered = this.def;
 
         setInterval(() => {
-            _fetch_and_load_quote('/api/json/v1/data?type=quote&ticker=' + this.entered, 'quote', 'grid', this.psps['quote'], true, false);
-        }, 500);
+            _fetch_and_load_quote('/api/json/v1/data?type=quote&ticker=' + this.entered, 'QUOTE', 'grid', this.psps['quote'], true, false);
+        }, 5000);
     }
 
     get inputNode(): HTMLInputElement {

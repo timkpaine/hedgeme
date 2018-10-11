@@ -1,4 +1,5 @@
 import json
+import numpy as np
 import pyEX as p
 import tornado.concurrent
 from .base import HTTPHandler, WebSocketHandler
@@ -49,4 +50,8 @@ class MarketsDataHandler(HTTPHandler):
 
     def get(self, *args):
         '''Get the login page'''
-        self.write(json.dumps({'markets': p.marketsDF().to_dict(orient='records')}))
+        df = p.marketsDF()
+        for col in df.select_dtypes(np.datetime64):
+            df[col] = df[col].astype(str)
+
+        self.write(json.dumps({'MARKETS': df.to_dict(orient='records')}))

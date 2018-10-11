@@ -26246,7 +26246,7 @@ class PerspectiveHelper {
                             this._psp_widgets[psp_key].pspNode.update(jsn);
                             setTimeout(() => {
                                 resolve();
-                            }, 100);
+                            }, 1000);
                         }
                         else {
                             resolve();
@@ -37655,6 +37655,11 @@ function fetch_and_load_company(path, loadto) {
         xhr1.send(null);
     });
 }
+function delete_all_children(element) {
+    while (element.lastChild) {
+        element.removeChild(element.lastChild);
+    }
+}
 function autocomplete_ticker(path, value, autocomplete) {
     var xhr1 = new XMLHttpRequest();
     xhr1.open('GET', path, true);
@@ -37662,9 +37667,7 @@ function autocomplete_ticker(path, value, autocomplete) {
         if (xhr1.response) {
             var jsn = JSON.parse(xhr1.response);
             if (jsn) {
-                while (autocomplete.lastChild) {
-                    autocomplete.removeChild(autocomplete.lastChild);
-                }
+                delete_all_children(autocomplete);
                 for (let val of jsn) {
                     let option = document.createElement('option');
                     option.value = val['symbol'];
@@ -37821,11 +37824,8 @@ class ControlsWidget extends widgets_1.Widget {
         let _psps_helper3 = new perspective_widget_1.PerspectiveHelper('/api/json/v1/metrics?ticker=' + this.def, psps3, psps_view_options, psps_data_options, psps_schemas);
         let _tables_helper = new table_1.TableHelper('/api/json/v1/data?ticker=' + this.def, tables, table_data_options);
         input.addEventListener('keyup', (e) => {
-            if (this.last == input.value) {
-                // duplicate
-                return;
-            }
             if (e.keyCode === 13) {
+                delete_all_children(autocomplete);
                 this.displayLoad();
                 _psps_helper.setUrl('/api/json/v1/data?ticker=' + input.value).then((count) => {
                     this.hideLoad(count);
@@ -37841,11 +37841,20 @@ class ControlsWidget extends widgets_1.Widget {
                 });
                 this.entered = input.value;
             }
+            if (this.last == input.value) {
+                // duplicate
+                return;
+            }
             if (e.keyCode !== 13) {
                 autocomplete_ticker('/api/json/v1/autocomplete?partial=' + input.value, input.value, autocomplete);
             }
             this.last = input.value;
         });
+        this.entered = this.def;
+        _fetch_and_load_quote('/api/json/v1/data?type=quote&ticker=' + this.def, 'QUOTE', 'grid', this.psps['quote'], true, false);
+        setInterval(() => {
+            _fetch_and_load_quote('/api/json/v1/data?type=quote&ticker=' + this.entered, 'QUOTE', 'grid', this.psps['quote'], true, false);
+        }, 5000);
         _psps_helper.start().then((count) => {
             this.hideLoad(count);
         });
@@ -37859,10 +37868,6 @@ class ControlsWidget extends widgets_1.Widget {
             this.hideLoad(count);
         });
         fetch_and_load_company('/api/json/v1/data?type=COMPANY&ticker=' + this.def, this.companyInfoNode);
-        this.entered = this.def;
-        setInterval(() => {
-            _fetch_and_load_quote('/api/json/v1/data?type=quote&ticker=' + this.entered, 'QUOTE', 'grid', this.psps['quote'], true, false);
-        }, 5000);
     }
     displayLoad() {
         this.synced = 0;

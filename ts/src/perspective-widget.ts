@@ -290,7 +290,7 @@ constructor(url: string,  // The url to fetch data from
               this._psp_widgets[psp_key].pspNode.update(jsn);
               setTimeout(() => {
                 resolve();
-              }, 100);
+              }, 1000);
             } else {
               resolve();
             }

@@ -1,5 +1,5 @@
 .tableWidget {
-    overflow: scroll !important;
+    overflow-y: scroll !important;
     min-width: 50px;
     min-height: 50px;
     padding: 8px;

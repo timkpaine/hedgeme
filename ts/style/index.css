@@ -35,11 +35,28 @@ body {
   font-family: Arial;
 }
 
+div#header {
+  height:45px;
+  background-color: var(--dark-bg-color3);
+  width: 100px;
+  position: absolute;
+  border-bottom: 1px solid var(--dark-border);
+}
+
+div#header img {
+  height: 40px;
+  object-fit: contain;
+  margin-left: 15px;
+}
 
 #menuBar {
   flex: 0 0 auto;
   background-color: var(--dark-bg-color3);
   color: var(--dark-color);
+  height: 45px;
+  margin-left: 75px;
+  display:flex;
+  align-items: flex-end;
 }
 
 

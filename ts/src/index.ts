@@ -12,8 +12,7 @@ import {
 } from '@phosphor/commands';
 
 import {
-  // BoxPanel, DockPanel,  SplitPanel, StackedPanel, CommandPalette, ContextMenu, MenuBar, Widget, DockLayout, Menu
-  BoxPanel, DockPanel,  SplitPanel, CommandPalette, ContextMenu, MenuBar, Widget, Menu
+  TabPanel, BoxPanel, DockPanel,  SplitPanel, CommandPalette, ContextMenu, MenuBar, Widget, Menu
 } from '@phosphor/widgets';
 
 import '../ts/style/index.css';
@@ -349,11 +348,17 @@ function main(): void {
   /* main area setup */
   BoxPanel.setStretch(dock, 1);
 
-  let main = new SplitPanel();
+  let home = new SplitPanel();
+  home.id = 'home';
+  home.title.label = 'Home';
+
+  home.addWidget(ctrl);
+  home.addWidget(dock);
+  home.setRelativeSizes([.3, .7]);
+
+  let main = new TabPanel();
   main.id = 'main';
-  main.addWidget(ctrl);
-  main.addWidget(dock);
-  main.setRelativeSizes([.3, .7]);
+  main.addWidget(home);
 
   window.onresize = () => { main.update(); };
 

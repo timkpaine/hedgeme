@@ -10,10 +10,10 @@ from .metrics import Metrics
 from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler, StockDataHandlerWS, StockMetricsHandler
 
 
-def getContext(arctic_host='localhost'):
+def getContext(arctic_host='localhost', offline=False):
     d = {}
     d['tickers'] = pyEX.symbolsDF().reset_index()
-    d['cache'] = Cache(arctic_host)
+    d['cache'] = Cache(arctic_host, offline=offline)
     d['metrics'] = Metrics(d['cache'])
     return d
 
@@ -47,7 +47,7 @@ class ServerApplication(tornado.web.Application):
 def main(*args, **kwargs):
     port = kwargs.get('port', 8080)
 
-    context = getContext()
+    context = getContext(offline=True)
 
     application = ServerApplication(context)
     log.critical('LISTENING: %s', port)

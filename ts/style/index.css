@@ -81,7 +81,7 @@ div#header img {
 }
 
 #main > .p-TabBar > .p-TabBar-content > .p-mod-current {
-  border-bottom:3px solid var(--highlight-teal);
+  border-bottom:3px solid var(--highlight-red);
 }
 
 

@@ -12,11 +12,11 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 setup(
     name='hedgeme',
-    version='0.0.2',
+    version='0.0.3',
     description='Financial Analytics',
     long_description=long_description,
     url='https://github.com/timkpaine/hedgeme',
-    download_url='https://github.com/timkpaine/hedgeme/archive/v0.0.2.tar.gz',
+    download_url='https://github.com/timkpaine/hedgeme/archive/v0.0.3.tar.gz',
     author='Tim Paine',
     author_email='timothy.k.paine@gmail.com',
     license='BSD 3 Clause',

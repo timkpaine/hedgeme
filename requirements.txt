@@ -1,11 +1,11 @@
-hedgedata
+hedgedata>=0.0.2
 IPython
 jinja2
 lxml
 numpy
 pandas
 pillow
-pyEX>=0.0.10
+pyEX>=0.1.5
 socketIO_client_nexus
 tornado
 tqdm

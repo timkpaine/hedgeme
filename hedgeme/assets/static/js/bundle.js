@@ -26018,7 +26018,7 @@ class PSPWidget extends widgets_1.Widget {
         super({ node: PSPWidget.createNode() });
         this.addClass('pspwidget');
         this.title.label = name;
-        this.title.closable = true;
+        // this.title.closable = true;
         this.title.caption = `Long description for: ${name}`;
     }
     get pspNode() {
@@ -37987,38 +37987,34 @@ function addCommands(palette) {
     });
 }
 function main() {
-    /* File Menu */
-    let menu = new widgets_1.Menu({ commands });
-    menu.title.label = 'File';
-    menu.title.mnemonic = 0;
-    menu.addItem({ command: 'controls:open' });
-    menu.addItem({ type: 'separator' });
+    let main = new widgets_1.TabPanel();
+    main.id = 'main';
     /* Data Menu */
-    let menu2 = new widgets_1.Menu({ commands });
-    menu2.title.label = 'Data';
-    menu2.title.mnemonic = 0;
-    menu2.addItem({ command: 'market-data:open' });
-    menu2.addItem({ type: 'separator' });
-    menu2.addItem({ command: 'fundamentals:open' });
-    menu2.addItem({ command: 'financials:open' });
-    menu2.addItem({ type: 'separator' });
-    menu2.addItem({ command: 'metrics:open' });
-    menu2.addItem({ type: 'separator' });
-    menu2.addItem({ command: 'markets:open' });
+    let menu = new widgets_1.Menu({ commands });
+    menu.title.label = 'Layout';
+    menu.title.mnemonic = 0;
+    menu.addItem({ command: 'market-data:open' });
+    menu.addItem({ type: 'separator' });
+    menu.addItem({ command: 'fundamentals:open' });
+    menu.addItem({ command: 'financials:open' });
+    menu.addItem({ type: 'separator' });
+    menu.addItem({ command: 'metrics:open' });
+    menu.addItem({ type: 'separator' });
+    menu.addItem({ command: 'markets:open' });
+    menu.addItem({ type: 'separator' });
+    menu.addItem({ command: 'save-dock-layout' });
+    menu.addItem({ type: 'separator' });
+    menu.addItem({ command: 'restore-dock-layout', args: { index: 0 } });
     /* layouts menu */
-    let menu3 = new widgets_1.Menu({ commands });
-    menu3.title.label = 'Layout';
-    menu3.title.mnemonic = 0;
-    menu3.addItem({ command: 'save-dock-layout' });
-    menu3.addItem({ type: 'separator' });
-    menu3.addItem({ command: 'restore-dock-layout', args: { index: 0 } });
+    let menu2 = new widgets_1.Menu({ commands });
+    menu2.title.label = 'Help';
+    menu2.title.mnemonic = 0;
     /* Title bar */
     let header = new Header();
     /* File bar */
     let bar = new widgets_1.MenuBar();
     bar.addMenu(menu);
     bar.addMenu(menu2);
-    bar.addMenu(menu3);
     bar.id = 'menuBar';
     /* context menu */
     let contextMenu = new widgets_1.ContextMenu({ commands });
@@ -38043,6 +38039,7 @@ function main() {
     let earnings = new perspective_widget_1.PSPWidget('Earnings');
     let peers = new perspective_widget_1.PSPWidget('Peers');
     let markets = new perspective_widget_1.PSPWidget('Markets');
+    markets.title.closable = false;
     let peercorrelation = new perspective_widget_1.PSPWidget('PeerCorrelation');
     let composition = new perspective_widget_1.PSPWidget('Composition');
     let psps = { 'chart': performance,
@@ -38070,7 +38067,6 @@ function main() {
     stats_and_comp_panel.addWidget(news);
     refdata_panel.addWidget(stats);
     refdata_panel.addWidget(stats_and_comp_panel);
-    refdata_panel.title.closable = true;
     /* Financials Tab */
     let financials_panel = new widgets_1.SplitPanel();
     let earnings_panel = new widgets_1.BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
@@ -38080,53 +38076,47 @@ function main() {
     earnings_panel.addWidget(psps['dividends']);
     financials_panel.addWidget(psps['cashflow']);
     financials_panel.addWidget(earnings_panel);
-    financials_panel.title.closable = true;
     /* Metrics Tab */
     let metrics_panel = new widgets_1.BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
     metrics_panel.title.label = 'Calculations';
     metrics_panel.addWidget(psps['peerCorrelation']);
     metrics_panel.addWidget(psps['peers']);
-    metrics_panel.title.closable = true;
     /* Market Data Tab */
     let market_data_panel = new widgets_1.BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
     market_data_panel.title.label = 'Market Data';
     market_data_panel.addWidget(psps['chart']);
     market_data_panel.addWidget(psps['quote']);
-    market_data_panel.title.closable = true;
     /* Markets Info */
-    dock.addWidget(market_data_panel);
-    dock.addWidget(refdata_panel, { mode: 'tab-after', ref: market_data_panel });
+    dock.addWidget(refdata_panel);
     dock.addWidget(financials_panel, { mode: 'tab-after', ref: refdata_panel });
-    dock.addWidget(metrics_panel, { mode: 'tab-after', ref: financials_panel });
-    dock.addWidget(psps['markets'], { mode: 'tab-after', ref: metrics_panel });
     /* save/restore layouts */
     let savedLayouts = [];
     /* command palette */
     let palette = new widgets_1.CommandPalette({ commands });
     palette.id = 'palette';
     addCommands(palette);
-    // /* command registry */
-    commands.addCommand('save-dock-layout', {
-        label: 'Save Layout',
-        caption: 'Save the current dock layout',
-        execute: () => {
-            savedLayouts.push(dock.saveLayout());
-            palette.addItem({
-                command: 'restore-dock-layout',
-                category: 'Dock Layout',
-                args: { index: savedLayouts.length - 1 }
-            });
-            menu3.addItem({ command: 'restore-dock-layout', args: { index: savedLayouts.length - 1 } });
-        }
-    });
-    commands.addCommand('restore-dock-layout', {
-        label: args => {
-            return `Restore Layout ${args.index}`;
-        },
-        execute: args => {
-            dock.restoreLayout(savedLayouts[args.index]);
-        }
-    });
+    /* command registry */
+    // commands.addCommand('save-dock-layout', {
+    //   label: 'Save Layout',
+    //   caption: 'Save the current dock layout',
+    //   execute: () => {
+    //     savedLayouts.push(dock.saveLayout());
+    //     palette.addItem({
+    //       command: 'restore-dock-layout',
+    //       category: 'Dock Layout',
+    //       args: { index: savedLayouts.length - 1 }
+    //     });
+    //     menu2.addItem({ command: 'restore-dock-layout', args: {index: savedLayouts.length - 1}});
+    //   }
+    // });
+    // commands.addCommand('restore-dock-layout', {
+    //   label: args => {
+    //     return `Restore Layout ${args.index as number}`;
+    //   },
+    //   execute: args => {
+    //     dock.restoreLayout(savedLayouts[args.index as number]);
+    //   }
+    // });
     // commands.addCommand('controls:open', {
     //   label: 'Controls',
     //   mnemonic: 1,
@@ -38135,46 +38125,46 @@ function main() {
     //     dock.restoreLayout(savedLayouts[0]);
     //   }
     // });
-    commands.addCommand('market-data:open', {
-        label: 'Open Market Data',
-        mnemonic: 2,
-        iconClass: 'fa fa-plus',
-        execute: () => {
-            dock.addWidget(market_data_panel);
-        }
-    });
-    commands.addCommand('fundamentals:open', {
-        label: 'Open Fundamentals Data',
-        mnemonic: 2,
-        iconClass: 'fa fa-plus',
-        execute: () => {
-            dock.addWidget(refdata_panel);
-        }
-    });
-    commands.addCommand('financials:open', {
-        label: 'Open Financials Data',
-        mnemonic: 2,
-        iconClass: 'fa fa-plus',
-        execute: () => {
-            dock.addWidget(financials_panel);
-        }
-    });
-    commands.addCommand('metrics:open', {
-        label: 'Open Calculations Data',
-        mnemonic: 2,
-        iconClass: 'fa fa-plus',
-        execute: () => {
-            dock.addWidget(metrics_panel);
-        }
-    });
-    commands.addCommand('markets:open', {
-        label: 'Open Markets',
-        mnemonic: 2,
-        iconClass: 'fa fa-plus',
-        execute: () => {
-            dock.addWidget(psps['markets']);
-        }
-    });
+    // commands.addCommand('market-data:open', {
+    //   label: 'Open Market Data',
+    //   mnemonic: 2,
+    //   iconClass: 'fa fa-plus',
+    //   execute: () => {
+    //     main.addWidget(market_data_panel);
+    //   }
+    // });
+    // commands.addCommand('fundamentals:open', {
+    //   label: 'Open Fundamentals Data',
+    //   mnemonic: 2,
+    //   iconClass: 'fa fa-plus',
+    //   execute: () => {
+    //     dock.addWidget(refdata_panel);
+    //   }
+    // });
+    // commands.addCommand('financials:open', {
+    //   label: 'Open Financials Data',
+    //   mnemonic: 2,
+    //   iconClass: 'fa fa-plus',
+    //   execute: () => {
+    //     dock.addWidget(financials_panel);
+    //   }
+    // });
+    // commands.addCommand('metrics:open', {
+    //   label: 'Open Calculations Data',
+    //   mnemonic: 2,
+    //   iconClass: 'fa fa-plus',
+    //   execute: () => {
+    //     main.addWidget(metrics_panel);
+    //   }
+    // });
+    // commands.addCommand('markets:open', {
+    //   label: 'Open Markets',
+    //   mnemonic: 2,
+    //   iconClass: 'fa fa-plus',
+    //   execute: () => {
+    //     main.addWidget(psps['markets']);
+    //   }
+    // });
     /* hack for custom sizing */
     // var layout = dock.saveLayout();
     // var sizes: number[] = (layout.main as DockLayout.ISplitAreaConfig).sizes;
@@ -38195,9 +38185,10 @@ function main() {
     home.addWidget(ctrl);
     home.addWidget(dock);
     home.setRelativeSizes([.3, .7]);
-    let main = new widgets_1.TabPanel();
-    main.id = 'main';
     main.addWidget(home);
+    main.addWidget(market_data_panel);
+    main.addWidget(metrics_panel);
+    main.addWidget(psps['markets']);
     window.onresize = () => { main.update(); };
     widgets_1.Widget.attach(header, document.body);
     widgets_1.Widget.attach(bar, document.body);
@@ -55379,7 +55370,7 @@ exports.i(__webpack_require__(391), "");
 exports.i(__webpack_require__(394), "");
 
 // module
-exports.push([module.i, "/*-----------------------------------------------------------------------------\n| Copyright (c) 2014-2017, PhosphorJS Contributors\n|\n| Distributed under the terms of the BSD 3-Clause License.\n|\n| The full license is in the file LICENSE, distributed with this software.\n|----------------------------------------------------------------------------*/\n\n\nbody {\n  display: flex;\n  flex-direction: column;\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n  color: var(--dark-color);\n  background-color: var(--dark-bg-color2);\n  font-family: Arial;\n}\n\ndiv#header {\n  height:45px;\n  background-color: var(--dark-bg-color2);\n  width: 100px;\n  position: absolute;\n  border-bottom: 1px solid var(--dark-border);\n}\n\ndiv#header img {\n  height: 40px;\n  object-fit: contain;\n  margin-left: 15px;\n}\n\n\n#menuBar {\n  flex: 0 0 auto;\n  background-color: var(--dark-bg-color2);\n  color: var(--dark-color);\n  height: 45px;\n  margin-left: 75%;\n  display:flex;\n  justify-content: center;\n}\n\n\n#main {\n  flex: 1 1 auto;\n  top: -45px;\n}\n\n\n#main > .p-TabBar > .p-TabBar-content {\n  padding-left: 30%;\n  padding-right: 30%;\n  border-bottom: 1px solid var(--dark-border);\n}\n\n.p-TabBar > .p-TabBar-content > .p-TabBar-tab {\n  display: flex;\n  align-items: center;\n  text-align: center;\n}\n\n#main > .p-TabBar > .p-TabBar-content > .p-mod-current {\n  border-bottom:3px solid var(--highlight-red);\n}\n\n\n\n#main {\n  flex: 1 1 auto;\n}\n\n\n#palette {\n  min-width: 300px;\n  border-right: 1px solid var(--dark-border);\n}\n\n\n#dock {\n  padding: 4px;\n  background-color: var(--dark-bg-color2);\n}\n", ""]);
+exports.push([module.i, "/*-----------------------------------------------------------------------------\n| Copyright (c) 2014-2017, PhosphorJS Contributors\n|\n| Distributed under the terms of the BSD 3-Clause License.\n|\n| The full license is in the file LICENSE, distributed with this software.\n|----------------------------------------------------------------------------*/\n\n\nbody {\n  display: flex;\n  flex-direction: column;\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n  color: var(--dark-color);\n  background-color: var(--dark-bg-color2);\n  font-family: Arial;\n}\n\ndiv#header {\n  height:45px;\n  background-color: var(--dark-bg-color2);\n  width: 100px;\n  position: absolute;\n  border-bottom: 1px solid var(--dark-border);\n}\n\ndiv#header img {\n  height: 40px;\n  object-fit: contain;\n  margin-left: 15px;\n}\n\n\n#menuBar {\n  flex: 0 0 auto;\n  background-color: var(--dark-bg-color2);\n  color: var(--dark-color);\n  height: 45px;\n  margin-left: 75%;\n  display:flex;\n  justify-content: center;\n}\n\n\n#main {\n  flex: 1 1 auto;\n  top: -45px;\n}\n\n\n#main > .p-TabBar > .p-TabBar-content {\n  padding-left: 20%;\n  padding-right: 20%;\n  border-bottom: 1px solid var(--dark-border);\n}\n\n.p-TabBar > .p-TabBar-content > .p-TabBar-tab {\n  display: flex;\n  align-items: center;\n  text-align: center;\n}\n\n#main > .p-TabBar > .p-TabBar-content > .p-mod-current {\n  border-bottom:3px solid var(--highlight-red);\n}\n\n\n\n#main {\n  flex: 1 1 auto;\n}\n\n\n#palette {\n  min-width: 300px;\n  border-right: 1px solid var(--dark-border);\n}\n\n\n#dock {\n  padding: 4px;\n  background-color: var(--dark-bg-color2);\n}\n", ""]);
 
 // exports
 

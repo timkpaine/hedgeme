@@ -105,38 +105,32 @@ function addCommands(palette:CommandPalette){
 
 
 function main(): void {
-  
-  /* File Menu */
-  let menu = new Menu({ commands });
-  menu.title.label = 'File';
-  menu.title.mnemonic = 0;
-
-  menu.addItem({ command: 'controls:open' });
-  menu.addItem({ type: 'separator'});
+  let main = new TabPanel();
+  main.id = 'main';
 
   /* Data Menu */
-  let menu2 = new Menu({ commands });
-  menu2.title.label = 'Data';
-  menu2.title.mnemonic = 0;
+  let menu = new Menu({ commands });
+  menu.title.label = 'Layout';
+  menu.title.mnemonic = 0;
 
-  menu2.addItem({ command: 'market-data:open'});
-  menu2.addItem({ type: 'separator'});
-  menu2.addItem({ command: 'fundamentals:open'});
-  menu2.addItem({ command: 'financials:open'});
-  menu2.addItem({ type: 'separator'});
-  menu2.addItem({ command: 'metrics:open'});
-  menu2.addItem({ type: 'separator'});
-  menu2.addItem({ command: 'markets:open' });
+  menu.addItem({ command: 'market-data:open'});
+  menu.addItem({ type: 'separator'});
+  menu.addItem({ command: 'fundamentals:open'});
+  menu.addItem({ command: 'financials:open'});
+  menu.addItem({ type: 'separator'});
+  menu.addItem({ command: 'metrics:open'});
+  menu.addItem({ type: 'separator'});
+  menu.addItem({ command: 'markets:open' });
+  menu.addItem({ type: 'separator'});
+  menu.addItem({ command: 'save-dock-layout'});
+  menu.addItem({ type: 'separator'});
+  menu.addItem({ command: 'restore-dock-layout', args: {index: 0}});
+
 
   /* layouts menu */
-  let menu3 = new Menu({ commands });
-  menu3.title.label = 'Layout';
-  menu3.title.mnemonic = 0;
-
-  menu3.addItem({ command: 'save-dock-layout'});
-  menu3.addItem({ type: 'separator'});
-  menu3.addItem({ command: 'restore-dock-layout', args: {index: 0}});
-
+  let menu2 = new Menu({ commands });
+  menu2.title.label = 'Help';
+  menu2.title.mnemonic = 0;
 
   /* Title bar */
   let header = new Header();
@@ -145,7 +139,6 @@ function main(): void {
   let bar = new MenuBar();
   bar.addMenu(menu);
   bar.addMenu(menu2);
-  bar.addMenu(menu3);
   bar.id = 'menuBar';
 
   /* context menu */
@@ -176,6 +169,7 @@ function main(): void {
   let earnings = new PSPWidget('Earnings');
   let peers = new PSPWidget('Peers');
   let markets = new PSPWidget('Markets');
+  markets.title.closable = false;
   let peercorrelation = new PSPWidget('PeerCorrelation');
   let composition = new PSPWidget('Composition');
 
@@ -209,7 +203,6 @@ function main(): void {
   stats_and_comp_panel.addWidget(news);
   refdata_panel.addWidget(stats);
   refdata_panel.addWidget(stats_and_comp_panel);
-  refdata_panel.title.closable = true;
 
   /* Financials Tab */
   let financials_panel = new SplitPanel();
@@ -220,28 +213,22 @@ function main(): void {
   earnings_panel.addWidget(psps['dividends']);
   financials_panel.addWidget(psps['cashflow']);
   financials_panel.addWidget(earnings_panel);
-  financials_panel.title.closable = true;
 
   /* Metrics Tab */
   let metrics_panel = new BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
   metrics_panel.title.label = 'Calculations';
   metrics_panel.addWidget(psps['peerCorrelation']);
   metrics_panel.addWidget(psps['peers']);
-  metrics_panel.title.closable = true;
 
   /* Market Data Tab */
   let market_data_panel = new BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
   market_data_panel.title.label = 'Market Data';
   market_data_panel.addWidget(psps['chart']);
   market_data_panel.addWidget(psps['quote']);
-  market_data_panel.title.closable = true;
 
   /* Markets Info */
-  dock.addWidget(market_data_panel);
-  dock.addWidget(refdata_panel, {mode: 'tab-after', ref: market_data_panel});
+  dock.addWidget(refdata_panel);
   dock.addWidget(financials_panel, {mode: 'tab-after', ref: refdata_panel});
-  dock.addWidget(metrics_panel, {mode: 'tab-after', ref: financials_panel});
-  dock.addWidget(psps['markets'], {mode: 'tab-after', ref: metrics_panel});
 
 
 
@@ -253,29 +240,29 @@ function main(): void {
   palette.id = 'palette';
   addCommands(palette);
 
-  // /* command registry */
-  commands.addCommand('save-dock-layout', {
-    label: 'Save Layout',
-    caption: 'Save the current dock layout',
-    execute: () => {
-      savedLayouts.push(dock.saveLayout());
-      palette.addItem({
-        command: 'restore-dock-layout',
-        category: 'Dock Layout',
-        args: { index: savedLayouts.length - 1 }
-      });
-      menu3.addItem({ command: 'restore-dock-layout', args: {index: savedLayouts.length - 1}});
-    }
-  });
+  /* command registry */
+  // commands.addCommand('save-dock-layout', {
+  //   label: 'Save Layout',
+  //   caption: 'Save the current dock layout',
+  //   execute: () => {
+  //     savedLayouts.push(dock.saveLayout());
+  //     palette.addItem({
+  //       command: 'restore-dock-layout',
+  //       category: 'Dock Layout',
+  //       args: { index: savedLayouts.length - 1 }
+  //     });
+  //     menu2.addItem({ command: 'restore-dock-layout', args: {index: savedLayouts.length - 1}});
+  //   }
+  // });
 
-  commands.addCommand('restore-dock-layout', {
-    label: args => {
-      return `Restore Layout ${args.index as number}`;
-    },
-    execute: args => {
-      dock.restoreLayout(savedLayouts[args.index as number]);
-    }
-  });
+  // commands.addCommand('restore-dock-layout', {
+  //   label: args => {
+  //     return `Restore Layout ${args.index as number}`;
+  //   },
+  //   execute: args => {
+  //     dock.restoreLayout(savedLayouts[args.index as number]);
+  //   }
+  // });
 
   // commands.addCommand('controls:open', {
   //   label: 'Controls',
@@ -286,51 +273,51 @@ function main(): void {
   //   }
   // });
 
-  commands.addCommand('market-data:open', {
-    label: 'Open Market Data',
-    mnemonic: 2,
-    iconClass: 'fa fa-plus',
-    execute: () => {
-      dock.addWidget(market_data_panel);
-    }
-  });
+  // commands.addCommand('market-data:open', {
+  //   label: 'Open Market Data',
+  //   mnemonic: 2,
+  //   iconClass: 'fa fa-plus',
+  //   execute: () => {
+  //     main.addWidget(market_data_panel);
+  //   }
+  // });
 
 
-  commands.addCommand('fundamentals:open', {
-    label: 'Open Fundamentals Data',
-    mnemonic: 2,
-    iconClass: 'fa fa-plus',
-    execute: () => {
-      dock.addWidget(refdata_panel);
-    }
-  });
+  // commands.addCommand('fundamentals:open', {
+  //   label: 'Open Fundamentals Data',
+  //   mnemonic: 2,
+  //   iconClass: 'fa fa-plus',
+  //   execute: () => {
+  //     dock.addWidget(refdata_panel);
+  //   }
+  // });
 
-  commands.addCommand('financials:open', {
-    label: 'Open Financials Data',
-    mnemonic: 2,
-    iconClass: 'fa fa-plus',
-    execute: () => {
-      dock.addWidget(financials_panel);
-    }
-  });
+  // commands.addCommand('financials:open', {
+  //   label: 'Open Financials Data',
+  //   mnemonic: 2,
+  //   iconClass: 'fa fa-plus',
+  //   execute: () => {
+  //     dock.addWidget(financials_panel);
+  //   }
+  // });
 
-  commands.addCommand('metrics:open', {
-    label: 'Open Calculations Data',
-    mnemonic: 2,
-    iconClass: 'fa fa-plus',
-    execute: () => {
-      dock.addWidget(metrics_panel);
-    }
-  });
+  // commands.addCommand('metrics:open', {
+  //   label: 'Open Calculations Data',
+  //   mnemonic: 2,
+  //   iconClass: 'fa fa-plus',
+  //   execute: () => {
+  //     main.addWidget(metrics_panel);
+  //   }
+  // });
 
-  commands.addCommand('markets:open', {
-    label: 'Open Markets',
-    mnemonic: 2,
-    iconClass: 'fa fa-plus',
-    execute: () => {
-      dock.addWidget(psps['markets']);
-    }
-  });
+  // commands.addCommand('markets:open', {
+  //   label: 'Open Markets',
+  //   mnemonic: 2,
+  //   iconClass: 'fa fa-plus',
+  //   execute: () => {
+  //     main.addWidget(psps['markets']);
+  //   }
+  // });
 
   /* hack for custom sizing */
   // var layout = dock.saveLayout();
@@ -356,9 +343,10 @@ function main(): void {
   home.addWidget(dock);
   home.setRelativeSizes([.3, .7]);
 
-  let main = new TabPanel();
-  main.id = 'main';
   main.addWidget(home);
+  main.addWidget(market_data_panel);
+  main.addWidget(metrics_panel);
+  main.addWidget(psps['markets']);
 
   window.onresize = () => { main.update(); };
 

@@ -26,7 +26,7 @@ class PSPWidget extends Widget {
     super({ node: PSPWidget.createNode() });
     this.addClass('pspwidget');
     this.title.label = name;
-    this.title.closable = true;
+    // this.title.closable = true;
     this.title.caption = `Long description for: ${name}`;
   }
 

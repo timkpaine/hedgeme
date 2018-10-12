@@ -69,8 +69,8 @@ div#header img {
 
 
 #main > .p-TabBar > .p-TabBar-content {
-  padding-left: 30%;
-  padding-right: 30%;
+  padding-left: 20%;
+  padding-right: 20%;
   border-bottom: 1px solid var(--dark-border);
 }
 

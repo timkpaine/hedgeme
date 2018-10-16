@@ -26310,38 +26310,58 @@ class TableWidget extends widgets_1.Widget {
             this.tableNode.focus();
         }
     }
-    loadData(jsn, raw) {
+    loadData(jsn, unwrap, raw) {
         while (this.tableNode.lastChild) {
             this.tableNode.removeChild(this.tableNode.lastChild);
         }
         if (jsn) {
-            let first = true;
-            for (let r of Object.keys(jsn)) {
-                let header;
-                if (first) {
-                    header = document.createElement('tr');
-                }
-                let row = document.createElement('tr');
-                for (let c of Object.keys(jsn[r])) {
-                    if (first && header) {
-                        let th = document.createElement('th');
-                        th.textContent = c;
-                        header.appendChild(th);
-                    }
-                    let td = document.createElement('td');
+            if (unwrap) {
+                for (let x of Object.keys(jsn)) {
+                    let row = document.createElement('tr');
+                    let td1 = document.createElement('td');
+                    let td2 = document.createElement('td');
                     if (raw) {
-                        td.innerHTML = jsn[r][c];
+                        td1.innerHTML = x;
+                        td2.innerHTML = jsn[x];
                     }
                     else {
-                        td.textContent = jsn[r][c];
+                        td1.textContent = x;
+                        td2.textContent = jsn[x];
                     }
-                    row.appendChild(td);
+                    row.appendChild(td1);
+                    row.appendChild(td2);
+                    this.tableNode.appendChild(row);
                 }
-                if (first) {
-                    first = false;
-                    this.tableNode.appendChild(header);
+            }
+            else {
+                let first = true;
+                for (let r of Object.keys(jsn)) {
+                    let header;
+                    if (first) {
+                        header = document.createElement('tr');
+                    }
+                    let row = document.createElement('tr');
+                    for (let c of Object.keys(jsn[r])) {
+                        if (first && header) {
+                            let th = document.createElement('th');
+                            th.textContent = c;
+                            header.appendChild(th);
+                        }
+                        let td = document.createElement('td');
+                        if (raw) {
+                            td.innerHTML = jsn[r][c];
+                        }
+                        else {
+                            td.textContent = jsn[r][c];
+                        }
+                        row.appendChild(td);
+                        if (first) {
+                            first = false;
+                            this.tableNode.appendChild(header);
+                        }
+                        this.tableNode.appendChild(row);
+                    }
                 }
-                this.tableNode.appendChild(row);
             }
         }
     }
@@ -26420,11 +26440,15 @@ class TableHelper {
                         let count = 0;
                         for (let table of Object.keys(this._table_widgets)) {
                             let wrap = false;
+                            let unwrap = false;
                             let data_key;
                             let raw = false;
                             if (this._data_options && Object.keys(this._data_options).includes(table)) {
                                 if (Object.keys(this._data_options[table]).includes('wrap')) {
                                     wrap = this._data_options[table]['wrap'] || false;
+                                }
+                                if (Object.keys(this._data_options[table]).includes('unwrap')) {
+                                    unwrap = this._data_options[table]['unwrap'] || false;
                                 }
                                 if (Object.keys(this._data_options[table]).includes('key')) {
                                     data_key = this._data_options[table]['key'] || '';
@@ -26443,7 +26467,10 @@ class TableHelper {
                             if (data_key && data_key !== true && data_key !== '') {
                                 jsn = json[data_key];
                             }
-                            this._table_widgets[table].loadData(jsn, raw);
+                            if (unwrap) {
+                                jsn = jsn[0];
+                            }
+                            this._table_widgets[table].loadData(jsn, unwrap, raw);
                             count++;
                         }
                         resolve(count);
@@ -37760,11 +37787,13 @@ class ControlsWidget extends widgets_1.Widget {
         };
         let table_data_options = {
             'stats': {
-                ['key']: 'STATS'
+                ['key']: 'STATS',
+                ['unwrap']: true
             },
             'news': {
                 ['key']: 'NEWS',
-                ['raw']: true
+                ['raw']: true,
+                ['wrap']: true
             }
         };
         let psps_schemas = {
@@ -37850,44 +37879,44 @@ class ControlsWidget extends widgets_1.Widget {
                 "totalLiabilities": perspective_widget_1.TypeNames.STRING,
                 "totalRevenue": perspective_widget_1.TypeNames.FLOAT
             },
-            'financials': {
-                "EPSSurpriseDollar": perspective_widget_1.TypeNames.FLOAT,
-                "actualEPS": perspective_widget_1.TypeNames.FLOAT,
-                "announceTime": perspective_widget_1.TypeNames.STRING,
-                "consensusEPS": perspective_widget_1.TypeNames.FLOAT,
-                "estimatedChangePercent": perspective_widget_1.TypeNames.FLOAT,
-                "estimatedEPS": perspective_widget_1.TypeNames.FLOAT,
-                "fiscalEndDate": perspective_widget_1.TypeNames.DATETIME,
-                "fiscalPeriod": perspective_widget_1.TypeNames.STRING,
-                "numberOfEstimates": perspective_widget_1.TypeNames.INTEGER,
-                "symbol": perspective_widget_1.TypeNames.STRING,
-                "symbolId": perspective_widget_1.TypeNames.FLOAT,
-                "yearAgo": perspective_widget_1.TypeNames.FLOAT,
-                "yearAgoChangePercent": perspective_widget_1.TypeNames.FLOAT,
-            },
-            'earnings': {
-                "cashChange": perspective_widget_1.TypeNames.FLOAT,
-                "cashFlow": perspective_widget_1.TypeNames.FLOAT,
-                "costOfRevenue": perspective_widget_1.TypeNames.STRING,
-                "currentAssets": perspective_widget_1.TypeNames.STRING,
-                "currentCash": perspective_widget_1.TypeNames.FLOAT,
-                "currentDebt": perspective_widget_1.TypeNames.FLOAT,
-                "grossProfit": perspective_widget_1.TypeNames.STRING,
-                "netIncome": perspective_widget_1.TypeNames.FLOAT,
-                "operatingExpense": perspective_widget_1.TypeNames.STRING,
-                "operatingGainsLosses": perspective_widget_1.TypeNames.STRING,
-                "operatingIncome": perspective_widget_1.TypeNames.STRING,
-                "operatingRevenue": perspective_widget_1.TypeNames.STRING,
-                "reportDate": perspective_widget_1.TypeNames.DATETIME,
-                "researchAndDevelopment": perspective_widget_1.TypeNames.STRING,
-                "shareholderEquity": perspective_widget_1.TypeNames.FLOAT,
-                "symbol": perspective_widget_1.TypeNames.STRING,
-                "totalAssets": perspective_widget_1.TypeNames.FLOAT,
-                "totalCash": perspective_widget_1.TypeNames.STRING,
-                "totalDebt": perspective_widget_1.TypeNames.FLOAT,
-                "totalLiabilities": perspective_widget_1.TypeNames.STRING,
-                "totalRevenue": perspective_widget_1.TypeNames.FLOAT
-            },
+            // 'financials': {
+            //     "EPSSurpriseDollar": TypeNames.FLOAT,
+            //     "actualEPS": TypeNames.FLOAT,
+            //     "announceTime": TypeNames.STRING,
+            //     "consensusEPS": TypeNames.FLOAT,
+            //     "estimatedChangePercent": TypeNames.FLOAT,
+            //     "estimatedEPS": TypeNames.FLOAT,
+            //     "fiscalEndDate": TypeNames.DATETIME,
+            //     "fiscalPeriod": TypeNames.STRING,
+            //     "numberOfEstimates": TypeNames.INTEGER,
+            //     "symbol": TypeNames.STRING,
+            //     "symbolId": TypeNames.FLOAT,
+            //     "yearAgo": TypeNames.FLOAT,
+            //     "yearAgoChangePercent": TypeNames.FLOAT,
+            // },
+            // 'earnings': {
+            //     "cashChange": TypeNames.FLOAT,
+            //     "cashFlow": TypeNames.FLOAT,
+            //     "costOfRevenue": TypeNames.STRING,
+            //     "currentAssets": TypeNames.STRING,
+            //     "currentCash": TypeNames.FLOAT,
+            //     "currentDebt": TypeNames.FLOAT,
+            //     "grossProfit": TypeNames.STRING,
+            //     "netIncome": TypeNames.FLOAT,
+            //     "operatingExpense": TypeNames.STRING,
+            //     "operatingGainsLosses": TypeNames.STRING,
+            //     "operatingIncome": TypeNames.STRING,
+            //     "operatingRevenue": TypeNames.STRING,
+            //     "reportDate": TypeNames.DATETIME,
+            //     "researchAndDevelopment": TypeNames.STRING,
+            //     "shareholderEquity": TypeNames.FLOAT,
+            //     "symbol": TypeNames.STRING,
+            //     "totalAssets": TypeNames.FLOAT,
+            //     "totalCash": TypeNames.STRING,
+            //     "totalDebt": TypeNames.FLOAT,
+            //     "totalLiabilities": TypeNames.STRING,
+            //     "totalRevenue": TypeNames.FLOAT
+            // },
             'peers': {
                 "CEO": perspective_widget_1.TypeNames.STRING,
                 "companyName": perspective_widget_1.TypeNames.STRING,

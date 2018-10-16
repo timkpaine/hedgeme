@@ -37,40 +37,57 @@ class TableWidget extends Widget {
     }
   }
 
-  loadData(jsn: any, raw?: string | boolean){
+  loadData(jsn: any, unwrap?: string | boolean, raw?: string | boolean){
     while(this.tableNode.lastChild){
         this.tableNode.removeChild(this.tableNode.lastChild);
     }
 
     if (jsn){
-      let first = true;
-      for(let r of Object.keys(jsn)){
-        let header;
-        if(first){
-          header = document.createElement('tr');
-        } 
-        let row = document.createElement('tr');
-
-        for(let c of Object.keys(jsn[r])){
-          if(first && header){
-            let th = document.createElement('th');
-            th.textContent = c;
-            header.appendChild(th)
-          }
-          let td = document.createElement('td');
-          if(raw){
-            td.innerHTML = jsn[r][c] as string;
-          } else {
-            td.textContent = jsn[r][c] as string;
-          }
-          row.appendChild(td);
+      if (unwrap){
+        for (let x of Object.keys(jsn)){
+            let row = document.createElement('tr');
+            let td1 = document.createElement('td');
+            let td2 = document.createElement('td');
+            if(raw){
+              td1.innerHTML = x;
+              td2.innerHTML = jsn[x];
+            } else {
+              td1.textContent = x;
+              td2.textContent = jsn[x];
+            }
+            row.appendChild(td1);
+            row.appendChild(td2);
+            this.tableNode.appendChild(row)
         }
+      } else {
+        let first = true;
+        for(let r of Object.keys(jsn)){
+          let header;
+          if(first){
+            header = document.createElement('tr');
+          }
+          let row = document.createElement('tr');
 
-        if(first){
-          first = false;
-          this.tableNode.appendChild(header);
+          for(let c of Object.keys(jsn[r])){
+            if(first && header){
+              let th = document.createElement('th');
+              th.textContent = c;
+              header.appendChild(th)
+            }
+            let td = document.createElement('td');
+            if(raw){
+              td.innerHTML = jsn[r][c] as string;
+            } else {
+              td.textContent = jsn[r][c] as string;
+            }
+            row.appendChild(td);
+            if(first){
+              first = false;
+              this.tableNode.appendChild(header);
+            }
+            this.tableNode.appendChild(row);
+          }
         }
-        this.tableNode.appendChild(row);
       }
     }
   }
@@ -155,12 +172,16 @@ constructor(url: string,  // The url to fetch data from
             let count = 0;
             for(let table of Object.keys(this._table_widgets)){
               let wrap = false;
+              let unwrap = false;
               let data_key;
               let raw = false;
 
               if(this._data_options && Object.keys(this._data_options).includes(table)){
                 if(Object.keys(this._data_options[table]).includes('wrap')){
                   wrap = <boolean>this._data_options[table]['wrap'] || false;
+                }
+                if(Object.keys(this._data_options[table]).includes('unwrap')){
+                  unwrap = <boolean>this._data_options[table]['unwrap'] || false;
                 }
                 if(Object.keys(this._data_options[table]).includes('key')){
                   data_key = this._data_options[table]['key'] || '';
@@ -179,7 +200,8 @@ constructor(url: string,  // The url to fetch data from
               if(data_key && data_key !== true && data_key !== ''){
                 jsn = json[data_key];
               }
-              this._table_widgets[table].loadData(jsn, raw);
+              if (unwrap){jsn = jsn[0];}
+              this._table_widgets[table].loadData(jsn, unwrap, raw);
               count++;
             }
             resolve(count);

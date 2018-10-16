@@ -223,11 +223,13 @@ class ControlsWidget extends Widget {
 
         let table_data_options = {
             'stats': {
-                ['key']: 'STATS'
+                ['key']: 'STATS',
+                ['unwrap']: true
             },
             'news': {
                 ['key']: 'NEWS',
-                ['raw']: true
+                ['raw']: true,
+                ['wrap']: true
             }
         };
 
@@ -314,44 +316,44 @@ class ControlsWidget extends Widget {
                 "totalLiabilities": TypeNames.STRING,
                 "totalRevenue": TypeNames.FLOAT
             },
-            'financials': {
-                "EPSSurpriseDollar": TypeNames.FLOAT,
-                "actualEPS": TypeNames.FLOAT,
-                "announceTime": TypeNames.STRING,
-                "consensusEPS": TypeNames.FLOAT,
-                "estimatedChangePercent": TypeNames.FLOAT,
-                "estimatedEPS": TypeNames.FLOAT,
-                "fiscalEndDate": TypeNames.DATETIME,
-                "fiscalPeriod": TypeNames.STRING,
-                "numberOfEstimates": TypeNames.INTEGER,
-                "symbol": TypeNames.STRING,
-                "symbolId": TypeNames.FLOAT,
-                "yearAgo": TypeNames.FLOAT,
-                "yearAgoChangePercent": TypeNames.FLOAT,
-            },
-            'earnings': {
-                "cashChange": TypeNames.FLOAT,
-                "cashFlow": TypeNames.FLOAT,
-                "costOfRevenue": TypeNames.STRING,
-                "currentAssets": TypeNames.STRING,
-                "currentCash": TypeNames.FLOAT,
-                "currentDebt": TypeNames.FLOAT,
-                "grossProfit": TypeNames.STRING,
-                "netIncome": TypeNames.FLOAT,
-                "operatingExpense": TypeNames.STRING,
-                "operatingGainsLosses": TypeNames.STRING,
-                "operatingIncome": TypeNames.STRING,
-                "operatingRevenue": TypeNames.STRING,
-                "reportDate": TypeNames.DATETIME,
-                "researchAndDevelopment": TypeNames.STRING,
-                "shareholderEquity": TypeNames.FLOAT,
-                "symbol": TypeNames.STRING,
-                "totalAssets": TypeNames.FLOAT,
-                "totalCash": TypeNames.STRING,
-                "totalDebt": TypeNames.FLOAT,
-                "totalLiabilities": TypeNames.STRING,
-                "totalRevenue": TypeNames.FLOAT
-            },
+            // 'financials': {
+            //     "EPSSurpriseDollar": TypeNames.FLOAT,
+            //     "actualEPS": TypeNames.FLOAT,
+            //     "announceTime": TypeNames.STRING,
+            //     "consensusEPS": TypeNames.FLOAT,
+            //     "estimatedChangePercent": TypeNames.FLOAT,
+            //     "estimatedEPS": TypeNames.FLOAT,
+            //     "fiscalEndDate": TypeNames.DATETIME,
+            //     "fiscalPeriod": TypeNames.STRING,
+            //     "numberOfEstimates": TypeNames.INTEGER,
+            //     "symbol": TypeNames.STRING,
+            //     "symbolId": TypeNames.FLOAT,
+            //     "yearAgo": TypeNames.FLOAT,
+            //     "yearAgoChangePercent": TypeNames.FLOAT,
+            // },
+            // 'earnings': {
+            //     "cashChange": TypeNames.FLOAT,
+            //     "cashFlow": TypeNames.FLOAT,
+            //     "costOfRevenue": TypeNames.STRING,
+            //     "currentAssets": TypeNames.STRING,
+            //     "currentCash": TypeNames.FLOAT,
+            //     "currentDebt": TypeNames.FLOAT,
+            //     "grossProfit": TypeNames.STRING,
+            //     "netIncome": TypeNames.FLOAT,
+            //     "operatingExpense": TypeNames.STRING,
+            //     "operatingGainsLosses": TypeNames.STRING,
+            //     "operatingIncome": TypeNames.STRING,
+            //     "operatingRevenue": TypeNames.STRING,
+            //     "reportDate": TypeNames.DATETIME,
+            //     "researchAndDevelopment": TypeNames.STRING,
+            //     "shareholderEquity": TypeNames.FLOAT,
+            //     "symbol": TypeNames.STRING,
+            //     "totalAssets": TypeNames.FLOAT,
+            //     "totalCash": TypeNames.STRING,
+            //     "totalDebt": TypeNames.FLOAT,
+            //     "totalLiabilities": TypeNames.STRING,
+            //     "totalRevenue": TypeNames.FLOAT
+            // },
             'peers': {
                 "CEO": TypeNames.STRING,
                 "companyName": TypeNames.STRING,

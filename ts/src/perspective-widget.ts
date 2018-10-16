@@ -132,12 +132,12 @@ export enum TypeNames {
   FLOAT = 'float',
   INTEGER = 'integer',
   BOOLEAN = 'boolean',
-  DATE = 'date'
+  DATETIME = 'datetime'
 }
 
 // TODO pull from perspective/types
 export type Schema = {
-  [ key: string ]: TypeNames ;
+  [ key: string ]: TypeNames;
 }
 
 export class PerspectiveHelper {
@@ -220,80 +220,72 @@ constructor(url: string,  // The url to fetch data from
       url = this._url;
     }
 
-    let count = 0;
-    let total:number;
-    if (this._psp_widgets){
-      total = Object.keys(this._psp_widgets).length;
-
-    } else {
-      total = 0;
-    }
-
     return new Promise((resolve) => {
-      for(let psp of Object.keys(this._psp_widgets)){
-        let _delete;
-        let wrap;
-        let data_key;
-
-        if(this._data_options && Object.keys(this._data_options).includes(psp)){
-          //TODO
-          if(Object.keys(this._data_options[psp]).includes(DataOption.DELETE)){
-            _delete = this._data_options[psp][DataOption.DELETE] || false;
-          }
-          if(Object.keys(this._data_options[psp]).includes(DataOption.WRAP)){
-            wrap = this._data_options[psp][DataOption.WRAP] || false;
-          }
-          if(Object.keys(this._data_options[psp]).includes(DataOption.KEY)){
-            data_key = this._data_options[psp][DataOption.KEY] || '';
-          }
-        }
-        this._fetchAndLoadHttp(url, psp, data_key, wrap, _delete).then(() => {
-          count++;
-          if (count >= total){
-            console.log(total);
-            return resolve(count);
-          }
-        });
-      }
+      this._fetchAndLoadHttp(url).then((count: number) => {
+          return resolve(count);
+      });
     });
   }
 
-  private _fetchAndLoadHttp(url: string, psp_key: string, data_key?: string | boolean, wrap?: string | boolean, _delete?: string | boolean): Promise<void> {
+  private _fetchAndLoadHttp(url: string): Promise<number> {
     return new Promise((resolve) => {
       var xhr1 = new XMLHttpRequest();
       xhr1.open('GET', url, true);
       xhr1.onload = () => { 
         if(xhr1.response){
-          let jsn = JSON.parse(xhr1.response);
-          if (Object.keys(jsn).length > 0){
-            if (wrap){jsn = [jsn];}
-            if(_delete){this._psp_widgets[psp_key].pspNode.delete();}
-            if(data_key && data_key !== true && data_key !== ''){
-              jsn = jsn[data_key];
-            }
+          let json = JSON.parse(xhr1.response);
+          if (Object.keys(json).length > 0){
+            let count = 0;
+            for(let psp of Object.keys(this._psp_widgets)){
+              let _delete = true;
+              let wrap = false;
+              let data_key = '';
 
-            // workaround for heatmap non-refresh issue
-            if(this._view_options && Object.keys(this._view_options).includes(psp_key)){
-              if(Object.keys(this._view_options[psp_key]).includes('view') && this._view_options[psp_key]['view'] == 'heatmap'){
-                if(!Object.keys(this._view_options[psp_key]).includes('columns')) {
-                  let columns = Object.keys(jsn[0]);
-                  var index = columns.indexOf('index');
-                  if (index > -1) {
-                    columns.splice(index, 1);
-                  }
-                  this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(columns));
-                  this._psp_widgets[psp_key].pspNode.removeAttribute('aggregates');
+              if(this._data_options && Object.keys(this._data_options).includes(psp)){
+                if(Object.keys(this._data_options[psp]).includes(DataOption.DELETE)){
+                  _delete = <boolean>this._data_options[psp][DataOption.DELETE] || false;
                 }
+                if(Object.keys(this._data_options[psp]).includes(DataOption.WRAP)){
+                  wrap = <boolean>this._data_options[psp][DataOption.WRAP] || false;
+                }
+                if(Object.keys(this._data_options[psp]).includes(DataOption.KEY)){
+                  data_key = <string>this._data_options[psp][DataOption.KEY] || '';
+                }
+
+                if(typeof data_key === 'undefined' || data_key === '' || !Object.keys(json).includes(data_key)){
+                  continue;
+                }
+
+                let jsn = json;
+                if(_delete){}; //this._psp_widgets[psp].pspNode.delete();}
+                if(data_key !== ''){
+                  jsn = jsn[data_key];
+                }
+                if (wrap){jsn = [jsn];}
+
+                // workaround for heatmap non-refresh issue
+                if(this._view_options && Object.keys(this._view_options).includes(psp)){
+                  if(Object.keys(this._view_options[psp]).includes('view') && this._view_options[psp]['view'] == 'heatmap'){
+                    if(!Object.keys(this._view_options[psp]).includes('columns')) {
+                      let columns = Object.keys(jsn[0]);
+                      var index = columns.indexOf('index');
+                      if (index > -1) {
+                        columns.splice(index, 1);
+                      }
+                      this._psp_widgets[psp].pspNode.setAttribute('columns', JSON.stringify(columns));
+                      this._psp_widgets[psp].pspNode.removeAttribute('aggregates');
+                    }
+                  }
+                }
+                if(jsn && (jsn.length || Object.keys(jsn).length > 0)){
+                  this._psp_widgets[psp].pspNode.update(jsn);
+                }
+                count++;
               }
             }
-            if(jsn && jsn.length){
-              this._psp_widgets[psp_key].pspNode.update(jsn);
-              setTimeout(() => {
-                resolve();
-              }, 1000);
-            } else {
-              resolve();
-            }
+            setTimeout(() => {
+              resolve(count);
+            }, 1000);
           }
         }
       };
@@ -329,7 +321,6 @@ namespace Private {
     } else if(url.indexOf('comm://') !== -1){
       return  'comm';
     } else{
-      console.log('assuming http');
       return 'http'
     }
   }

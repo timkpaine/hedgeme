@@ -26096,7 +26096,7 @@ var TypeNames;
     TypeNames["FLOAT"] = "float";
     TypeNames["INTEGER"] = "integer";
     TypeNames["BOOLEAN"] = "boolean";
-    TypeNames["DATE"] = "date";
+    TypeNames["DATETIME"] = "datetime";
 })(TypeNames = exports.TypeNames || (exports.TypeNames = {}));
 class PerspectiveHelper {
     constructor(url, // The url to fetch data from
@@ -26176,81 +26176,70 @@ class PerspectiveHelper {
         else {
             url = this._url;
         }
-        let count = 0;
-        let total;
-        if (this._psp_widgets) {
-            total = Object.keys(this._psp_widgets).length;
-        }
-        else {
-            total = 0;
-        }
         return new Promise((resolve) => {
-            for (let psp of Object.keys(this._psp_widgets)) {
-                let _delete;
-                let wrap;
-                let data_key;
-                if (this._data_options && Object.keys(this._data_options).includes(psp)) {
-                    //TODO
-                    if (Object.keys(this._data_options[psp]).includes(DataOption.DELETE)) {
-                        _delete = this._data_options[psp][DataOption.DELETE] || false;
-                    }
-                    if (Object.keys(this._data_options[psp]).includes(DataOption.WRAP)) {
-                        wrap = this._data_options[psp][DataOption.WRAP] || false;
-                    }
-                    if (Object.keys(this._data_options[psp]).includes(DataOption.KEY)) {
-                        data_key = this._data_options[psp][DataOption.KEY] || '';
-                    }
-                }
-                this._fetchAndLoadHttp(url, psp, data_key, wrap, _delete).then(() => {
-                    count++;
-                    if (count >= total) {
-                        console.log(total);
-                        return resolve(count);
-                    }
-                });
-            }
+            this._fetchAndLoadHttp(url).then((count) => {
+                return resolve(count);
+            });
         });
     }
-    _fetchAndLoadHttp(url, psp_key, data_key, wrap, _delete) {
+    _fetchAndLoadHttp(url) {
         return new Promise((resolve) => {
             var xhr1 = new XMLHttpRequest();
             xhr1.open('GET', url, true);
             xhr1.onload = () => {
                 if (xhr1.response) {
-                    let jsn = JSON.parse(xhr1.response);
-                    if (Object.keys(jsn).length > 0) {
-                        if (wrap) {
-                            jsn = [jsn];
-                        }
-                        if (_delete) {
-                            this._psp_widgets[psp_key].pspNode.delete();
-                        }
-                        if (data_key && data_key !== true && data_key !== '') {
-                            jsn = jsn[data_key];
-                        }
-                        // workaround for heatmap non-refresh issue
-                        if (this._view_options && Object.keys(this._view_options).includes(psp_key)) {
-                            if (Object.keys(this._view_options[psp_key]).includes('view') && this._view_options[psp_key]['view'] == 'heatmap') {
-                                if (!Object.keys(this._view_options[psp_key]).includes('columns')) {
-                                    let columns = Object.keys(jsn[0]);
-                                    var index = columns.indexOf('index');
-                                    if (index > -1) {
-                                        columns.splice(index, 1);
-                                    }
-                                    this._psp_widgets[psp_key].pspNode.setAttribute('columns', JSON.stringify(columns));
-                                    this._psp_widgets[psp_key].pspNode.removeAttribute('aggregates');
+                    let json = JSON.parse(xhr1.response);
+                    if (Object.keys(json).length > 0) {
+                        let count = 0;
+                        for (let psp of Object.keys(this._psp_widgets)) {
+                            let _delete = true;
+                            let wrap = false;
+                            let data_key = '';
+                            if (this._data_options && Object.keys(this._data_options).includes(psp)) {
+                                if (Object.keys(this._data_options[psp]).includes(DataOption.DELETE)) {
+                                    _delete = this._data_options[psp][DataOption.DELETE] || false;
                                 }
+                                if (Object.keys(this._data_options[psp]).includes(DataOption.WRAP)) {
+                                    wrap = this._data_options[psp][DataOption.WRAP] || false;
+                                }
+                                if (Object.keys(this._data_options[psp]).includes(DataOption.KEY)) {
+                                    data_key = this._data_options[psp][DataOption.KEY] || '';
+                                }
+                                if (typeof data_key === 'undefined' || data_key === '' || !Object.keys(json).includes(data_key)) {
+                                    continue;
+                                }
+                                let jsn = json;
+                                if (_delete) { }
+                                ; //this._psp_widgets[psp].pspNode.delete();}
+                                if (data_key !== '') {
+                                    jsn = jsn[data_key];
+                                }
+                                if (wrap) {
+                                    jsn = [jsn];
+                                }
+                                // workaround for heatmap non-refresh issue
+                                if (this._view_options && Object.keys(this._view_options).includes(psp)) {
+                                    if (Object.keys(this._view_options[psp]).includes('view') && this._view_options[psp]['view'] == 'heatmap') {
+                                        if (!Object.keys(this._view_options[psp]).includes('columns')) {
+                                            let columns = Object.keys(jsn[0]);
+                                            var index = columns.indexOf('index');
+                                            if (index > -1) {
+                                                columns.splice(index, 1);
+                                            }
+                                            this._psp_widgets[psp].pspNode.setAttribute('columns', JSON.stringify(columns));
+                                            this._psp_widgets[psp].pspNode.removeAttribute('aggregates');
+                                        }
+                                    }
+                                }
+                                if (jsn && (jsn.length || Object.keys(jsn).length > 0)) {
+                                    this._psp_widgets[psp].pspNode.update(jsn);
+                                }
+                                count++;
                             }
                         }
-                        if (jsn && jsn.length) {
-                            this._psp_widgets[psp_key].pspNode.update(jsn);
-                            setTimeout(() => {
-                                resolve();
-                            }, 1000);
-                        }
-                        else {
-                            resolve();
-                        }
+                        setTimeout(() => {
+                            resolve(count);
+                        }, 1000);
                     }
                 }
             };
@@ -26282,7 +26271,6 @@ var Private;
             return 'comm';
         }
         else {
-            console.log('assuming http');
             return 'http';
         }
     }
@@ -26321,58 +26309,38 @@ class TableWidget extends widgets_1.Widget {
             this.tableNode.focus();
         }
     }
-    loadData(jsn, unwrap, raw) {
+    loadData(jsn, raw) {
         while (this.tableNode.lastChild) {
             this.tableNode.removeChild(this.tableNode.lastChild);
         }
         if (jsn) {
-            if (unwrap) {
-                for (let x of Object.keys(jsn)) {
-                    let row = document.createElement('tr');
-                    let td1 = document.createElement('td');
-                    let td2 = document.createElement('td');
+            let first = true;
+            for (let r of Object.keys(jsn)) {
+                let header;
+                if (first) {
+                    header = document.createElement('tr');
+                }
+                let row = document.createElement('tr');
+                for (let c of Object.keys(jsn[r])) {
+                    if (first && header) {
+                        let th = document.createElement('th');
+                        th.textContent = c;
+                        header.appendChild(th);
+                    }
+                    let td = document.createElement('td');
                     if (raw) {
-                        td1.innerHTML = x;
-                        td2.innerHTML = jsn[x];
+                        td.innerHTML = jsn[r][c];
                     }
                     else {
-                        td1.textContent = x;
-                        td2.textContent = jsn[x];
+                        td.textContent = jsn[r][c];
                     }
-                    row.appendChild(td1);
-                    row.appendChild(td2);
-                    this.tableNode.appendChild(row);
+                    row.appendChild(td);
                 }
-            }
-            else {
-                let first = true;
-                for (let r of Object.keys(jsn)) {
-                    let header;
-                    if (first) {
-                        header = document.createElement('tr');
-                    }
-                    let row = document.createElement('tr');
-                    for (let c of Object.keys(jsn[r])) {
-                        if (first && header) {
-                            let th = document.createElement('th');
-                            th.textContent = c;
-                            header.appendChild(th);
-                        }
-                        let td = document.createElement('td');
-                        if (raw) {
-                            td.innerHTML = jsn[r][c];
-                        }
-                        else {
-                            td.textContent = jsn[r][c];
-                        }
-                        row.appendChild(td);
-                    }
-                    if (first) {
-                        first = false;
-                        this.tableNode.appendChild(header);
-                    }
-                    this.tableNode.appendChild(row);
+                if (first) {
+                    first = false;
+                    this.tableNode.appendChild(header);
                 }
+                this.tableNode.appendChild(row);
             }
         }
     }
@@ -26434,57 +26402,51 @@ class TableHelper {
         else {
             url = this._url;
         }
-        let count = 0;
-        let total = Object.keys(this._table_widgets).length;
         return new Promise((resolve) => {
-            for (let table of Object.keys(this._table_widgets)) {
-                let wrap;
-                let unwrap;
-                let data_key;
-                let raw;
-                if (this._data_options && Object.keys(this._data_options).includes(table)) {
-                    if (Object.keys(this._data_options[table]).includes('wrap')) {
-                        wrap = this._data_options[table]['wrap'] || false;
-                    }
-                    if (Object.keys(this._data_options[table]).includes('unwrap')) {
-                        unwrap = this._data_options[table]['unwrap'] || false;
-                    }
-                    if (Object.keys(this._data_options[table]).includes('key')) {
-                        data_key = this._data_options[table]['key'] || '';
-                    }
-                    if (Object.keys(this._data_options[table]).includes('raw')) {
-                        raw = this._data_options[table]['raw'] || false;
-                    }
-                }
-                this._fetchAndLoadHttp(url, table, data_key, wrap, unwrap, raw).then(() => {
-                    count++;
-                    if (count >= total) {
-                        resolve(count);
-                    }
-                });
-            }
+            this._fetchAndLoadHttp(url).then((count) => {
+                resolve(count);
+            });
         });
     }
-    _fetchAndLoadHttp(url, table_key, data_key, wrap, unwrap, raw) {
+    _fetchAndLoadHttp(url) {
         return new Promise((resolve) => {
             var xhr1 = new XMLHttpRequest();
             xhr1.open('GET', url, true);
             xhr1.onload = () => {
                 if (xhr1.response) {
-                    let jsn = JSON.parse(xhr1.response);
-                    if (Object.keys(jsn).length > 0) {
-                        if (wrap) {
-                            jsn = [jsn];
+                    let json = JSON.parse(xhr1.response);
+                    if (Object.keys(json).length > 0) {
+                        let count = 0;
+                        for (let table of Object.keys(this._table_widgets)) {
+                            let wrap = false;
+                            let data_key;
+                            let raw = false;
+                            if (this._data_options && Object.keys(this._data_options).includes(table)) {
+                                if (Object.keys(this._data_options[table]).includes('wrap')) {
+                                    wrap = this._data_options[table]['wrap'] || false;
+                                }
+                                if (Object.keys(this._data_options[table]).includes('key')) {
+                                    data_key = this._data_options[table]['key'] || '';
+                                }
+                                if (Object.keys(this._data_options[table]).includes('raw')) {
+                                    raw = this._data_options[table]['raw'] || false;
+                                }
+                            }
+                            if (data_key && data_key !== true && data_key !== '' && !Object.keys(json).includes(data_key)) {
+                                continue;
+                            }
+                            let jsn = json;
+                            if (wrap) {
+                                jsn = [json];
+                            }
+                            if (data_key && data_key !== true && data_key !== '') {
+                                jsn = json[data_key];
+                            }
+                            this._table_widgets[table].loadData(jsn, raw);
+                            count++;
                         }
-                        if (data_key && data_key !== true && data_key !== '') {
-                            jsn = jsn[data_key];
-                        }
-                        if (unwrap) {
-                            jsn = jsn[0];
-                        }
-                        this._table_widgets[table_key].loadData(jsn, unwrap, raw);
+                        resolve(count);
                     }
-                    resolve();
                 }
             };
             xhr1.send(null);
@@ -37756,7 +37718,7 @@ class ControlsWidget extends widgets_1.Widget {
         let psps_data_options = {
             'chart': {
                 [perspective_widget_1.DataOption.DELETE]: true,
-                [perspective_widget_1.DataOption.KEY]: 'DAILY'
+                [perspective_widget_1.DataOption.KEY]: 'DAILY',
             },
             'quote': {
                 [perspective_widget_1.DataOption.WRAP]: true,
@@ -37797,16 +37759,162 @@ class ControlsWidget extends widgets_1.Widget {
         };
         let table_data_options = {
             'stats': {
-                ['unwrap']: true,
                 ['key']: 'STATS'
             },
             'news': {
-                ['unwrap']: false,
                 ['key']: 'NEWS',
                 ['raw']: true
             }
         };
-        let psps_schemas = {};
+        let psps_schemas = {
+            'chart': {
+                "close": perspective_widget_1.TypeNames.FLOAT,
+                "date": perspective_widget_1.TypeNames.DATETIME,
+                "high": perspective_widget_1.TypeNames.FLOAT,
+                "low": perspective_widget_1.TypeNames.FLOAT,
+                "open": perspective_widget_1.TypeNames.FLOAT,
+                "ticker": perspective_widget_1.TypeNames.STRING,
+            },
+            'quote': {
+                "avgTotalVolume": perspective_widget_1.TypeNames.FLOAT,
+                "calculationPrice": perspective_widget_1.TypeNames.STRING,
+                "change": perspective_widget_1.TypeNames.FLOAT,
+                "changePercent": perspective_widget_1.TypeNames.FLOAT,
+                "close": perspective_widget_1.TypeNames.FLOAT,
+                "closeTime": perspective_widget_1.TypeNames.DATETIME,
+                "companyName": perspective_widget_1.TypeNames.STRING,
+                "delayedPrice": perspective_widget_1.TypeNames.FLOAT,
+                "delayedPriceTime": perspective_widget_1.TypeNames.DATETIME,
+                "extendedChange": perspective_widget_1.TypeNames.FLOAT,
+                "extendedChangePercent": perspective_widget_1.TypeNames.FLOAT,
+                "extendedPrice": perspective_widget_1.TypeNames.FLOAT,
+                "extendedPriceTime": perspective_widget_1.TypeNames.DATETIME,
+                "high": perspective_widget_1.TypeNames.FLOAT,
+                "iexAskPrice": perspective_widget_1.TypeNames.FLOAT,
+                "iexAskSize": perspective_widget_1.TypeNames.FLOAT,
+                "iexBidPrice": perspective_widget_1.TypeNames.FLOAT,
+                "iexBidSize": perspective_widget_1.TypeNames.FLOAT,
+                "iexLastUpdated": perspective_widget_1.TypeNames.DATETIME,
+                "iexMarketPercent": perspective_widget_1.TypeNames.FLOAT,
+                "iexRealtimePrice": perspective_widget_1.TypeNames.FLOAT,
+                "iexRealtimeSize": perspective_widget_1.TypeNames.INTEGER,
+                "iexVolume": perspective_widget_1.TypeNames.FLOAT,
+                "latestPrice": perspective_widget_1.TypeNames.FLOAT,
+                "latestSource": perspective_widget_1.TypeNames.STRING,
+                "latestTime": perspective_widget_1.TypeNames.DATETIME,
+                "latestUpdate": perspective_widget_1.TypeNames.FLOAT,
+                "latestVolume": perspective_widget_1.TypeNames.FLOAT,
+                "low": perspective_widget_1.TypeNames.FLOAT,
+                "marketCap": perspective_widget_1.TypeNames.FLOAT,
+                "open": perspective_widget_1.TypeNames.FLOAT,
+                "openTime": perspective_widget_1.TypeNames.DATETIME,
+                "peRatio": perspective_widget_1.TypeNames.FLOAT,
+                "previousClose": perspective_widget_1.TypeNames.FLOAT,
+                "primaryExchange": perspective_widget_1.TypeNames.STRING,
+                "sector": perspective_widget_1.TypeNames.STRING,
+                "week52High": perspective_widget_1.TypeNames.FLOAT,
+                "week52Low": perspective_widget_1.TypeNames.FLOAT,
+                "ytdChange": perspective_widget_1.TypeNames.FLOAT,
+            },
+            'dividends': {
+                "amount": perspective_widget_1.TypeNames.FLOAT,
+                "declaredDate": perspective_widget_1.TypeNames.DATETIME,
+                "flag": perspective_widget_1.TypeNames.STRING,
+                "indicated": perspective_widget_1.TypeNames.STRING,
+                "paymentDate": perspective_widget_1.TypeNames.DATETIME,
+                "qualified": perspective_widget_1.TypeNames.STRING,
+                "recordDate": perspective_widget_1.TypeNames.DATETIME,
+                "type": perspective_widget_1.TypeNames.STRING,
+            },
+            'cashflow': {
+                "cashChange": perspective_widget_1.TypeNames.FLOAT,
+                "cashFlow": perspective_widget_1.TypeNames.FLOAT,
+                "costOfRevenue": perspective_widget_1.TypeNames.STRING,
+                "currentAssets": perspective_widget_1.TypeNames.STRING,
+                "currentCash": perspective_widget_1.TypeNames.FLOAT,
+                "currentDebt": perspective_widget_1.TypeNames.FLOAT,
+                "grossProfit": perspective_widget_1.TypeNames.STRING,
+                "netIncome": perspective_widget_1.TypeNames.FLOAT,
+                "operatingExpense": perspective_widget_1.TypeNames.STRING,
+                "operatingGainsLosses": perspective_widget_1.TypeNames.STRING,
+                "operatingIncome": perspective_widget_1.TypeNames.STRING,
+                "operatingRevenue": perspective_widget_1.TypeNames.STRING,
+                "reportDate": perspective_widget_1.TypeNames.DATETIME,
+                "researchAndDevelopment": perspective_widget_1.TypeNames.STRING,
+                "shareholderEquity": perspective_widget_1.TypeNames.FLOAT,
+                "symbol": perspective_widget_1.TypeNames.STRING,
+                "totalAssets": perspective_widget_1.TypeNames.FLOAT,
+                "totalCash": perspective_widget_1.TypeNames.STRING,
+                "totalDebt": perspective_widget_1.TypeNames.FLOAT,
+                "totalLiabilities": perspective_widget_1.TypeNames.STRING,
+                "totalRevenue": perspective_widget_1.TypeNames.FLOAT
+            },
+            'financials': {
+                "EPSSurpriseDollar": perspective_widget_1.TypeNames.FLOAT,
+                "actualEPS": perspective_widget_1.TypeNames.FLOAT,
+                "announceTime": perspective_widget_1.TypeNames.STRING,
+                "consensusEPS": perspective_widget_1.TypeNames.FLOAT,
+                "estimatedChangePercent": perspective_widget_1.TypeNames.FLOAT,
+                "estimatedEPS": perspective_widget_1.TypeNames.FLOAT,
+                "fiscalEndDate": perspective_widget_1.TypeNames.DATETIME,
+                "fiscalPeriod": perspective_widget_1.TypeNames.STRING,
+                "numberOfEstimates": perspective_widget_1.TypeNames.INTEGER,
+                "symbol": perspective_widget_1.TypeNames.STRING,
+                "symbolId": perspective_widget_1.TypeNames.INTEGER,
+                "yearAgo": perspective_widget_1.TypeNames.FLOAT,
+                "yearAgoChangePercent": perspective_widget_1.TypeNames.FLOAT,
+            },
+            'earnings': {
+                "cashChange": perspective_widget_1.TypeNames.FLOAT,
+                "cashFlow": perspective_widget_1.TypeNames.FLOAT,
+                "costOfRevenue": perspective_widget_1.TypeNames.STRING,
+                "currentAssets": perspective_widget_1.TypeNames.STRING,
+                "currentCash": perspective_widget_1.TypeNames.FLOAT,
+                "currentDebt": perspective_widget_1.TypeNames.FLOAT,
+                "grossProfit": perspective_widget_1.TypeNames.STRING,
+                "netIncome": perspective_widget_1.TypeNames.FLOAT,
+                "operatingExpense": perspective_widget_1.TypeNames.STRING,
+                "operatingGainsLosses": perspective_widget_1.TypeNames.STRING,
+                "operatingIncome": perspective_widget_1.TypeNames.STRING,
+                "operatingRevenue": perspective_widget_1.TypeNames.STRING,
+                "reportDate": perspective_widget_1.TypeNames.DATETIME,
+                "researchAndDevelopment": perspective_widget_1.TypeNames.STRING,
+                "shareholderEquity": perspective_widget_1.TypeNames.FLOAT,
+                "symbol": perspective_widget_1.TypeNames.STRING,
+                "totalAssets": perspective_widget_1.TypeNames.FLOAT,
+                "totalCash": perspective_widget_1.TypeNames.STRING,
+                "totalDebt": perspective_widget_1.TypeNames.FLOAT,
+                "totalLiabilities": perspective_widget_1.TypeNames.STRING,
+                "totalRevenue": perspective_widget_1.TypeNames.FLOAT
+            },
+            'peers': {
+                "CEO": perspective_widget_1.TypeNames.STRING,
+                "companyName": perspective_widget_1.TypeNames.STRING,
+                "description": perspective_widget_1.TypeNames.STRING,
+                "exchange": perspective_widget_1.TypeNames.STRING,
+                "industry": perspective_widget_1.TypeNames.STRING,
+                "issueType": perspective_widget_1.TypeNames.STRING,
+                "sector": perspective_widget_1.TypeNames.STRING,
+                "tags": perspective_widget_1.TypeNames.FLOAT,
+                "website": perspective_widget_1.TypeNames.STRING,
+            },
+            'markets': {
+                "lastUpdated": perspective_widget_1.TypeNames.DATETIME,
+                "marketPercent": perspective_widget_1.TypeNames.FLOAT,
+                "mic": perspective_widget_1.TypeNames.STRING,
+                "tapeA": perspective_widget_1.TypeNames.FLOAT,
+                "tapeB": perspective_widget_1.TypeNames.FLOAT,
+                "tapeC": perspective_widget_1.TypeNames.FLOAT,
+                "tapeId": perspective_widget_1.TypeNames.STRING,
+                "venueName": perspective_widget_1.TypeNames.STRING,
+                "volume": perspective_widget_1.TypeNames.FLOAT,
+            },
+            'composition': {
+                "Symbol": perspective_widget_1.TypeNames.STRING,
+                "Name": perspective_widget_1.TypeNames.STRING,
+                "Percent": perspective_widget_1.TypeNames.FLOAT
+            },
+        };
         let psps1 = { 'chart': this.psps['chart'],
             'quote': this.psps['quote'],
             'dividends': this.psps['dividends'],

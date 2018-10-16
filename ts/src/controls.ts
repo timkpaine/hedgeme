@@ -7,7 +7,7 @@ import {
 } from '@phosphor/widgets';
 
 import {
-    PSPWidget, PerspectiveHelper, ViewOption, DataOption
+    PSPWidget, PerspectiveHelper, ViewOption, DataOption, TypeNames
 } from './perspective-widget';
 
 import {
@@ -180,7 +180,7 @@ class ControlsWidget extends Widget {
         let psps_data_options = {
             'chart':{
                 [DataOption.DELETE]: true,
-                [DataOption.KEY]: 'DAILY'
+                [DataOption.KEY]: 'DAILY',
             },
             'quote': {
                 [DataOption.WRAP]: true,
@@ -223,17 +223,163 @@ class ControlsWidget extends Widget {
 
         let table_data_options = {
             'stats': {
-                ['unwrap']: true,
                 ['key']: 'STATS'
             },
             'news': {
-                ['unwrap']: false,
                 ['key']: 'NEWS',
                 ['raw']: true
             }
         };
 
-        let psps_schemas = {};
+        let psps_schemas = {
+            'chart': {
+                "close": TypeNames.FLOAT,
+                "date": TypeNames.DATETIME,
+                "high": TypeNames.FLOAT,
+                "low": TypeNames.FLOAT,
+                "open": TypeNames.FLOAT,
+                "ticker": TypeNames.STRING,
+            },
+            'quote': {
+                "avgTotalVolume": TypeNames.FLOAT,
+                "calculationPrice": TypeNames.STRING,
+                "change": TypeNames.FLOAT,
+                "changePercent": TypeNames.FLOAT,
+                "close": TypeNames.FLOAT,
+                "closeTime": TypeNames.DATETIME,
+                "companyName": TypeNames.STRING,
+                "delayedPrice": TypeNames.FLOAT,
+                "delayedPriceTime": TypeNames.DATETIME,
+                "extendedChange": TypeNames.FLOAT,
+                "extendedChangePercent": TypeNames.FLOAT,
+                "extendedPrice": TypeNames.FLOAT,
+                "extendedPriceTime": TypeNames.DATETIME,
+                "high": TypeNames.FLOAT,
+                "iexAskPrice": TypeNames.FLOAT,
+                "iexAskSize": TypeNames.FLOAT,
+                "iexBidPrice": TypeNames.FLOAT,
+                "iexBidSize": TypeNames.FLOAT,
+                "iexLastUpdated": TypeNames.DATETIME,
+                "iexMarketPercent": TypeNames.FLOAT,
+                "iexRealtimePrice": TypeNames.FLOAT,
+                "iexRealtimeSize": TypeNames.INTEGER,
+                "iexVolume": TypeNames.FLOAT,
+                "latestPrice": TypeNames.FLOAT,
+                "latestSource": TypeNames.STRING,
+                "latestTime": TypeNames.DATETIME,
+                "latestUpdate": TypeNames.FLOAT,
+                "latestVolume": TypeNames.FLOAT,
+                "low": TypeNames.FLOAT,
+                "marketCap": TypeNames.FLOAT,
+                "open": TypeNames.FLOAT,
+                "openTime": TypeNames.DATETIME,
+                "peRatio": TypeNames.FLOAT,
+                "previousClose": TypeNames.FLOAT,
+                "primaryExchange": TypeNames.STRING,
+                "sector": TypeNames.STRING,
+                "week52High": TypeNames.FLOAT,
+                "week52Low": TypeNames.FLOAT,
+                "ytdChange": TypeNames.FLOAT,
+            },
+            'dividends':{
+                "amount": TypeNames.FLOAT,
+                "declaredDate": TypeNames.DATETIME,
+                "flag": TypeNames.STRING,
+                "indicated": TypeNames.STRING,
+                "paymentDate": TypeNames.DATETIME,
+                "qualified": TypeNames.STRING,
+                "recordDate": TypeNames.DATETIME,
+                "type": TypeNames.STRING,
+            },
+            'cashflow': {
+                "cashChange": TypeNames.FLOAT,
+                "cashFlow": TypeNames.FLOAT,
+                "costOfRevenue": TypeNames.STRING,
+                "currentAssets": TypeNames.STRING,
+                "currentCash": TypeNames.FLOAT,
+                "currentDebt": TypeNames.FLOAT,
+                "grossProfit": TypeNames.STRING,
+                "netIncome": TypeNames.FLOAT,
+                "operatingExpense": TypeNames.STRING,
+                "operatingGainsLosses": TypeNames.STRING,
+                "operatingIncome": TypeNames.STRING,
+                "operatingRevenue": TypeNames.STRING,
+                "reportDate": TypeNames.DATETIME,
+                "researchAndDevelopment": TypeNames.STRING,
+                "shareholderEquity": TypeNames.FLOAT,
+                "symbol": TypeNames.STRING,
+                "totalAssets": TypeNames.FLOAT,
+                "totalCash": TypeNames.STRING,
+                "totalDebt": TypeNames.FLOAT,
+                "totalLiabilities": TypeNames.STRING,
+                "totalRevenue": TypeNames.FLOAT
+            },
+            'financials': {
+                "EPSSurpriseDollar": TypeNames.FLOAT,
+                "actualEPS": TypeNames.FLOAT,
+                "announceTime": TypeNames.STRING,
+                "consensusEPS": TypeNames.FLOAT,
+                "estimatedChangePercent": TypeNames.FLOAT,
+                "estimatedEPS": TypeNames.FLOAT,
+                "fiscalEndDate": TypeNames.DATETIME,
+                "fiscalPeriod": TypeNames.STRING,
+                "numberOfEstimates": TypeNames.INTEGER,
+                "symbol": TypeNames.STRING,
+                "symbolId": TypeNames.INTEGER,
+                "yearAgo": TypeNames.FLOAT,
+                "yearAgoChangePercent": TypeNames.FLOAT,
+            },
+            'earnings': {
+                "cashChange": TypeNames.FLOAT,
+                "cashFlow": TypeNames.FLOAT,
+                "costOfRevenue": TypeNames.STRING,
+                "currentAssets": TypeNames.STRING,
+                "currentCash": TypeNames.FLOAT,
+                "currentDebt": TypeNames.FLOAT,
+                "grossProfit": TypeNames.STRING,
+                "netIncome": TypeNames.FLOAT,
+                "operatingExpense": TypeNames.STRING,
+                "operatingGainsLosses": TypeNames.STRING,
+                "operatingIncome": TypeNames.STRING,
+                "operatingRevenue": TypeNames.STRING,
+                "reportDate": TypeNames.DATETIME,
+                "researchAndDevelopment": TypeNames.STRING,
+                "shareholderEquity": TypeNames.FLOAT,
+                "symbol": TypeNames.STRING,
+                "totalAssets": TypeNames.FLOAT,
+                "totalCash": TypeNames.STRING,
+                "totalDebt": TypeNames.FLOAT,
+                "totalLiabilities": TypeNames.STRING,
+                "totalRevenue": TypeNames.FLOAT
+            },
+            'peers': {
+                "CEO": TypeNames.STRING,
+                "companyName": TypeNames.STRING,
+                "description": TypeNames.STRING,
+                "exchange": TypeNames.STRING,
+                "industry": TypeNames.STRING,
+                "issueType": TypeNames.STRING,
+                "sector": TypeNames.STRING,
+                "tags": TypeNames.FLOAT,
+                "website": TypeNames.STRING,
+            },
+            'markets': {
+                "lastUpdated": TypeNames.DATETIME,
+                "marketPercent": TypeNames.FLOAT,
+                "mic": TypeNames.STRING,
+                "tapeA": TypeNames.FLOAT,
+                "tapeB": TypeNames.FLOAT,
+                "tapeC": TypeNames.FLOAT,
+                "tapeId": TypeNames.STRING,
+                "venueName": TypeNames.STRING,
+                "volume": TypeNames.FLOAT,
+            },
+            'composition': {
+                "Symbol": TypeNames.STRING,
+                "Name": TypeNames.STRING,
+                "Percent": TypeNames.FLOAT
+            },
+        };
 
         let psps1 = {'chart': this.psps['chart'],
                      'quote': this.psps['quote'],

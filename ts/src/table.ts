@@ -37,58 +37,40 @@ class TableWidget extends Widget {
     }
   }
 
-  loadData(jsn: any, unwrap?: string | boolean, raw?: string | boolean){
+  loadData(jsn: any, raw?: string | boolean){
     while(this.tableNode.lastChild){
         this.tableNode.removeChild(this.tableNode.lastChild);
     }
 
     if (jsn){
-      if (unwrap){
-        for (let x of Object.keys(jsn)){
-            let row = document.createElement('tr');
-            let td1 = document.createElement('td');
-            let td2 = document.createElement('td');
-            if(raw){
-              td1.innerHTML = x;
-              td2.innerHTML = jsn[x];
-            } else {
-              td1.textContent = x;
-              td2.textContent = jsn[x];
-            }
-            row.appendChild(td1);
-            row.appendChild(td2);
-            this.tableNode.appendChild(row)
-        }
-      } else {
-        let first = true;
-        for(let r of Object.keys(jsn)){
-          let header;
-          if(first){
-            header = document.createElement('tr');
-          } 
-          let row = document.createElement('tr');
+      let first = true;
+      for(let r of Object.keys(jsn)){
+        let header;
+        if(first){
+          header = document.createElement('tr');
+        } 
+        let row = document.createElement('tr');
 
-          for(let c of Object.keys(jsn[r])){
-            if(first && header){
-              let th = document.createElement('th');
-              th.textContent = c;
-              header.appendChild(th)
-            }
-            let td = document.createElement('td');
-            if(raw){
-              td.innerHTML = jsn[r][c] as string;
-            } else {
-              td.textContent = jsn[r][c] as string;
-            }
-            row.appendChild(td);
+        for(let c of Object.keys(jsn[r])){
+          if(first && header){
+            let th = document.createElement('th');
+            th.textContent = c;
+            header.appendChild(th)
           }
-
-          if(first){
-            first = false;
-            this.tableNode.appendChild(header);
+          let td = document.createElement('td');
+          if(raw){
+            td.innerHTML = jsn[r][c] as string;
+          } else {
+            td.textContent = jsn[r][c] as string;
           }
-          this.tableNode.appendChild(row);
+          row.appendChild(td);
         }
+
+        if(first){
+          first = false;
+          this.tableNode.appendChild(header);
+        }
+        this.tableNode.appendChild(row);
       }
     }
   }
@@ -154,56 +136,54 @@ constructor(url: string,  // The url to fetch data from
       url = this._url;
     }
 
-    let count = 0;
-    let total = Object.keys(this._table_widgets).length;
-
     return new Promise((resolve) => {
-      for(let table of Object.keys(this._table_widgets)){
-        let wrap;
-        let unwrap;
-        let data_key;
-        let raw;
-
-        if(this._data_options && Object.keys(this._data_options).includes(table)){
-          if(Object.keys(this._data_options[table]).includes('wrap')){
-            wrap = this._data_options[table]['wrap'] || false;
-          }
-          if(Object.keys(this._data_options[table]).includes('unwrap')){
-            unwrap = this._data_options[table]['unwrap'] || false;
-          }
-          if(Object.keys(this._data_options[table]).includes('key')){
-            data_key = this._data_options[table]['key'] || '';
-          }
-          if(Object.keys(this._data_options[table]).includes('raw')){
-            raw = this._data_options[table]['raw'] || false;
-          }
-        }
-        this._fetchAndLoadHttp(url, table, data_key, wrap, unwrap, raw).then(() => {
-          count++;
-          if (count >= total){
-            resolve(count);
-          }
-        });
-      }
+      this._fetchAndLoadHttp(url).then((count: number) => {
+        resolve(count);
+      });
     });
   }
 
-  private _fetchAndLoadHttp(url: string, table_key: string, data_key?: string | boolean, wrap?: string | boolean, unwrap?: string | boolean, raw?: string | boolean): Promise<void> {
+  private _fetchAndLoadHttp(url: string): Promise<number> {
     return new Promise((resolve) => {
       var xhr1 = new XMLHttpRequest();
       xhr1.open('GET', url, true);
       xhr1.onload = () => { 
         if(xhr1.response){
-          let jsn = JSON.parse(xhr1.response);
-          if (Object.keys(jsn).length > 0){
-            if (wrap){jsn = [jsn];}
-            if(data_key && data_key !== true && data_key !== ''){
-              jsn = jsn[data_key];
+          let json = JSON.parse(xhr1.response);
+
+          if (Object.keys(json).length > 0){
+            let count = 0;
+            for(let table of Object.keys(this._table_widgets)){
+              let wrap = false;
+              let data_key;
+              let raw = false;
+
+              if(this._data_options && Object.keys(this._data_options).includes(table)){
+                if(Object.keys(this._data_options[table]).includes('wrap')){
+                  wrap = <boolean>this._data_options[table]['wrap'] || false;
+                }
+                if(Object.keys(this._data_options[table]).includes('key')){
+                  data_key = this._data_options[table]['key'] || '';
+                }
+                if(Object.keys(this._data_options[table]).includes('raw')){
+                  raw = <boolean>this._data_options[table]['raw'] || false;
+                }
+              }
+
+              if(data_key && data_key !== true && data_key !== '' && !Object.keys(json).includes(data_key)){
+                  continue;
+              }
+
+              let jsn = json;
+              if (wrap){jsn = [json];}
+              if(data_key && data_key !== true && data_key !== ''){
+                jsn = json[data_key];
+              }
+              this._table_widgets[table].loadData(jsn, raw);
+              count++;
             }
-            if (unwrap){jsn = jsn[0];}
-            this._table_widgets[table_key].loadData(jsn, unwrap, raw);
+            resolve(count);
           }
-          resolve();
         }
       };
       xhr1.send(null);

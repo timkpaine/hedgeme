@@ -132,7 +132,7 @@ export enum TypeNames {
   FLOAT = 'float',
   INTEGER = 'integer',
   BOOLEAN = 'boolean',
-  DATETIME = 'datetime'
+  DATETIME = 'date'
 }
 
 // TODO pull from perspective/types
@@ -257,7 +257,7 @@ constructor(url: string,  // The url to fetch data from
                 }
 
                 let jsn = json;
-                if(_delete){}; //this._psp_widgets[psp].pspNode.delete();}
+                if(_delete){this._psp_widgets[psp].pspNode.delete();}
                 if(data_key !== ''){
                   jsn = jsn[data_key];
                 }

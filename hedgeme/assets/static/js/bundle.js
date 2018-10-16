@@ -26096,7 +26096,7 @@ var TypeNames;
     TypeNames["FLOAT"] = "float";
     TypeNames["INTEGER"] = "integer";
     TypeNames["BOOLEAN"] = "boolean";
-    TypeNames["DATETIME"] = "datetime";
+    TypeNames["DATETIME"] = "date";
 })(TypeNames = exports.TypeNames || (exports.TypeNames = {}));
 class PerspectiveHelper {
     constructor(url, // The url to fetch data from
@@ -26209,8 +26209,9 @@ class PerspectiveHelper {
                                     continue;
                                 }
                                 let jsn = json;
-                                if (_delete) { }
-                                ; //this._psp_widgets[psp].pspNode.delete();}
+                                if (_delete) {
+                                    this._psp_widgets[psp].pspNode.delete();
+                                }
                                 if (data_key !== '') {
                                     jsn = jsn[data_key];
                                 }
@@ -37777,7 +37778,7 @@ class ControlsWidget extends widgets_1.Widget {
             },
             'quote': {
                 "avgTotalVolume": perspective_widget_1.TypeNames.FLOAT,
-                "calculationPrice": perspective_widget_1.TypeNames.STRING,
+                "calculationPrice": perspective_widget_1.TypeNames.FLOAT,
                 "change": perspective_widget_1.TypeNames.FLOAT,
                 "changePercent": perspective_widget_1.TypeNames.FLOAT,
                 "close": perspective_widget_1.TypeNames.FLOAT,
@@ -37797,7 +37798,7 @@ class ControlsWidget extends widgets_1.Widget {
                 "iexLastUpdated": perspective_widget_1.TypeNames.DATETIME,
                 "iexMarketPercent": perspective_widget_1.TypeNames.FLOAT,
                 "iexRealtimePrice": perspective_widget_1.TypeNames.FLOAT,
-                "iexRealtimeSize": perspective_widget_1.TypeNames.INTEGER,
+                "iexRealtimeSize": perspective_widget_1.TypeNames.FLOAT,
                 "iexVolume": perspective_widget_1.TypeNames.FLOAT,
                 "latestPrice": perspective_widget_1.TypeNames.FLOAT,
                 "latestSource": perspective_widget_1.TypeNames.STRING,
@@ -37860,7 +37861,7 @@ class ControlsWidget extends widgets_1.Widget {
                 "fiscalPeriod": perspective_widget_1.TypeNames.STRING,
                 "numberOfEstimates": perspective_widget_1.TypeNames.INTEGER,
                 "symbol": perspective_widget_1.TypeNames.STRING,
-                "symbolId": perspective_widget_1.TypeNames.INTEGER,
+                "symbolId": perspective_widget_1.TypeNames.FLOAT,
                 "yearAgo": perspective_widget_1.TypeNames.FLOAT,
                 "yearAgoChangePercent": perspective_widget_1.TypeNames.FLOAT,
             },
@@ -37895,7 +37896,7 @@ class ControlsWidget extends widgets_1.Widget {
                 "industry": perspective_widget_1.TypeNames.STRING,
                 "issueType": perspective_widget_1.TypeNames.STRING,
                 "sector": perspective_widget_1.TypeNames.STRING,
-                "tags": perspective_widget_1.TypeNames.FLOAT,
+                "tags": perspective_widget_1.TypeNames.STRING,
                 "website": perspective_widget_1.TypeNames.STRING,
             },
             'markets': {

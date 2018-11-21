@@ -20,4 +20,4 @@ def peerCorrelation(cache, target):
     rets = rets.unstack(0)['changePercent'][all]
     rets = rets.corr()
     rets['symbol'] = rets.index
-    return rets.corr()
+    return rets.corr()  # FIXME

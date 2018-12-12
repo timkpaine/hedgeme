@@ -5,7 +5,6 @@
 |
 | The full license is in the file LICENSE, distributed with this software.
 |----------------------------------------------------------------------------*/
-import 'es6-promise/auto';  // polyfill Promise on IE
 
 import {
   CommandRegistry
@@ -16,9 +15,9 @@ import {
 } from '@phosphor/widgets';
 
 import '../ts/style/index.css';
-import "@jpmorganchase/perspective-viewer";
-import "@jpmorganchase/perspective-viewer-hypergrid";
-import "@jpmorganchase/perspective-viewer-highcharts";
+import "@jpmorganchase/perspective-viewer/build/perspective.view.js";
+import "@jpmorganchase/perspective-viewer-hypergrid/build/hypergrid.plugin.js";
+import "@jpmorganchase/perspective-viewer-highcharts/build/highcharts.plugin.js";
 
 import {
   PSPWidget
@@ -33,6 +32,7 @@ import {
 } from './controls';
 
 
+export
 class Header extends Widget {
     static createNode(): HTMLElement {
         let node = document.createElement('div');

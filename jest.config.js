@@ -8,8 +8,5 @@ module.exports = {
        "\\.(css|less|sass|scss)$": "<rootDir>/tests/js/styleMock.js",
        "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/tests/js/fileMock.js"
   },
-  preset: 'ts-jest',
-  "setupFiles": [
-    "<rootDir>/tests/js/setup.js"
-  ]
+  preset: 'ts-jest'
 };

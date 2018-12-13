@@ -1,21 +1,19 @@
 module.exports = {
+  verbose: true,
   transform: {
-    "^.+\\.js$": "babel-jest",
-    '^.+\\.ts?$': 'ts-jest',
+    "^.+\\.(ts|tsx)$": "ts-jest",
     ".+\\.(css|styl|less|sass|scss)$": "jest-transform-css"
   },
   cache: false,
+  testPathIgnorePatterns: [
+    "build"
+  ],
   transformIgnorePatterns: [
-    "node_modules/(?!(@jpmorganchase/perspective|@jpmorganchase/perspective-viewer)/)"
+    "node_modules"
   ],
-  testPathIgnorePatterns: ["build"],
   moduleNameMapper:{
-       "\\.(css|less|sass|scss)$": "<rootDir>/tests/js/styleMock.js",
-       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/tests/js/fileMock.js"
+      "\\.(css|less)$": "<rootDir>/tests/js/styleMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/tests/js/fileMock.js"
   },
-  moduleDirectories: [
-    "node_modules",
-    "ts/src"
-  ],
   preset: 'ts-jest'
 };

@@ -1,5 +1,7 @@
 language: python
-cache: pip
+cache: 
+  - pip
+  - npm
 
 python:
   - "3.6"
@@ -7,8 +9,12 @@ python:
 install:
     - pip install -r requirements.txt
     - pip install codecov
+    - npm install
+    - npm run build
 
-script: make test
+script: 
+  - make test
+  - npm run test
 
 after_success:
     - codecov --token f1584ece-92aa-4be7-b6ae-89c02a19af16

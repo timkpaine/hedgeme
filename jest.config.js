@@ -6,14 +6,15 @@ module.exports = {
   },
   cache: false,
   testPathIgnorePatterns: [
-    "build"
+    "build",
+    "__tests__/js"
   ],
   transformIgnorePatterns: [
     "node_modules"
   ],
   moduleNameMapper:{
-      "\\.(css|less)$": "<rootDir>/tests/js/styleMock.js",
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/tests/js/fileMock.js"
+      "\\.(css|less)$": "<rootDir>/__tests__/js/styleMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__tests__/js/fileMock.js"
   },
   preset: 'ts-jest'
 };

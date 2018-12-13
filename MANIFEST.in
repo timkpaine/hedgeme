@@ -1,3 +1,3 @@
 recursive-include hedgeme/assets *
-prune tests
+prune pytests
 include requirements.txt

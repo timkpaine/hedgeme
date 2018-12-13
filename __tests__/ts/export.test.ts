@@ -12,6 +12,9 @@ import {Header} from '../../ts/src/index';
 // import * as puppeteer from"puppeteer";
 // import * as path from "path";
 describe('Checks browser interactions', () => {
+    test("Check extension", () => {
+
+    });
     // test("Check extension", async () => {
     //     const browser = await puppeteer.launch({args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", '--proxy-server="direct://"', "--proxy-bypass-list=*"]});
     //     const page = await browser.newPage();

@@ -23,6 +23,7 @@ pipeline {
             stage('Test') {
                 steps {
                     sh 'make test'
+                    sh 'npm install && npm run build && npm run test'
                 }
                 post {
                     success {

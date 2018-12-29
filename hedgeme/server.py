@@ -7,7 +7,11 @@ import tornado.web
 from hedgedata import Cache
 from .utils import log, parse_args
 from .metrics import Metrics
-from .handlers import HTMLOpenHandler, AutocompleteHandler, StockDataHandler, MarketsDataHandler, StockDataHandlerWS, StockMetricsHandler
+from .handlers import HTMLOpenHandler, \
+                      AutocompleteHandler, \
+                      StockDataHandler, \
+                      MarketsDataHandler, \
+                      StockMetricsHandler  # , StockDataHandlerWS, \
 
 
 def getContext(arctic_host='localhost', offline=False):
@@ -57,6 +61,7 @@ def main(*args, **kwargs):
         tornado.ioloop.IOLoop.current().start()
     except KeyboardInterrupt:
         log.critical('Exiting...')
+
 
 if __name__ == "__main__":
     args, kwargs = parse_args(sys.argv)

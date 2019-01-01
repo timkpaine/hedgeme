@@ -6,7 +6,6 @@ module.exports = {
   },
   cache: false,
   testPathIgnorePatterns: [
-    "build",
     "__tests__/js"
   ],
   transformIgnorePatterns: [

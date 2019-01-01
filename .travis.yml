@@ -6,12 +6,16 @@ cache:
 python:
   - "3.6"
 
+sudo: true
+
 install:
     - pip install -r requirements.txt
     - pip install nose2 flake8 pylint codecov
     - npm install
     - ln -s ../../timkpaine ../../../timkpaine
     - ls /home/travis//timkpaine
+    - ls /home/travis//timkpaine/hedgeme
+    - ls /home/travis//timkpaine/hedgeme/node_modules
     - npm run build
 
 script: 

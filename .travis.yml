@@ -7,15 +7,11 @@ python:
   - "3.6"
 
 install:
-    - rm -rf node_modules
     - pip install -r requirements.txt
     - pip install nose2 flake8 pylint codecov
     - npm install
-    - ls node_modules
-    - ls node_modules/\@jpmorganchase
-    - ls node_modules/\@jpmorganchase/perspective
     - ls node_modules/\@jpmorganchase/perspective/build
-    - npm run build
+    - HOME=/home/travis/build npm run build
 
 script: 
   - make test

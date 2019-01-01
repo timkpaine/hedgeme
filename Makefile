@@ -2,10 +2,10 @@ run:  ## run server
 	python3 -m hedgeme.server
 
 tests: clean ## Clean and Make unit tests
-	python3 -m nose -v pytests --with-coverage --cover-erase --cover-package=`find hedgeme -name "*.py" | sed "s=\./==g" | sed "s=/=.=g" | sed "s/\.py//g" | tr '\n' ',' | rev | cut -c2- | rev`
+	python3 -m nose2 -v pytests --with-coverage --coverage=hedgeme
 
 test: clean lint ## run the tests for travis CI
-	@ python3 -m nose -v pytests --with-coverage --cover-erase --cover-package=`find hedgeme -name "*.py" | sed "s=\./==g" | sed "s=/=.=g" | sed "s/\.py//g" | tr '\n' ',' | rev | cut -c2- | rev`
+	@ python3 -m nose2 -v pytests --with-coverage --coverage=hedgeme
 
 lint: ## run linter
 	pylint hedgeme || echo

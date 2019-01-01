@@ -11,7 +11,8 @@ install:
     - pip install nose2 flake8 pylint codecov
     - npm install
     - ls node_modules/\@jpmorganchase/perspective/build
-    - HOME=/home/travis/build npm run build
+    - pwd
+    - npm run build
 
 script: 
   - make test

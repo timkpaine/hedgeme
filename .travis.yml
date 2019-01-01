@@ -13,7 +13,6 @@ install:
     - ls node_modules/\@jpmorganchase/perspective/build
     - pwd
     - ln -s ../../timkpaine ../../../timkpaine
-    - ln -s ../../timkpaine ../../../\/timkpaine
     - npm run build
 
 script: 

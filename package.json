@@ -10,7 +10,8 @@
     "@phosphor/dragdrop": "^1.3.0",
     "@phosphor/messaging": "^1.2.2",
     "@phosphor/widgets": "^1.6.0",
-    "es6-promise": "^4.0.5"
+    "es6-promise": "^4.0.5",
+    "fast-async": "^6.3.8"
   },
   "devDependencies": {
     "@types/jest": "^23.3.9",

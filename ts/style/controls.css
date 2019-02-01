@@ -9,13 +9,11 @@
 }
 
 body.dark .controls {
-  border: 1px solid var(--dark-border);
   box-shadow: 1px 1px 2px var(--dark-drop-shadow);
   background: var(--dark-bg-color);
 }
 
 body.light .controls {
-  border: 1px solid var(--light-border);
   box-shadow: 1px 1px 2px var(--light-drop-shadow);
   background: var(--light-bg-color);
 }

@@ -19,11 +19,11 @@
 }
 
 body.dark .p-TabBar-content {
-  border-bottom: 1px solid var(--dark-border);
+  /*border-bottom: 1px solid var(--dark-border);*/
 }
 
 body.light .p-TabBar-content {
-  border-bottom: 1px solid var(--light-border);
+  /*border-bottom: 1px solid var(--light-border);*/
 }
 
 .p-TabBar-tab {
@@ -40,12 +40,10 @@ body.light .p-TabBar-content {
 
 body.dark .p-TabBar-tab {
   background: var(--dark-bg-color2);
-  border: 1px solid var(--dark-border);
 }
 
 body.light .p-TabBar-tab {
   background: var(--light-bg-color2);
-  border: 1px solid var(--light-border);
 }
 
 body.dark .p-TabBar-tab:hover:not(.p-mod-current) {

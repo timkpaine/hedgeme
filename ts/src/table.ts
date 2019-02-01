@@ -7,8 +7,6 @@ import {
 } from '@phosphor/widgets';
 
 
-import '../ts/style/index.css';
-
 export
 class TableWidget extends Widget {
 

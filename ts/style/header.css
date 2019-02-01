@@ -1,0 +1,72 @@
+div#appheader {
+  display:flex;
+  align-items: center;
+  height:25px;
+  width: 85%;
+  position: absolute;
+}
+
+body.dark div#appheader {
+  background-color: var(--dark-bg-color2);
+  border-bottom: 1px solid var(--dark-border);
+}
+
+body.light div#appheader {
+  background-color: var(--light-bg-color2);
+  border-bottom: 1px solid var(--light-border);
+}
+
+div#appheader > a {
+  height: 25px;
+  width: 50px;
+  z-index:3;
+}
+
+div#appheader > span.username {
+  padding-left:10px;
+}
+
+div#appheader > a > img {
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
+}
+
+#lighticon {
+  margin-left: 70%;
+  z-index: 6;
+  height: 23px;
+  width: 23px;
+}
+
+#lighticon:before {
+  content: '\f185';
+  font-family: 'FontAwesome';
+  font-size: 23px;
+}
+
+#darkicon {
+  margin-left: 10px;
+  z-index: 6;
+  height: 23px;
+  width: 23px;
+}
+
+#darkicon:before {
+  content: '\f186';
+  font-family: 'FontAwesome';
+  font-size: 23px;
+}
+
+body.dark div.active-icon,
+body.light div.active-icon {
+  color: var(--highlight-red);
+}
+
+body.dark #lighticon:hover {
+  color: white;
+}
+
+body.light #darkicon:hover {
+  color: lightgrey;
+}

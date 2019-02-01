@@ -1,18 +1,13 @@
-/*-----------------------------------------------------------------------------
-| Copyright (c) 2014-2017, PhosphorJS Contributors
-|
-| Distributed under the terms of the BSD 3-Clause License.
-|
-| The full license is in the file LICENSE, distributed with this software.
-|----------------------------------------------------------------------------*/
 @import './vars.css';
 @import '~@phosphor/dragdrop/style/index.css';
 @import '~@phosphor/widgets/style/index.css';
 @import './commandpalette.css';
 @import './content.css';
 @import './dockpanel.css';
+@import './header.css';
 @import './menu.css';
 @import './menubar.css';
+@import './modal.css';
 @import './tabbar.css';
 @import './psp.css';
 @import './table.css';
@@ -20,10 +15,14 @@
 @import './material.dark.css';
 
 
+/**********/
+/* common */
+/**********/
 body {
   display: flex;
   flex-direction: column;
   position: absolute;
+  font-family: 'Roboto';
   top: 0;
   left: 0;
   right: 0;
@@ -31,9 +30,39 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--highlight-red);
+}
+
+textarea.json {
+  min-height: 500px;
+}
+
+/**********/
+/* /common */
+/**********/
+
+body.dark {
   color: var(--dark-color);
   background-color: var(--dark-bg-color2);
-  font-family: Arial;
+}
+body.dark a {
+  color: var(--dark-color);
+}
+
+body.light {
+  color: var(--light-color);
+  background-color: var(--light-bg-color2);
+}
+
+body.light a {
+  color: var(--light-color);
 }
 
 body div.footer {
@@ -46,42 +75,48 @@ body div.footer {
   bottom: 10px;
 }
 
-div#header {
-  height:45px;
-  background-color: var(--dark-bg-color2);
+button {
   width: 100px;
-  position: absolute;
-  border-bottom: 1px solid var(--dark-border);
 }
 
-div#header img {
-  height: 40px;
-  object-fit: contain;
-  margin-left: 15px;
+button:hover {
+    color: white;
+    background-color: var(--highlight-red);
 }
-
 
 #menuBar {
   flex: 0 0 auto;
-  background-color: var(--dark-bg-color2);
-  color: var(--dark-color);
-  height: 45px;
-  margin-left: 75%;
+  height: 25px;
+  margin-left: 85%;
   display:flex;
   justify-content: center;
 }
 
+body.dark #menuBar {
+  background-color: var(--dark-bg-color2);
+  color: var(--dark-color);
+}
+
+body.light #menuBar {
+  background-color: var(--light-bg-color2);
+  color: var(--light-color);
+}
 
 #main {
   flex: 1 1 auto;
-  top: -45px;
+  top: -25px;
 }
 
-
 #main > .p-TabBar > .p-TabBar-content {
-  padding-left: 20%;
-  padding-right: 20%;
+  margin-left: 50px;
+}
+
+body.dark #main > .p-TabBar > .p-TabBar-content {
   border-bottom: 1px solid var(--dark-border);
+}
+
+body.light #main > .p-TabBar > .p-TabBar-content {
+  border-bottom: 1px solid var(--light-border);
 }
 
 .p-TabBar > .p-TabBar-content > .p-TabBar-tab {
@@ -90,24 +125,60 @@ div#header img {
   text-align: center;
 }
 
-#main > .p-TabBar > .p-TabBar-content > .p-mod-current {
+body.dark #main > .p-TabBar > .p-TabBar-content > .p-mod-current,
+body.light #main > .p-TabBar > .p-TabBar-content > .p-mod-current {
   border-bottom:3px solid var(--highlight-red);
 }
 
-
-
-#main {
-  flex: 1 1 auto;
-}
-
-
 #palette {
   min-width: 300px;
+}
+
+body.dark #palette {
   border-right: 1px solid var(--dark-border);
+}
+
+body.light #palette {
+  border-right: 1px solid var(--light-border);
 }
 
 
 #dock {
   padding: 4px;
-  background-color: var(--dark-bg-color2);
+}
+
+body.dark #dock {
+  background-color: var(--dark-bg-color);
+}
+
+body.light #dock {
+  background-color: var(--light-bg-color);
+}
+
+body.dark .p-SplitPanel {
+  background-color: var(--dark-bg-color);
+}
+
+
+body.light .p-SplitPanel {
+  background-color: var(--light-bg-color);
+}
+
+body.dark tr:hover > td {
+  background-color: var(--dark-bg-color2)
+}
+
+body.light tr:hover > td {
+  background-color: var(--light-bg-color2)
+}
+
+div.details {
+  overflow-y: scroll;
+}
+
+div.details > table {
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5px;
 }

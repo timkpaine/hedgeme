@@ -12,5 +12,5 @@
     "lib": ["es2016", "ES2015.Promise", "DOM"],
     "types": []
   },
-  "include": ["ts/src/*"]
+  "include": ["ts/src/*", "ts/style/*"]
 }

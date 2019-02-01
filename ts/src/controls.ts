@@ -14,7 +14,6 @@ import {
     TableWidget, TableHelper
 } from './table';
 
-import '../ts/style/index.css';
 
 function _fetch_and_load_quote(path:string, field:string, type:string, loadto:PSPWidget, wrap_list=false, _delete=true){
     var xhr1 = new XMLHttpRequest();
@@ -140,7 +139,7 @@ class ControlsWidget extends Widget {
         loader_icon.classList.add('loader_icon');
         this.loader.appendChild(loader_icon);
         document.body.appendChild(this.loader);
-
+        this.loader.onclick = () => {this.loader.style.display='none';};
     }
 
     start(): void {

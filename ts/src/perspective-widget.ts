@@ -7,10 +7,10 @@ import {
 } from '@phosphor/widgets';
 
 
-import '../ts/style/index.css';
-import "@jpmorganchase/perspective-viewer";
-import "@jpmorganchase/perspective-viewer-hypergrid";
-import "@jpmorganchase/perspective-viewer-highcharts";
+import "@jpmorganchase/perspective-viewer/build/perspective.view.js";
+import "@jpmorganchase/perspective-viewer-hypergrid/build/hypergrid.plugin.js";
+import "@jpmorganchase/perspective-viewer-highcharts/build/highcharts.plugin.js";
+
 
 export
 class PSPWidget extends Widget {
@@ -154,7 +154,6 @@ constructor(url: string,  // The url to fetch data from
   {  
     this._url = url;
     this._preload_url = preload_url;
-    this._datatype = Private.data_source(url);
     this._psp_widgets = psps;
     this._data_options = data_options;
     this._view_options = view_options;
@@ -178,23 +177,21 @@ constructor(url: string,  // The url to fetch data from
 
   start(delay?: number): Promise<number> {
     return new Promise((resolve) => {
-      if (this._datatype === 'http'){
-        if (this._preload_url){
-          this.fetchAndLoad(true).then((count:number) => {
-            resolve(count);
-          });
-        }
+      if (this._preload_url){
+        this.fetchAndLoad(true).then((count:number) => {
+          resolve(count);
+        });
+      }
 
-        if (this._repeat > 0){
-          setInterval(() => {
-            this.fetchAndLoad();
-          }, this._repeat);
-          resolve(0);
-        } else {
-          this.fetchAndLoad().then((count: number) => {
-            resolve(count);
-          });
-        }
+      if (this._repeat > 0){
+        setInterval(() => {
+          this.fetchAndLoad();
+        }, this._repeat);
+        resolve(0);
+      } else {
+        this.fetchAndLoad().then((count: number) => {
+          resolve(count);
+        });
       }
     });
   }
@@ -295,33 +292,9 @@ constructor(url: string,  // The url to fetch data from
 
   _url: string;
   private _preload_url?: string;
-  private _datatype: string;
   private _psp_widgets: {[key:string]:PSPWidget};
   private _data_options?: {[psp_key: string]: DataSettings};
   private _repeat = -1;
   private _view_options?: {[psp_key: string]: ViewSettings};
   // private _worker: any; // TODO make this a shared perspective worker
-}
-
-
-namespace Private {
-  export let _loaded = false;
-
-  export function data_source(url: string): string {
-    if(url.indexOf('sio://') !== -1){
-      return 'sio';
-    } else if(url.indexOf('ws://') !== -1){
-      return  'ws';
-    } else if(url.indexOf('wss://') !== -1){
-      return  'wss';
-    } else if(url.indexOf('http://') !== -1){
-      return  'http';
-    } else if(url.indexOf('https://') !== -1){
-      return  'http';
-    } else if(url.indexOf('comm://') !== -1){
-      return  'comm';
-    } else{
-      return 'http'
-    }
-  }
 }

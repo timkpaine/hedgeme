@@ -4,21 +4,14 @@ import pyEX
 import tornado.ioloop
 import tornado.web
 
-from hedgedata import Cache
 from .utils import log, parse_args
-from .metrics import Metrics
 from .handlers import HTMLOpenHandler, \
-                      AutocompleteHandler, \
-                      StockDataHandler, \
-                      MarketsDataHandler, \
-                      StockMetricsHandler  # , StockDataHandlerWS, \
+                      AutocompleteHandler
 
 
 def getContext(arctic_host='localhost', offline=False):
     d = {}
     d['tickers'] = pyEX.symbolsDF().reset_index()
-    d['cache'] = Cache(arctic_host, offline=offline)
-    d['metrics'] = Metrics(d['cache'])
     return d
 
 
@@ -29,10 +22,10 @@ class ServerApplication(tornado.web.Application):
 
         default_handlers = [
             (r"/", HTMLOpenHandler, {'template': 'index.html'}),
-            (r"/api/json/v1/data", StockDataHandler, context),
-            (r"/api/ws/v1/data", StockDataHandler, context),
-            (r"/api/json/v1/metrics", StockMetricsHandler, context),
-            (r"/api/json/v1/markets", MarketsDataHandler, context),
+            # (r"/api/json/v1/data", StockDataHandler, context),
+            # (r"/api/ws/v1/data", StockDataHandler, context),
+            # (r"/api/json/v1/metrics", StockMetricsHandler, context),
+            # (r"/api/json/v1/markets", MarketsDataHandler, context),
             (r"/api/json/v1/autocomplete", AutocompleteHandler, context),
             (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": static}),
             (r"/(.*)", HTMLOpenHandler, {'template': '404.html'})

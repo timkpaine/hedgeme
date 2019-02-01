@@ -24,8 +24,8 @@ clean: ## clean the repository
 	make -C ./docs clean || echo
 
 js:  ## build the js
-	npm install
-	npm run build
+	yarn
+	yarn build
 
 build:  ## build the repository
 	python3 setup.py build

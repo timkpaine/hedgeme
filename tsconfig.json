@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "declaration": true,
+    "declaration": false,
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,

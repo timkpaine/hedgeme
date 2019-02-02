@@ -4,14 +4,16 @@ import pyEX
 import tornado.ioloop
 import tornado.web
 
+from hedgedata import Cache
 from .utils import log, parse_args
 from .handlers import HTMLOpenHandler, \
                       AutocompleteHandler
 
 
-def getContext(arctic_host='localhost', offline=False):
+def getContext(cache_type='none'):
     d = {}
     d['tickers'] = pyEX.symbolsDF().reset_index()
+    d['cache'] = Cache(cache_type)
     return d
 
 
@@ -44,7 +46,7 @@ class ServerApplication(tornado.web.Application):
 def main(*args, **kwargs):
     port = kwargs.get('port', 8080)
 
-    context = getContext(offline=True)
+    context = getContext()
 
     application = ServerApplication(context)
     log.critical('LISTENING: %s', port)

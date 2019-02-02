@@ -125,9 +125,9 @@ body.light #main > .p-TabBar > .p-TabBar-content {
   text-align: center;
 }
 
-body.dark #main > .p-TabBar > .p-TabBar-content > .p-mod-current,
-body.light #main > .p-TabBar > .p-TabBar-content > .p-mod-current {
-  border-bottom:3px solid var(--highlight-red);
+body.dark .p-TabBar > .p-TabBar-content > .p-mod-current,
+body.light .p-TabBar > .p-TabBar-content > .p-mod-current {
+  border-bottom: 3px solid var(--highlight-red);
 }
 
 #palette {

@@ -7,6 +7,10 @@ import {
 } from '@phosphor/widgets';
 
 
+import {
+  request, RequestResult
+} from './request';
+
 export
 class TableWidget extends Widget {
 
@@ -160,12 +164,9 @@ constructor(url: string,  // The url to fetch data from
 
   private _fetchAndLoadHttp(url: string): Promise<number> {
     return new Promise((resolve) => {
-      var xhr1 = new XMLHttpRequest();
-      xhr1.open('GET', url, true);
-      xhr1.onload = () => { 
-        if(xhr1.response){
-          let json = JSON.parse(xhr1.response);
-
+      request('get', url).then((res: RequestResult) =>{
+        if(res.ok){
+          let json = res.json() as any;
           if (Object.keys(json).length > 0){
             let count = 0;
             for(let table of Object.keys(this._table_widgets)){
@@ -205,8 +206,7 @@ constructor(url: string,  // The url to fetch data from
             resolve(count);
           }
         }
-      };
-      xhr1.send(null);
+      });
     });
   }
 

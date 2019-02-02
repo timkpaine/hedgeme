@@ -15,20 +15,8 @@ import {
 } from '@phosphor/widgets';
 
 import {
-  PSPWidget
-} from './perspective-widget';
-
-import {
-  TableWidget
-} from './table';
-
-import {
   Header
 } from './header';
-
-import {
-  ControlsWidget
-} from './controls';
 
 import '../ts/style/index.css';
 
@@ -135,37 +123,6 @@ function main(): void {
   });
 
 
-  /* perspectives */
-  let performance = new PSPWidget('Performance');  // chart
-  let quotes = new PSPWidget('Quotes');  // quote
-  let dividends = new PSPWidget('Dividends'); //dividends
-  let cashflow = new PSPWidget('Cashflow');
-  let financials = new PSPWidget('Financials'); // financials
-  let earnings = new PSPWidget('Earnings');
-  let peers = new PSPWidget('Peers');
-  let markets = new PSPWidget('Markets');
-  markets.title.closable = false;
-  let peercorrelation = new PSPWidget('PeerCorrelation');
-  let composition = new PSPWidget('Composition');
-
-  let psps= {'chart':performance,
-             'quote':quotes,
-             'dividends': dividends,
-             'cashflow': cashflow,
-             'financials': financials,
-             'earnings': earnings,
-             'peers': peers,
-             'markets':markets,
-             'peerCorrelation': peercorrelation,
-             'composition': composition}
-
-  let stats = new TableWidget('Stats');
-  let news = new TableWidget('News');
-  let tables = {'stats': stats,
-                'news': news};
-
-  let ctrl = new ControlsWidget('JPM', psps, tables);
-
   let dock = new DockPanel();
   dock.id = 'dock';
 
@@ -174,38 +131,25 @@ function main(): void {
   let refdata_panel = new SplitPanel();
   refdata_panel.title.label = 'Fundamentals';
   let stats_and_comp_panel = new BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
-  stats_and_comp_panel.addWidget(psps['composition']);
-  stats_and_comp_panel.addWidget(news);
-  refdata_panel.addWidget(stats);
   refdata_panel.addWidget(stats_and_comp_panel);
 
   /* Financials Tab */
   let financials_panel = new SplitPanel();
   let earnings_panel = new BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
   financials_panel.title.label = 'Financials';
-  earnings_panel.addWidget(psps['financials']);
-  earnings_panel.addWidget(psps['earnings']);
-  earnings_panel.addWidget(psps['dividends']);
-  financials_panel.addWidget(psps['cashflow']);
   financials_panel.addWidget(earnings_panel);
 
   /* Metrics Tab */
   let metrics_panel = new BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
   metrics_panel.title.label = 'Calculations';
-  metrics_panel.addWidget(psps['peerCorrelation']);
-  metrics_panel.addWidget(psps['peers']);
 
   /* Market Data Tab */
   let market_data_panel = new BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
   market_data_panel.title.label = 'Market Data';
-  market_data_panel.addWidget(psps['chart']);
-  market_data_panel.addWidget(psps['quote']);
 
   /* Markets Info */
   dock.addWidget(refdata_panel);
   dock.addWidget(financials_panel, {mode: 'tab-after', ref: refdata_panel});
-
-
 
   /* save/restore layouts */
   let savedLayouts: DockPanel.ILayoutConfig[] = [];
@@ -215,97 +159,8 @@ function main(): void {
   palette.id = 'palette';
   addCommands(palette);
 
-  /* command registry */
-  // commands.addCommand('save-dock-layout', {
-  //   label: 'Save Layout',
-  //   caption: 'Save the current dock layout',
-  //   execute: () => {
-  //     savedLayouts.push(dock.saveLayout());
-  //     palette.addItem({
-  //       command: 'restore-dock-layout',
-  //       category: 'Dock Layout',
-  //       args: { index: savedLayouts.length - 1 }
-  //     });
-  //     menu2.addItem({ command: 'restore-dock-layout', args: {index: savedLayouts.length - 1}});
-  //   }
-  // });
-
-  // commands.addCommand('restore-dock-layout', {
-  //   label: args => {
-  //     return `Restore Layout ${args.index as number}`;
-  //   },
-  //   execute: args => {
-  //     dock.restoreLayout(savedLayouts[args.index as number]);
-  //   }
-  // });
-
-  // commands.addCommand('controls:open', {
-  //   label: 'Controls',
-  //   mnemonic: 1,
-  //   iconClass: 'fa fa-plus',
-  //   execute: () => {
-  //     dock.restoreLayout(savedLayouts[0]);
-  //   }
-  // });
-
-  // commands.addCommand('market-data:open', {
-  //   label: 'Open Market Data',
-  //   mnemonic: 2,
-  //   iconClass: 'fa fa-plus',
-  //   execute: () => {
-  //     main.addWidget(market_data_panel);
-  //   }
-  // });
-
-
-  // commands.addCommand('fundamentals:open', {
-  //   label: 'Open Fundamentals Data',
-  //   mnemonic: 2,
-  //   iconClass: 'fa fa-plus',
-  //   execute: () => {
-  //     dock.addWidget(refdata_panel);
-  //   }
-  // });
-
-  // commands.addCommand('financials:open', {
-  //   label: 'Open Financials Data',
-  //   mnemonic: 2,
-  //   iconClass: 'fa fa-plus',
-  //   execute: () => {
-  //     dock.addWidget(financials_panel);
-  //   }
-  // });
-
-  // commands.addCommand('metrics:open', {
-  //   label: 'Open Calculations Data',
-  //   mnemonic: 2,
-  //   iconClass: 'fa fa-plus',
-  //   execute: () => {
-  //     main.addWidget(metrics_panel);
-  //   }
-  // });
-
-  // commands.addCommand('markets:open', {
-  //   label: 'Open Markets',
-  //   mnemonic: 2,
-  //   iconClass: 'fa fa-plus',
-  //   execute: () => {
-  //     main.addWidget(psps['markets']);
-  //   }
-  // });
-
   /* hack for custom sizing */
-  // var layout = dock.saveLayout();
-  // var sizes: number[] = (layout.main as DockLayout.ISplitAreaConfig).sizes;
-  // sizes[0] = 0.6;
-  // sizes[1] = 0.4;
-  // dock.restoreLayout(layout);
   savedLayouts.push(dock.saveLayout());
-  // palette.addItem({
-  //   command: 'restore-dock-layout',
-  //   category: 'Dock Layout',
-  //   args: { index: 0}
-  // });
 
   /* main area setup */
   BoxPanel.setStretch(dock, 1);
@@ -314,39 +169,18 @@ function main(): void {
   home.id = 'home';
   home.title.label = 'Home';
 
-  home.addWidget(ctrl);
   home.addWidget(dock);
   home.setRelativeSizes([.3, .7]);
 
   main.addWidget(home);
   main.addWidget(market_data_panel);
   main.addWidget(metrics_panel);
-  main.addWidget(psps['markets']);
 
   window.onresize = () => { main.update(); };
 
   Widget.attach(header, document.body);
   Widget.attach(bar, document.body);
   Widget.attach(main, document.body);
-
-  setTimeout(()=>{ctrl.start()}, 500);
-
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
-  console.log('test');
 }
 
 

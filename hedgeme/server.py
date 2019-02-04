@@ -7,6 +7,7 @@ import tornado.web
 from hedgedata import Cache
 from .utils import log, parse_args
 from .handlers import HTMLOpenHandler, \
+                      StockDataHandler, \
                       AutocompleteHandler
 
 
@@ -24,7 +25,7 @@ class ServerApplication(tornado.web.Application):
 
         default_handlers = [
             (r"/", HTMLOpenHandler, {'template': 'index.html'}),
-            # (r"/api/json/v1/data", StockDataHandler, context),
+            (r"/api/json/v1/data", StockDataHandler, context),
             # (r"/api/ws/v1/data", StockDataHandler, context),
             # (r"/api/json/v1/metrics", StockMetricsHandler, context),
             # (r"/api/json/v1/markets", MarketsDataHandler, context),

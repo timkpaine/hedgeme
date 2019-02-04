@@ -1,0 +1,3 @@
+import {
+    PSPWidget
+} from './widget';

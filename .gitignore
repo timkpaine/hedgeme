@@ -107,3 +107,4 @@ package-lock.json
 cache
 .autoversion
 coverage
+keys.sh

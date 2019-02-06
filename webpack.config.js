@@ -1,5 +1,5 @@
 const path = require("path");
-const PerspectivePlugin = require("@jpmorganchase/perspective/webpack-plugin");
+const PerspectivePlugin = require("@jpmorganchase/perspective-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = {

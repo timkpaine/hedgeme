@@ -2,11 +2,10 @@ import {
   TabPanel, BoxPanel, DockPanel,  SplitPanel, MenuBar, Widget
 } from '@phosphor/widgets';
 
-import {
-  Header
-} from './header';
+import {Header} from './header';
 
 import '../ts/style/index.css';
+import {showLoader, hideLoader} from './loader';
 
 export
 function main(): void {
@@ -22,6 +21,9 @@ function main(): void {
 
   let dock = new DockPanel();
   dock.id = 'dock';
+
+  showLoader();
+  hideLoader(1000);
 
   /* Reference Data Tab */
   let refdata_panel = new SplitPanel();

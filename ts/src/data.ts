@@ -1,6 +1,5 @@
-import {
-  request, RequestResult
-} from './request';
+import {PerspectiveWidget, PerspectiveWidgetOptions} from '@jpmorganchase/perspective-phosphor';
+import {request, RequestResult} from './request';
 
 export
 interface ConsumesData {
@@ -10,8 +9,25 @@ interface ConsumesData {
 }
 
 export
-class DataLoader {
+class PerspectiveDataLoader extends PerspectiveWidget implements  ConsumesData {
+    constructor(name: string = '', options: PerspectiveWidgetOptions = {}){
+        super(name, options);
+    }
 
+    loadData(data: any): void {
+        super.reload(data as PerspectiveWidgetOptions);
+    }
+
+    updateData(data: any): void {
+        super._data_changed(data, true);
+    }
+
+    urlChange(): void {
+    }
+}
+
+export
+class DataLoader {
     constructor(loads: [ConsumesData], url: string, queryParams: any = {}, poll = 0){
         this.loads = loads;
         this.url = url;
@@ -42,7 +58,9 @@ class DataLoader {
     start(): void {
         this.get().then((data: any) => {
             for(let l of this.loads){
-                l.updateData(data);
+                console.log(data);
+                console.log(data.data);
+                l.loadData(data);
             }
         });
 
@@ -61,6 +79,5 @@ class DataLoader {
     private url: string;
     private params: any;
     private poll: number;
-
 }
 

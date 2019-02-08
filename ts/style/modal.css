@@ -45,9 +45,6 @@ body.light div.loader_icon {
 }
 
 div.loader_icon {
-  border: 24px solid #333; 
-  /*border: 16px solid #f3f3f3; */
-  /*border-top: 16px solid #3498db; */
   border-right: 24px solid var(--highlight-red);
   border-left: 24px solid var(--highlight-red);
 
@@ -59,11 +56,13 @@ div.loader_icon {
 }
 
 body.dark div.loader_icon {
-  border: 24px solid #333; 
+  border-top: 24px solid #333; 
+  border-bottom: 24px solid #333; 
 }
 
 body.light div.loader_icon {
-  border: 24px solid #ccc; 
+  border-top: 24px solid #ccc;
+  border-bottom: 24px solid #ccc;
 }
 
 @keyframes spin {

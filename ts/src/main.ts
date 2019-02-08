@@ -1,11 +1,9 @@
-import {
-  TabPanel, BoxPanel, DockPanel,  SplitPanel, MenuBar, Widget
-} from '@phosphor/widgets';
+import {TabPanel, BoxPanel, DockPanel,  SplitPanel, MenuBar, Widget} from '@phosphor/widgets';
 
+import {PerspectiveDataLoader, DataLoader} from './data';
 import {Header} from './header';
-
-import '../ts/style/index.css';
 import {showLoader, hideLoader} from './loader';
+import '../ts/style/index.css';
 
 export
 function main(): void {
@@ -25,14 +23,11 @@ function main(): void {
   showLoader();
   hideLoader(1000);
 
-  /* Reference Data Tab */
-  let refdata_panel = new SplitPanel();
-  refdata_panel.title.label = 'Fundamentals';
-  let stats_and_comp_panel = new BoxPanel({ direction: 'top-to-bottom', spacing: 0 });
-  refdata_panel.addWidget(stats_and_comp_panel);
+  let daily = new PerspectiveDataLoader('Daily');
+  dock.addWidget(daily);
 
-  /* Markets Info */
-  dock.addWidget(refdata_panel);
+  let data = new DataLoader([daily], '/api/json/v1/data', {key: 'aapl', type: 'daily'})
+  data.start();
 
   /* save/restore layouts */
   let savedLayouts: DockPanel.ILayoutConfig[] = [];

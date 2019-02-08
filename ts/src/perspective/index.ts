@@ -1,3 +1,0 @@
-import {
-    PSPWidget
-} from './widget';

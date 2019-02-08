@@ -26,9 +26,6 @@ class ServerApplication(tornado.web.Application):
         default_handlers = [
             (r"/", HTMLOpenHandler, {'template': 'index.html'}),
             (r"/api/json/v1/data", StockDataHandler, context),
-            # (r"/api/ws/v1/data", StockDataHandler, context),
-            # (r"/api/json/v1/metrics", StockMetricsHandler, context),
-            # (r"/api/json/v1/markets", MarketsDataHandler, context),
             (r"/api/json/v1/autocomplete", AutocompleteHandler, context),
             (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": static}),
             (r"/(.*)", HTMLOpenHandler, {'template': '404.html'})

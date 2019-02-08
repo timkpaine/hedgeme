@@ -3,7 +3,6 @@ import {TabPanel, BoxPanel, DockPanel,  SplitPanel, MenuBar, Widget} from '@phos
 import {PerspectiveDataLoader, DataLoader} from './data';
 import {Header} from './header';
 import {showLoader, hideLoader} from './loader';
-import '../ts/style/index.css';
 
 export
 function main(): void {

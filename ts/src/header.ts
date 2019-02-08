@@ -31,6 +31,10 @@ class Header extends Widget {
             document.body.classList.add('light');
             dark.classList.remove('active-icon');
             light.classList.add('active-icon');
+            for(let c of (document.getElementsByClassName('PSPContainer-dark') as any as HTMLElement[])){
+                c.classList.add('PSPContainer');
+                c.classList.remove('PSPContainer-dark');
+            }
         }
 
         let dark = document.createElement('div');
@@ -40,6 +44,10 @@ class Header extends Widget {
             document.body.classList.add('dark');
             dark.classList.add('active-icon');
             light.classList.remove('active-icon');
+            for(let c of (document.getElementsByClassName('PSPContainer') as any as HTMLElement[])){
+                c.classList.remove('PSPContainer');
+                c.classList.add('PSPContainer-dark');
+            }
         }
 
         node.appendChild(light);

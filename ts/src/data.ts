@@ -16,10 +16,11 @@ class PerspectiveDataLoader extends PerspectiveWidget implements  ConsumesData {
 
     loadData(data: any): void {
         super.reload(data as PerspectiveWidgetOptions);
+        super.initialize();
     }
 
     updateData(data: any): void {
-        super._data_changed(data, true);
+        super.data = data;
     }
 
     urlChange(): void {

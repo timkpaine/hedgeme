@@ -1,4 +1,4 @@
-import {TabPanel, BoxPanel, DockPanel, MenuBar, Widget} from '@phosphor/widgets';
+import {TabPanel, BoxPanel, DockPanel, DockLayout, MenuBar, Widget} from '@phosphor/widgets';
 
 import {PerspectiveDataLoader, DataLoader} from './data';
 import {Header} from './header';
@@ -27,13 +27,24 @@ function main(): void {
   dock.addWidget(daily);
 
   let cashflow = new PerspectiveDataLoader('Cashflow');
-  dock.addWidget(cashflow);
+  dock.addWidget(cashflow, {mode: "split-bottom", ref: daily});
 
   let data = new DataLoader([daily], '/api/json/v1/data', {key: 'aapl', type: 'daily'})
   data.start();
 
   let data2 = new DataLoader([cashflow], '/api/json/v1/data', {key: 'aapl', type: 'cashflow'})
   data2.start();
+
+  /* save/restore layouts */
+  // let savedLayouts: DockPanel.ILayoutConfig[] = [];
+  // savedLayouts.push(dock.saveLayout());
+  
+  /* hack for custom sizing */
+  var layout = dock.saveLayout();
+  var sizes: number[] = (layout.main as DockLayout.ISplitAreaConfig).sizes;
+  sizes[0] = 0.75;
+  sizes[1] = 0.25;
+  dock.restoreLayout(layout);
 
   /* main area setup */
   BoxPanel.setStretch(dock, 1);
@@ -46,3 +57,4 @@ function main(): void {
   Widget.attach(bar, document.body);
   Widget.attach(main, document.body);
 }
+  

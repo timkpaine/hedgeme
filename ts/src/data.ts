@@ -59,8 +59,6 @@ class DataLoader {
     start(): void {
         this.get().then((data: any) => {
             for(let l of this.loads){
-                console.log(data);
-                console.log(data.data);
                 l.loadData(data);
             }
         });

@@ -11,9 +11,9 @@ class StockDataHandler(HTTPHandler, PerspectiveHTTPMixin):
     @tornado.concurrent.run_on_executor
     def get_data(self, key, type):
         if type == 'daily':
-            self.loadData(data=self._cache.daily([key]), view='y_line', columns=['open', 'high', 'low', 'close'])
+            self.loadData(data=self._cache.daily([key]).reset_index(), view='y_line', columns=['open', 'high', 'low', 'close'])
         elif type == 'cashflow':
-            self.loadData(data=self._cache.cashflow([key]), view='hypergrid')
+            self.loadData(data=self._cache.cashflow([key]), view='heatmap', rowpivots=['symbol'])
         else:
             raise NotImplementedError()
         return self.getData()

@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "declaration": false,
-    "noImplicitAny": true,
+     "noImplicitAny": true,
     "noEmitOnError": true,
     "noUnusedLocals": true,
-    "strictNullChecks": true,
     "module": "commonjs",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowJs": true,
     "target": "es2016",
     "outDir": "./build",
     "lib": [
@@ -14,7 +14,9 @@
       "ES2015.Promise",
       "DOM"
     ],
-    "types": [
+   "types": [
+      "jest",
+      "@jpmorganchase/perspective-viewer",
       "@jpmorganchase/perspective-phosphor"
     ]
   },

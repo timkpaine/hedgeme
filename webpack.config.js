@@ -4,6 +4,8 @@ const webpack = require("webpack");
 
 module.exports = {
     entry: './build/index.js',
+    mode: 'development',
+    devtool: 'inline-source-map',
     output: {
         path: __dirname + '/hedgeme/assets/static/js/',
         filename: 'bundle.js',

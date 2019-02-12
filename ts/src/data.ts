@@ -9,14 +9,14 @@ interface ConsumesData {
 }
 
 export
-class PerspectiveDataLoader extends PerspectiveWidget implements  ConsumesData {
+class PerspectiveDataLoader extends PerspectiveWidget {// implements  ConsumesData {
     constructor(name: string = '', options: PerspectiveWidgetOptions = {}){
         super(name, options);
     }
 
     loadData(data: any): void {
-        super.reload(data as PerspectiveWidgetOptions);
-        super.initialize();
+        super._load(data as PerspectiveWidgetOptions);
+        super._render();
     }
 
     updateData(data: any): void {

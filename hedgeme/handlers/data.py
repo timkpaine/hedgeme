@@ -12,9 +12,11 @@ class StockDataHandler(HTTPHandler, PerspectiveHTTPMixin):
     def get_data(self, key, type):
         if type == 'daily':
             self.loadData(data=self._cache.daily([key]), view='y_line', columns=['open', 'high', 'low', 'close'])
-            return self.getData()
+        elif type == 'cashflow':
+            self.loadData(data=self._cache.cashflow([key]), view='hypergrid')
         else:
             raise NotImplementedError()
+        return self.getData()
 
     async def get(self, *args):
         key = self.get_argument('ticker', 'aapl')

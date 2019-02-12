@@ -176,6 +176,14 @@ div.details {
   overflow-y: scroll;
 }
 
+body.dark .p-SplitPanel[data-orientation='horizontal'] > .p-SplitPanel-handle:after {
+  background-color: var(--dark-bg-color2);
+}
+
+body.light .p-SplitPanel[data-orientation='horizontal'] > .p-SplitPanel-handle:after {
+  background-color: var(--light-bg-color2);
+}
+
 div.details > table {
   width: 500px;
   margin-left: auto;

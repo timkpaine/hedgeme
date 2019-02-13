@@ -2,10 +2,10 @@ run:  ## run server
 	source keys.sh && python3 -m hedgeme.server
 
 tests: clean ## Clean and Make unit tests
-	python3 -m nose2 -v pytests --with-coverage --coverage=hedgeme
+	python3 -m pytest pytests --cov=hedgeme
 
 test: clean lint ## run the tests for travis CI
-	@ python3 -m nose2 -v pytests --with-coverage --coverage=hedgeme
+	@ python3 -m pytest pytests --cov=hedgeme
 
 lint: ## run linter
 	pylint hedgeme || echo

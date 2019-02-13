@@ -10,7 +10,7 @@ sudo: true
 
 install:
     - pip install -r requirements.txt
-    - pip install nose2 flake8 pylint codecov
+    - pip install pytest pytest-cov flake8 pylint codecov
     - npm install
     - mkdir -p ~/timkpaine/hedgeme/node_modules
     - cp -r node_modules/* ~/timkpaine/hedgeme/node_modules

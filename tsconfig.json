@@ -20,5 +20,5 @@
       "@jpmorganchase/perspective-phosphor"
     ]
   },
-  "include": ["ts/src/*", "ts/style/*"]
+  "include": ["src/ts/*"]
 }

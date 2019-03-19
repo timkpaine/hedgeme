@@ -8,8 +8,8 @@ test: clean lint ## run the tests for travis CI
 	@ python3 -m pytest -v pytests --cov=hedgeme
 
 lint: ## run linter
-	pylint hedgeme || echo
-	flake8 hedgeme 
+	flake8 hedgeme
+	yarn lint
 
 annotate: ## MyPy type annotation check
 	mypy -s hedgeme

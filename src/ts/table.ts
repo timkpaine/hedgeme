@@ -8,7 +8,7 @@ import {
 
 import {
   IRequestResult, request,
-} from "./request";
+} from "requests-helper";
 
 export
 class TableWidget extends Widget {

@@ -1,5 +1,5 @@
 const path = require("path");
-const PerspectivePlugin = require("@jpmorganchase/perspective-webpack-plugin");
+const PerspectivePlugin = require("@finos/perspective-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = {
@@ -13,7 +13,7 @@ module.exports = {
     },
     // resolveLoader: {
     //     alias: {
-    //         "file-worker-loader": "@jpmorganchase/perspective-webpack-plugin/src/js/file_worker_loader.js"
+    //         "file-worker-loader": "@finos/perspective-webpack-plugin/src/js/file_worker_loader.js"
     //     }
     // },
     // resolve: {

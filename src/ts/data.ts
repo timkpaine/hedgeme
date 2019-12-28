@@ -1,5 +1,5 @@
-import {PerspectiveWidget, PerspectiveWidgetOptions} from "@jpmorganchase/perspective-phosphor";
-import {IRequestResult, request} from "./request";
+import {PerspectiveWidget, PerspectiveWidgetOptions} from "@finos/perspective-phosphor";
+import {IRequestResult, request} from "requests-helper";
 
 export
 interface IConsumesData {

@@ -16,8 +16,8 @@
     ],
    "types": [
       "jest",
-      "@jpmorganchase/perspective-viewer",
-      "@jpmorganchase/perspective-phosphor"
+      "@finos/perspective-viewer",
+      "@finos/perspective-phosphor"
     ]
   },
   "include": ["src/ts/*"]

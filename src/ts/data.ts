@@ -25,6 +25,7 @@ class PerspectiveDataLoader extends PerspectiveWidget {// implements  ConsumesDa
 
     // tslint:disable-next-line: no-empty
     public urlChange(): void {
+
     }
 }
 
